@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>CCU Nurse Pocket | วอร์ดวิกฤตหัวใจ ศิริราช</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Sarabun & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- PWA meta tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#0284c7">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+            prompt: ['Prompt', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+            heart: {
+              50: '#fff1f2',
+              500: '#f43f5e',
+              600: '#e11d48',
+              700: '#be123c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: 78px; /* space for bottom navigation bar */
+    }
+    h1, h2, h3, h4, .font-heading { font-family: 'Prompt', sans-serif; }
+    
+    .tab-view { display: none; }
+    .tab-view.active { display: block; animation: fadeIn 0.2s ease-out; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .safe-top { padding-top: env(safe-area-inset-top, 0px); }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- TOP APP BAR -->
+  <header class="bg-brand-700 text-white sticky top-0 z-40 shadow-md safe-top">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Title & Unit Badge -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-rose-300 border border-white/20 shadow-inner">
+          <i class="fa-solid fa-heart-pulse text-lg animate-pulse"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="font-heading font-bold text-base tracking-tight">CCU Pocket Guide</span>
+            <span class="text-[10px] bg-rose-500/90 text-white font-medium px-1.5 py-0.5 rounded">นวมินทร์ ชั้น 7</span>
+          </div>
+          <p class="text-[11px] text-sky-200 mt-0.5">ศิริราชพยาบาล • Cardiac Care Unit</p>
+        </div>
+      </div>
+
+      <!-- Quick Action: SOS Emergency button -->
+      <button onclick="switchTab('emergency')" class="bg-rose-600 active:bg-rose-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg shadow flex items-center gap-1 border border-rose-400/40">
+        <i class="fa-solid fa-bolt text-amber-300"></i>
+        <span>ด่วน! วิกฤต</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- APP CONTENT CONTAINER -->
+  <main class="max-w-md mx-auto px-4 pt-3 pb-6">
+
+    <!-- ================================================= -->
+    <!-- VIEW 1: HOME (หน้าหลัก / Quick Actions & Search)  -->
+    <!-- ================================================= -->
+    <div id="view-home" class="tab-view active space-y-4">
+      
+      <!-- Bedside Search Bar -->
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+        <input 
+          type="text" 
+          id="mobileSearch" 
+          placeholder="ค้นหาด่วน: EKG, VT, Delirium, Norepi, IABP..." 
+          onkeyup="handleSearch(event)"
+          class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-sm border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-slate-400"
+        >
+        <button onclick="clearSearch()" id="clearBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Quick Filter Chips -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs whitespace-nowrap">
+        <button onclick="filterTag('all')" class="tag-chip active px-3 py-1 rounded-full bg-brand-600 text-white font-medium shadow-sm">ทั้งหมด</button>
+        <button onclick="filterTag('arrhythmia')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">คลื่นหัวใจ EKG</button>
+        <button onclick="filterTag('med')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">ยา High Alert</button>
+        <button onclick="filterTag('device')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">IABP & เครื่องพยุงชีพ</button>
+        <button onclick="filterTag('delirium')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">CAM-ICU</button>
+      </div>
+
+      <!-- Welcome Banner for Bedside -->
+      <div class="bg-gradient-to-br from-brand-600 to-brand-800 text-white p-4 rounded-2xl shadow-sm relative overflow-hidden">
+        <div class="relative z-10">
+          <span class="inline-block text-[10px] bg-white/20 text-sky-100 font-semibold px-2 py-0.5 rounded mb-1">
+            <i class="fa-solid fa-user-nurse"></i> คู่มือปฏิบัติการพยาบาลประจำเวร
+          </span>
+          <h2 class="font-heading text-lg font-bold">คลังแนวปฏิบัติข้างเตียง CCU</h2>
+          <p class="text-xs text-sky-100 mt-1 line-clamp-2">
+            สรุปกระชับ พร้อมใช้ข้างเตียงคนไข้ เพื่อการดูแลผู้ป่วยวิกฤตหัวใจที่ถูกต้องแม่นยำ
+          </p>
+        </div>
+        <i class="fa-solid fa-notes-medical absolute -right-3 -bottom-3 text-7xl text-white/10 pointer-events-none"></i>
+      </div>
+
+      <!-- 4 Quick Action Grids -->
+      <div class="grid grid-cols-2 gap-2.5">
+        
+        <!-- Action 1: Arrhythmia -->
+        <div onclick="openTopicDetail('arrhythmia')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-lg mb-2">
+              <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">Arrhythmia EKG</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">แปลผลคลื่นไฟฟ้า & ตั้งค่า Defib</p>
+          </div>
+          <span class="mt-2 text-[10px] text-rose-600 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-book-open"></i> มีคู่มือ PDF ฉบับเต็ม
+          </span>
+        </div>
+
+        <!-- Action 2: High Alert Drugs -->
+        <div onclick="openTopicDetail('med')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-2">
+              <i class="fa-solid fa-syringe"></i>
+            </div>
+            <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">High Alert Drugs</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Norepi, Dobutamine, Cordarone</p>
+          </div>
+          <span class="mt-2 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-calculator"></i> ตาราง Rate & Double check
+          </span>
+        </div>
+
+        <!-- Action 3: IABP & Devices -->
+        <div onclick="openTopicDetail('device')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="w-9 h-9 rounded-lg bg-sky-50 text-brand-600 flex items-center justify-center text-lg mb-2">
+              <i class="fa-solid fa-microchip"></i>
+            </div>
+            <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">IABP & เครื่องพยุงชีพ</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Waveform, Timing & เฝ้าระวังขาซีด</p>
+          </div>
+          <span class="mt-2 text-[10px] text-brand-600 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-list-check"></i> Checklist ข้างเตียง
+          </span>
+        </div>
+
+        <!-- Action 4: Delirium CAM-ICU -->
+        <div onclick="openTopicDetail('delirium')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg mb-2">
+              <i class="fa-solid fa-brain"></i>
+            </div>
+            <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">CAM-ICU Delirium</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">ประเมินสับสนเฉียบพลัน 4 ขั้นตอน</p>
+          </div>
+          <span class="mt-2 text-[10px] text-amber-700 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-circle-check"></i> ขั้นตอนประเมินด่วน
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Senior Clinical Pearls Highlight (Tacit Knowledge Feed) -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-heading font-bold text-sm text-slate-800 flex items-center gap-1.5">
+            <i class="fa-solid fa-lightbulb text-amber-500"></i> ข้อคิดสะกิดใจจากพี่ในเวร
+          </h3>
+          <button onclick="switchTab('tacit')" class="text-xs text-brand-600 font-semibold">ดูเพิ่ม &rarr;</button>
+        </div>
+
+        <!-- Mini Card 1 -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1 mb-2">
+          <div class="flex justify-between items-center text-[10px] text-slate-500">
+            <span class="font-semibold text-brand-700"><i class="fa-solid fa-user-check"></i> พี่ชล (พยาบาลชำนาญการพิเศษ 14 ปี)</span>
+            <span class="bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded font-medium">VT Alarm</span>
+          </div>
+          <p class="text-slate-700 leading-relaxed font-medium">
+            "Alarm ดังอย่าเพิ่งตกใจ มองหน้าคนไข้ก่อน 1 วินาทีเสมอ ถ้าคนไข้ยังยิ้มหรือแปรงฟันอยู่ แปลว่าสาย Lead หลุดหรือสั่น (Artifact)"
+          </p>
+        </div>
+
+        <!-- Mini Card 2 -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1">
+          <div class="flex justify-between items-center text-[10px] text-slate-500">
+            <span class="font-semibold text-brand-700"><i class="fa-solid fa-user-check"></i> พี่ฟ้า (CCU Nurse)</span>
+            <span class="bg-sky-100 text-brand-700 px-1.5 py-0.2 rounded font-medium">IABP Care</span>
+          </div>
+          <p class="text-slate-700 leading-relaxed font-medium">
+            "อย่าลืมคลำ Dorsalis Pedis Pulse ขาข้างที่ใส่ IABP ทุก 1 ชั่วโมง ถ้าคลำเบาลงหรือขาเย็น รีบแจ้งแพทย์ทันที"
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================================================= -->
+    <!-- VIEW 2: KNOWLEDGE LIST & TOPIC DETAILS            -->
+    <!-- ================================================= -->
+    <div id="view-knowledge" class="tab-view space-y-4">
+      <div>
+        <h2 class="font-heading text-lg font-bold text-slate-800">คลังแนวปฏิบัติ CCU</h2>
+        <p class="text-xs text-slate-500">แตะดูสรุปแนวปฏิบัติ หรือเปิดอ่านเอกสารฉบับเต็ม</p>
+      </div>
+
+      <!-- Card 1: Arrhythmia E-book -->
+      <div class="topic-item arrhythmia bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2 mb-1.5">
+            <span class="text-[10px] font-bold bg-rose-50 text-rose-600 px-2 py-0.5 rounded">PDF คู่มือทางการ</span>
+            <span class="text-[10px] text-slate-400">13.9 MB</span>
+          </div>
+          <h3 class="font-heading font-bold text-base text-slate-800">คู่มือ Arrhythmia น้อง ICU & CCU</h3>
+          <p class="text-xs text-slate-600 mt-1 line-clamp-2">
+            ครอบคลุม: กลไกการเกิด Arrhythmia, Sinus / Atrial / Ventricular Rhythms, AV Blocks และการตั้งค่า Defibrillator
+          </p>
+          <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <button onclick="openTopicDetail('arrhythmia')" class="text-xs font-bold text-brand-600 flex items-center gap-1">
+              <i class="fa-solid fa-eye"></i> ดูเนื้อหาย่อ
+            </button>
+            <a href="../Arrhythmia น้องICU.pdf" target="_blank" class="text-xs font-semibold bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg flex items-center gap-1">
+              <i class="fa-solid fa-file-pdf"></i> เปิดอ่าน PDF ฉบับเต็ม
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Delirium & CAM-ICU -->
+      <div class="topic-item delirium bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2 mb-1.5">
+            <span class="text-[10px] font-bold bg-amber-50 text-amber-700 px-2 py-0.5 rounded">Bedside Checklist</span>
+            <span class="text-[10px] text-slate-400">อัปเดต 2569</span>
+          </div>
+          <h3 class="font-heading font-bold text-base text-slate-800">การประเมิน CAM-ICU & Delirium</h3>
+          <p class="text-xs text-slate-600 mt-1 line-clamp-2">
+            เกณฑ์ 4 ขั้นตอนการประเมินผู้ป่วยสับสนเฉียบพลันใน CCU และการจัดการแบบไม่ใช้ยา (Non-pharmacological)
+          </p>
+          <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <button onclick="openTopicDetail('delirium')" class="text-xs font-bold text-brand-600 flex items-center gap-1">
+              <i class="fa-solid fa-list-check"></i> เปิดดู Checklist ประเมิน
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: IABP Care -->
+      <div class="topic-item device bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2 mb-1.5">
+            <span class="text-[10px] font-bold bg-sky-50 text-brand-700 px-2 py-0.5 rounded">Action Protocol</span>
+            <span class="text-[10px] text-slate-400">Advanced CCU</span>
+          </div>
+          <h3 class="font-heading font-bold text-base text-slate-800">การพยาบาลผู้ป่วยใส่สาย IABP</h3>
+          <p class="text-xs text-slate-600 mt-1 line-clamp-2">
+            การดู Waveform Dicrotic Notch, ข้อปฏิบัติห้ามงอขา, การสังเกตภาวะแทรกซ้อน และขั้นตอนแก้ Alarm
+          </p>
+          <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <button onclick="openTopicDetail('device')" class="text-xs font-bold text-brand-600 flex items-center gap-1">
+              <i class="fa-solid fa-file-waveform"></i> ดูขั้นตอนการปฏิบัติ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: High Alert Meds -->
+      <div class="topic-item med bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2 mb-1.5">
+            <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">Medication Safety</span>
+            <span class="text-[10px] text-slate-400">Double Check</span>
+          </div>
+          <h3 class="font-heading font-bold text-base text-slate-800">ยากระตุ้น/ปรับความดัน (Inotropes & Vasopressors)</h3>
+          <p class="text-xs text-slate-600 mt-1 line-clamp-2">
+            สูตรผสม Norepinephrine, Dopamine, Dobutamine, Adrenaline และแนวทาง Titrate ตามค่า MAP
+          </p>
+          <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <button onclick="openTopicDetail('med')" class="text-xs font-bold text-brand-600 flex items-center gap-1">
+              <i class="fa-solid fa-table-list"></i> ดูตารางขนาดยา
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- VIEW 3: TACIT KNOWLEDGE (ประสบการณ์พี่สู่น้อง)    -->
+    <!-- ================================================= -->
+    <div id="view-tacit" class="tab-view space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="font-heading text-lg font-bold text-slate-800">ประสบการณ์พี่สู่น้อง (Pearls)</h2>
+          <p class="text-xs text-slate-500">เกร็ดความรู้และเทคนิคการพยาบาลจากพี่ในวอร์ด</p>
+        </div>
+        <button onclick="openAddTacitModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 active:bg-brand-700 shadow-sm">
+          <i class="fa-solid fa-plus"></i> เพิ่มเกร็ดความรู้
+        </button>
+      </div>
+
+      <!-- Tacit Feed -->
+      <div class="space-y-3" id="tacitFeed">
+        <!-- Post 1 -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center">
+                พช
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-800">พี่ชล (พยาบาลชำนาญการพิเศษ)</p>
+                <p class="text-[10px] text-slate-400">CCU 14 ปี • เรื่อง: การบริหาร Norepi ชั่วคราว</p>
+              </div>
+            </div>
+            <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
+              <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 28
+            </span>
+          </div>
+          <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+            <strong>เกร็ดปฏิบัติ:</strong> หากผู้ป่วย Shock ขั้นวิกฤต ยังใส่ C-line ไม่ทัน ต้องให้ Norepi ผ่าน Peripheral Line:
+            <ul class="list-disc list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
+              <li>ใช้เส้นใหญ่ระดับข้อพับ (Antecubital) เท่านั้น ห้ามแทงหลังมือ</li>
+              <li>เช็คดูการรั่วซึม (Extravasation) ทุก 15-30 นาที</li>
+              <li>เตรียมยาแก้พิษ Regitine (Phentolamine) สำรองไว้ทันที</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Post 2 -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-teal-100 text-teal-700 font-bold text-xs flex items-center justify-center">
+                พฝ
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-800">พี่ฟ้า (CCU Nurse)</p>
+                <p class="text-[10px] text-slate-400">CCU • เรื่อง: Post-op CABG Bleeding</p>
+              </div>
+            </div>
+            <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
+              <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 22
+            </span>
+          </div>
+          <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+            <strong>เกร็ดปฏิบัติ:</strong> ผู้ป่วยหลังผ่าตัดหัวใจกลับมาวอร์ด สังเกตสาย ICD / Mediastinal drain ถ้าออก &gt; 200 ml/hr ติดต่อกัน 2 ชม. หรือสีแดงสด ให้แจ้งแพทย์เวรทันที และระวัง Cardiac Tamponade ถ้าอยู่ดีๆ เลือดหยุดไหลกะทันหันแต่ BP ตก!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- VIEW 4: EMERGENCY SOS (ด่วน! ข้างเตียงวิกฤต)       -->
+    <!-- ================================================= -->
+    <div id="view-emergency" class="tab-view space-y-4">
+      <div class="bg-rose-600 text-white p-4 rounded-2xl shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-2xl text-amber-300 animate-bounce"></i>
+            <div>
+              <h2 class="font-heading font-bold text-base">Quick Action วิกฤตข้างเตียง</h2>
+              <p class="text-xs text-rose-100">ขั้นตอนการพยาบาลเร่งด่วน CCU</p>
+            </div>
+          </div>
+          <button onclick="switchTab('home')" class="text-xs bg-white/20 px-2 py-1 rounded">ปิด &times;</button>
+        </div>
+      </div>
+
+      <!-- Action Card 1 -->
+      <div class="bg-white p-4 rounded-xl border-2 border-rose-300 shadow-sm space-y-2">
+        <h3 class="font-heading font-bold text-sm text-rose-800 flex items-center gap-1.5">
+          <i class="fa-solid fa-bolt text-rose-600"></i> 1. Pulseless VT / VF Arrest
+        </h3>
+        <div class="text-xs text-slate-700 space-y-1.5 pl-2 border-l-2 border-rose-400">
+          <p><strong>1. ร้องเรียกคนช่วย + นำ Defibrillator มาทันที</strong></p>
+          <p><strong>2. CPR ทันที:</strong> กดหน้าอกลึก 2-2.4 นิ้ว เร็ว 100-120 bpm</p>
+          <p><strong>3. Shock ทันที (Defibrillation):</strong> 200 Joules (Biphasic) แล้ว CPR ต่อ 2 นาทีทันที</p>
+          <p><strong>4. บริหารยา:</strong> Adrenaline 1mg IV ทุก 3-5 นาที, Amiodarone 300mg IV push หลัง Defib ครั้งที่ 3</p>
+        </div>
+      </div>
+
+      <!-- Action Card 2 -->
+      <div class="bg-white p-4 rounded-xl border-2 border-amber-300 shadow-sm space-y-2">
+        <h3 class="font-heading font-bold text-sm text-amber-800 flex items-center gap-1.5">
+          <i class="fa-solid fa-heart-crack text-amber-600"></i> 2. Symptomatic Bradycardia (HR &lt; 50)
+        </h3>
+        <div class="text-xs text-slate-700 space-y-1.5 pl-2 border-l-2 border-amber-400">
+          <p><strong>1. ประเมินอาการ Shock:</strong> BP drop, เหงื่อแตก, สับสน, เจ็บหน้าอก</p>
+          <p><strong>2. ให้ยา Atropine:</strong> 1 mg IV push ซ้ำได้ทุก 3-5 นาที (สูงสุด 3 mg)</p>
+          <p><strong>3. หากไม่ดีขึ้น:</strong> ติดแผ่น Transcutaneous Pacing (TCP) หรือเริ่ม Dopamine / Epinephrine drip ทันที</p>
+        </div>
+      </div>
+
+      <!-- Action Card 3 -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <h3 class="font-heading font-bold text-sm text-brand-800 flex items-center gap-1.5">
+          <i class="fa-solid fa-phone-volume text-brand-600"></i> เบอร์โทรศัพท์ฉุกเฉินภายใน
+        </h3>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="p-2 bg-slate-50 rounded border text-center">
+            <span class="text-slate-500 block text-[10px]">CPR / Code Heart</span>
+            <strong class="text-rose-600 text-sm">โทร 4444</strong>
+          </div>
+          <div class="p-2 bg-slate-50 rounded border text-center">
+            <span class="text-slate-500 block text-[10px]">Fellow หัวใจ On duty</span>
+            <strong class="text-brand-700 text-sm">โทร 7100</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- SLIDE-UP BOTTOM SHEET / TOPIC DETAILS MODAL       -->
+    <!-- ================================================= -->
+    <div id="topicModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
+      <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+        <!-- Sheet Header -->
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 id="modalTitle" class="font-heading font-bold text-base text-slate-800">หัวข้อแนวปฏิบัติ</h3>
+          <button onclick="closeTopicModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <!-- Sheet Body -->
+        <div id="modalBody" class="p-4 overflow-y-auto text-xs text-slate-700 space-y-3">
+          <!-- Dynamic Content -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================================================= -->
+  <!-- MOBILE BOTTOM NAVIGATION BAR (3 Core Tabs + Emergency) -->
+  <!-- ================================================= -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 safe-bottom shadow-lg">
+    <div class="max-w-md mx-auto grid grid-cols-4 h-14 text-center">
+      
+      <!-- Nav 1: Home -->
+      <button onclick="switchTab('home')" id="nav-home" class="nav-item active flex flex-col items-center justify-center text-brand-600 transition-colors">
+        <i class="fa-solid fa-house text-base"></i>
+        <span class="text-[10px] font-medium mt-0.5">หน้าหลัก</span>
+      </button>
+
+      <!-- Nav 2: Knowledge -->
+      <button onclick="switchTab('knowledge')" id="nav-knowledge" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+        <i class="fa-solid fa-book-medical text-base"></i>
+        <span class="text-[10px] font-medium mt-0.5">คลังความรู้</span>
+      </button>
+
+      <!-- Nav 3: Tacit Pearls -->
+      <button onclick="switchTab('tacit')" id="nav-tacit" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+        <i class="fa-solid fa-lightbulb text-base"></i>
+        <span class="text-[10px] font-medium mt-0.5">พี่สู่น้อง</span>
+      </button>
+
+      <!-- Nav 4: Emergency SOS -->
+      <button onclick="switchTab('emergency')" id="nav-emergency" class="nav-item flex flex-col items-center justify-center text-rose-500 hover:text-rose-600 transition-colors">
+        <i class="fa-solid fa-bolt text-base"></i>
+        <span class="text-[10px] font-semibold mt-0.5">ด่วนวิกฤต</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Tab Switching
+    function switchTab(viewId) {
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('text-brand-600', 'text-rose-600');
+        if (btn.id === 'nav-emergency') {
+          btn.classList.add('text-rose-500');
+        } else {
+          btn.classList.add('text-slate-400');
+        }
+      });
+
+      const target = document.getElementById('view-' + viewId);
+      if (target) {
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      const activeNav = document.getElementById('nav-' + viewId);
+      if (activeNav) {
+        if (viewId === 'emergency') {
+          activeNav.classList.remove('text-rose-500');
+          activeNav.classList.add('text-rose-600', 'font-bold');
+        } else {
+          activeNav.classList.remove('text-slate-400');
+          activeNav.classList.add('text-brand-600');
+        }
+      }
+    }
+
+    // Modal Content Database
+    const topics = {
+      arrhythmia: {
+        title: "คู่มือ Arrhythmia น้อง ICU & CCU",
+        content: `
+          <div class="space-y-3">
+            <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-900">
+              <p class="font-bold text-xs"><i class="fa-solid fa-heart-pulse text-rose-600"></i> สรุปหลักการอ่านคลื่นไฟฟ้าหัวใจ</p>
+              <p class="text-[11px] mt-1">อ้างอิงจากคู่มือ 'Arrhythmia น้องICU' เน้นดู 3 สเต็ป: Rate สม่ำเสมอไหม? P wave นำหน้า QRS ไหม? และ QRS กว้างหรือแคบ?</p>
+            </div>
+            
+            <div class="space-y-2">
+              <div class="p-2.5 border rounded-lg">
+                <span class="font-bold text-slate-800 text-[11px]">1. Narrow Complex Tachycardia (QRS &lt; 0.12s)</span>
+                <p class="text-[11px] text-slate-600 mt-0.5">• SVT: อัตราเต้นเร็วสม่ำเสมอ 150-250 bpm -&gt; ทำ Vagal maneuver หรือ Adenosine 6mg rapid IV push</p>
+                <p class="text-[11px] text-slate-600">• AF with RVR: ไม่สม่ำเสมอ ไม่มี P wave ชัดเจน -&gt; ควบคุม Rate ด้วย Amiodarone หรือ Beta-blocker</p>
+              </div>
+
+              <div class="p-2.5 border rounded-lg bg-rose-50/50">
+                <span class="font-bold text-rose-800 text-[11px]">2. Wide Complex Tachycardia (QRS &gt; 0.12s)</span>
+                <p class="text-[11px] text-slate-600 mt-0.5">• VT with Pulse: Amiodarone 150 mg drip ใน 10 นาที หรือ เตรียม Synchronized Cardioversion</p>
+                <p class="text-[11px] text-rose-600 font-semibold">• Pulseless VT / VF: Defibrillation 200J Biphasic ทันที!</p>
+              </div>
+            </div>
+
+            <a href="../Arrhythmia น้องICU.pdf" target="_blank" class="block w-full py-2.5 bg-rose-600 text-white font-semibold text-center rounded-xl text-xs active:bg-rose-700">
+              <i class="fa-solid fa-file-pdf"></i> เปิดอ่านสไลด์ E-Book ฉบับเต็ม (13.9 MB)
+            </a>
+          </div>
+        `
+      },
+      med: {
+        title: "High Alert Drugs (ยากระตุ้น/ปรับความดัน)",
+        content: `
+          <div class="space-y-3">
+            <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-[11px]">
+              <strong>หลักความปลอดภัย:</strong> ต้อง Double check 2 คนเสมอ ทั้งชื่อยา, ความเข้มข้น, อัตราหยด (Rate) และให้ผ่าน Infusion Pump เสมอ
+            </div>
+
+            <div class="space-y-2 text-[11px]">
+              <div class="p-2.5 border rounded-lg">
+                <strong class="text-slate-800">1. Norepinephrine (Levophed) 4:250</strong>
+                <p class="text-slate-600 mt-0.5">• ขนาดยา: 0.05 - 1 mcg/kg/min</p>
+                <p class="text-slate-600">• เป้าหมาย: MAP &ge; 65 mmHg</p>
+                <p class="text-rose-600 font-medium">• ข้อควรระวัง: ให้ผ่าน Central Line เป็นหลักเพื่อป้องกันเนื้อตาย</p>
+              </div>
+
+              <div class="p-2.5 border rounded-lg">
+                <strong class="text-slate-800">2. Dobutamine 250:250</strong>
+                <p class="text-slate-600 mt-0.5">• ขนาดยา: 2.5 - 20 mcg/kg/min (Inodilator ช่วยเพิ่ม CO)</p>
+                <p class="text-amber-700">• ข้อควรระวัง: อาจทำให้ BP drop เล็กน้อย และระวัง Tachycardia</p>
+              </div>
+
+              <div class="p-2.5 border rounded-lg">
+                <strong class="text-slate-800">3. Amiodarone (Cordarone)</strong>
+                <p class="text-slate-600 mt-0.5">• Arrest: 300mg IV push, ซ้ำ 150mg</p>
+                <p class="text-slate-600">• Maintenance: 900mg ใน 24 ชม. (ระวัง Phlebitis ต้องใช้ In-line filter)</p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      device: {
+        title: "การพยาบาลผู้ป่วยใส่เครื่อง IABP / เครื่องพยุงชีพ",
+        content: `
+          <div class="space-y-3">
+            <div class="p-3 bg-sky-50 border border-sky-200 rounded-xl text-brand-900 text-[11px]">
+              <strong>เป้าหมายของ IABP:</strong> ช่วยเพิ่มเลือดไปเลี้ยงกล้ามเนื้อหัวใจ (ช่วง Diastole) และลดภาระหัวใจบีบตัว (ช่วง Systole)
+            </div>
+
+            <div class="space-y-2 text-[11px]">
+              <p><strong>1. ท่าทางของผู้ป่วย:</strong> จัดท่านอนศีรษะสูงไม่เกิน 30 องศา และ <u>ห้ามงอข้อสะโพก</u> ข้างที่ใส่สายเด็ดขาด</p>
+              <p><strong>2. เฝ้าระวัง Limb Ischemia:</strong> ตรวจสีผิว, ความอุ่น, Capillary refill และคลำ Dorsalis pedis pulse ขาข้างที่ใส่สายทุก 1 ชม.</p>
+              <p><strong>3. การดู Helium Leak:</strong> หากพบเลือดสดหรือหยดน้ำในสายก๊าซฮีเลียม ให้รีบกดหยุดเครื่องและแจ้งแพทย์ทันที</p>
+            </div>
+          </div>
+        `
+      },
+      delirium: {
+        title: "แนวทางประเมิน CAM-ICU ใน CCU",
+        content: `
+          <div class="space-y-3">
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px]">
+              <strong>วินิจฉัย Delirium เมื่อ:</strong> พบ Feature 1 + 2 และมี (Feature 3 หรือ Feature 4) อย่างใดอย่างหนึ่ง
+            </div>
+
+            <ol class="list-decimal list-inside space-y-1.5 text-[11px] text-slate-700">
+              <li><strong>Feature 1: อาการเปลี่ยนแปลงเฉียบพลัน</strong> หรือมีอาการขึ้นๆ ลงๆ ภายใน 24 ชม.</li>
+              <li><strong>Feature 2: ความสนใจบกพร่อง (Inattention)</strong> ให้บีบมือเมื่อได้ยินตัว 'A' ในคำว่า "S-A-V-E-A-H-A-A-R-T" ผิด &gt; 2 ครั้ง</li>
+              <li><strong>Feature 3: ระดับความรู้สึกตัวเปลี่ยน</strong> ค่า RASS ไม่ใช่ 0 (เช่น กระวนกระวาย หรือซึม)</li>
+              <li><strong>Feature 4: ความคิดสับสน (Disorganized)</strong> ถามคำถามตรรกะง่ายๆ 4 ข้อ (หินลอยน้ำได้ไหม? ปลามีปีกไหม?) ผิด &gt; 1 ข้อ</li>
+            </ol>
+
+            <div class="p-2.5 bg-slate-50 rounded-lg text-[11px] text-slate-600">
+              <strong>การดูแลไม่ใช้ยา:</strong> เปิดม่านรับแสงกลางวัน ลดเสียง Alarm ตอนกลางคืน ให้ใส่แว่น/ฟันปลอม และให้ญาติคุ้นเคยพูดคุย
+            </div>
+          </div>
+        `
+      }
+    };
+
+    function openTopicDetail(key) {
+      const item = topics[key];
+      if (!item) return;
+      document.getElementById('modalTitle').innerText = item.title;
+      document.getElementById('modalBody').innerHTML = item.content;
+      document.getElementById('topicModal').classList.remove('hidden');
+    }
+
+    function closeTopicModal() {
+      document.getElementById('topicModal').classList.add('hidden');
+    }
+
+    // Filter by tag
+    function filterTag(cat) {
+      document.querySelectorAll('.tag-chip').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white');
+        btn.classList.add('bg-white', 'text-slate-600');
+      });
+      event.target.classList.add('bg-brand-600', 'text-white');
+      event.target.classList.remove('bg-white', 'text-slate-600');
+
+      switchTab('knowledge');
+      const items = document.querySelectorAll('.topic-item');
+      items.forEach(item => {
+        if (cat === 'all' || item.classList.contains(cat)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // Search logic
+    function handleSearch(e) {
+      const q = e.target.value.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearBtn');
+      if (q) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      if (e.key === 'Enter') {
+        switchTab('knowledge');
+        const items = document.querySelectorAll('.topic-item');
+        items.forEach(item => {
+          if (item.innerText.toLowerCase().includes(q)) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      }
+    }
+
+    function clearSearch() {
+      document.getElementById('mobileSearch').value = '';
+      document.getElementById('clearBtn').classList.add('hidden');
+      document.querySelectorAll('.topic-item').forEach(i => i.style.display = 'block');
+    }
+
+    function openAddTacitModal() {
+      const text = prompt("พิมพ์เกร็ดความรู้ (Pearls) ที่ต้องการส่งต่อให้น้องๆ ใน CCU:");
+      if (text) {
+        alert("บันทึกเกร็ดความรู้สำเร็จ! ข้อมูลถูกเพิ่มลงในระบบเรียบร้อยครับ");
+      }
+    }
+  </script>
+</body>
+</html>
