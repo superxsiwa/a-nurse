@@ -557,8 +557,8 @@
             </div>
 
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">ลิงก์ไฟล์เอกสาร / PDF / Google Drive (ถ้ามี):</label>
-              <input type="text" id="formFile" placeholder="เช่น documents/knowledge/... หรือ ลิงก์ Google Drive" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
+              <label class="block font-semibold text-slate-700 mb-1">ลิงก์ไฟล์เอกสาร / PDF (ถ้ามี):</label>
+              <input type="text" id="formFile" placeholder="เช่น documents/knowledge/... หรือ URL เอกสาร" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
             </div>
 
             <div class="pt-2 flex gap-2">
@@ -835,7 +835,7 @@
     ];
 
     // Local Storage Knowledge Store
-    const CATALOG_VERSION = "v2.2";
+    const CATALOG_VERSION = "v2.3";
     function getKnowledgeCatalog() {
       const currentVer = localStorage.getItem('ccu_catalog_version');
       if (currentVer !== CATALOG_VERSION) {
