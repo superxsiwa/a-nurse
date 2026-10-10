@@ -9,7 +9,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <!-- Google Fonts: Sarabun & Prompt -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
@@ -213,17 +212,17 @@
 
         <!-- Quick Filter Tags -->
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs whitespace-nowrap">
-          <button onclick="filterTag('all')" class="tag-chip active px-3 py-1 rounded-full bg-brand-600 text-white font-medium shadow-sm">ทั้งหมด (29)</button>
-          <button onclick="filterTag('EKG')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">EKG (8)</button>
-          <button onclick="filterTag('Drug')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Drug / HAD (10)</button>
-          <button onclick="filterTag('TAVI')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">TAVI (6)</button>
-          <button onclick="filterTag('TEER')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">TEER (1)</button>
-          <button onclick="filterTag('ACS')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">ACS (2)</button>
-          <button onclick="filterTag('Pacemaker')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Pacemaker (1)</button>
-          <button onclick="filterTag('Rehabilitation')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Rehab (1)</button>
+          <button onclick="filterTag('all')" class="tag-chip active px-3 py-1 rounded-full bg-brand-600 text-white font-medium shadow-sm">ทั้งหมด (<span id="totalBadgeCount">29</span>)</button>
+          <button onclick="filterTag('EKG')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">EKG</button>
+          <button onclick="filterTag('Drug')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Drug / HAD</button>
+          <button onclick="filterTag('TAVI')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">TAVI</button>
+          <button onclick="filterTag('TEER')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">TEER</button>
+          <button onclick="filterTag('ACS')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">ACS</button>
+          <button onclick="filterTag('Pacemaker')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Pacemaker</button>
+          <button onclick="filterTag('Rehabilitation')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Rehab</button>
         </div>
 
-        <!-- Hero Card -->
+        <!-- Hero Card with Manage KM Shortcut -->
         <div class="bg-gradient-to-br from-brand-700 via-brand-800 to-sky-900 text-white p-4 rounded-2xl shadow-sm relative overflow-hidden">
           <div class="relative z-10">
             <span class="inline-block text-[10px] bg-white/20 text-sky-100 font-semibold px-2 py-0.5 rounded mb-1">
@@ -231,8 +230,13 @@
             </span>
             <h2 class="font-heading text-lg font-bold">คู่มือพกพาข้างเตียงพยาบาล</h2>
             <p class="text-xs text-sky-100 mt-1 line-clamp-2">
-              รวบรวม 29 เอกสารแนวปฏิบัติเฉพาะทางด้านโรคหัวใจและหัตถการขั้นสูง เพื่อการบริบาลผู้ป่วยอย่างมั่นใจและปลอดภัยสูงสุด
+              รวบรวมเอกสารแนวปฏิบัติเฉพาะทางด้านโรคหัวใจและหัตถการขั้นสูง เพื่อการบริบาลผู้ป่วยอย่างมั่นใจและปลอดภัยสูงสุด
             </p>
+            <div class="mt-3 flex items-center gap-2">
+              <button onclick="switchTab('manage')" class="bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 backdrop-blur-sm border border-white/30 transition-all">
+                <i class="fa-solid fa-pen-to-square"></i> จัดการ/สร้างความรู้ใหม่
+              </button>
+            </div>
           </div>
           <i class="fa-solid fa-heart-pulse absolute -right-3 -bottom-3 text-7xl text-white/10 pointer-events-none"></i>
         </div>
@@ -250,7 +254,7 @@
               <p class="text-[11px] text-slate-500 mt-0.5">แปลผลคลื่นไฟฟ้าหัวใจ & Bradycardia</p>
             </div>
             <span class="mt-2 text-[10px] text-rose-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> 8 เอกสาร (อ.ศุภชัย / น้องICU)
+              <i class="fa-solid fa-file-pdf"></i> เอกสาร อ.ศุภชัย / น้องICU
             </span>
           </div>
 
@@ -264,7 +268,7 @@
               <p class="text-[11px] text-slate-500 mt-0.5">Inotrope, ละลายลิ่มเลือด, Arrest Drugs</p>
             </div>
             <span class="mt-2 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> 10 เอกสารเภสัชกรรม
+              <i class="fa-solid fa-file-pdf"></i> เภสัชกรรม ศิริราช
             </span>
           </div>
 
@@ -278,7 +282,7 @@
               <p class="text-[11px] text-slate-500 mt-0.5">Pre-Post OP, Monitoring & เฝ้าระวัง Stroke</p>
             </div>
             <span class="mt-2 text-[10px] text-brand-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> 6 เอกสารทีมพยาบาล CCU
+              <i class="fa-solid fa-file-pdf"></i> ทีมพยาบาล CCU ศิริราช
             </span>
           </div>
 
@@ -306,7 +310,7 @@
               <p class="text-[11px] text-slate-500 mt-0.5">2025 ACS Clinical Update & Care</p>
             </div>
             <span class="mt-2 text-[10px] text-amber-700 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> 2 เอกสาร Update 2025
+              <i class="fa-solid fa-file-pdf"></i> Update 2025
             </span>
           </div>
 
@@ -326,38 +330,6 @@
 
         </div>
 
-        <!-- Senior Clinical Pearls Highlight (Tacit Knowledge Feed) -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-heading font-bold text-sm text-slate-800 flex items-center gap-1.5">
-              <i class="fa-solid fa-lightbulb text-amber-500"></i> ข้อคิดสะกิดใจจากพี่ในเวร
-            </h3>
-            <button onclick="switchTab('tacit')" class="text-xs text-brand-600 font-semibold">ดูเพิ่ม &rarr;</button>
-          </div>
-
-          <!-- Mini Card 1: Drug HAD -->
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1 mb-2">
-            <div class="flex justify-between items-center text-[10px] text-slate-500">
-              <span class="font-semibold text-brand-700"><i class="fa-solid fa-user-check"></i> เภสัชกร / พี่ CCU ศิริราช</span>
-              <span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-medium">ยา HAD & Inotrope</span>
-            </div>
-            <p class="text-slate-700 leading-relaxed font-medium">
-              "Dobutamine Low dose (2-5 mcg/kg/min) ระวังทำให้เกิด Hypotension! และหาก BP drop ในคนไข้ Sepsis ให้เลือก Norepinephrine ก่อนเป็นอันดับแรก"
-            </p>
-          </div>
-
-          <!-- Mini Card 2: TAVI Stroke -->
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1">
-            <div class="flex justify-between items-center text-[10px] text-slate-500">
-              <span class="font-semibold text-brand-700"><i class="fa-solid fa-user-check"></i> พว.พัฒนาพร (CCU ศิริราช)</span>
-              <span class="bg-sky-100 text-brand-700 px-1.5 py-0.2 rounded font-medium">Post-TAVI</span>
-            </div>
-            <p class="text-slate-700 leading-relaxed font-medium">
-              "หลังทำ TAVI ให้ประเมิน Neurological Deficit ทันทีเพื่อเฝ้าระวัง Stroke (สังเกตความรู้สึกตัว, แขนขาอ่อนแรง, ปากเบี้ยว) และตรวจ Puncture site ทุก 15-30 นาที"
-            </p>
-          </div>
-        </div>
-
       </div>
 
       <!-- ================================================= -->
@@ -366,9 +338,12 @@
       <div id="view-knowledge" class="tab-view space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="font-heading text-lg font-bold text-slate-800">คลังเอกสารแนวปฏิบัติ (29 รายการ)</h2>
+            <h2 class="font-heading text-lg font-bold text-slate-800">คลังเอกสารแนวปฏิบัติ (<span id="catalogCount">29</span> รายการ)</h2>
             <p class="text-xs text-slate-500">แตะดูสรุป หรือเปิดอ่านไฟล์เอกสารฉบับเต็ม</p>
           </div>
+          <button onclick="openCreateKnowledgeModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-brand-700">
+            <i class="fa-solid fa-plus"></i> เพิ่มความรู้
+          </button>
         </div>
 
         <div id="knowledgeListContainer" class="space-y-3">
@@ -377,7 +352,39 @@
       </div>
 
       <!-- ================================================= -->
-      <!-- VIEW 3: TACIT KNOWLEDGE (ประสบการณ์พี่สู่น้อง)    -->
+      <!-- VIEW 3: MANAGE KNOWLEDGE (หน้าจัดการ & สร้างความรู้)-->
+      <!-- ================================================= -->
+      <div id="view-manage" class="tab-view space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+          <div>
+            <h2 class="font-heading text-lg font-bold text-slate-800">จัดการองค์ความรู้ (KM Management)</h2>
+            <p class="text-xs text-slate-500">เพิ่ม แก้ไข และปรับปรุงแนวปฏิบัติในวอร์ด CCU</p>
+          </div>
+          <button onclick="openCreateKnowledgeModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-brand-700">
+            <i class="fa-solid fa-plus"></i> สร้างใหม่
+          </button>
+        </div>
+
+        <!-- Quick Summary Stats -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="bg-white p-3 rounded-xl border border-slate-200 text-center">
+            <p class="text-[10px] text-slate-400">องค์ความรู้ทั้งหมด</p>
+            <p id="statTotalKm" class="text-xl font-heading font-bold text-brand-700">29</p>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-slate-200 text-center">
+            <p class="text-[10px] text-slate-400">หมวดหมู่หลัก</p>
+            <p class="text-xl font-heading font-bold text-emerald-600">7 หมวด</p>
+          </div>
+        </div>
+
+        <!-- Manage List Table / Cards -->
+        <div class="space-y-3" id="manageListContainer">
+          <!-- Dynamically rendered manage cards with edit/delete buttons -->
+        </div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- VIEW 4: TACIT KNOWLEDGE (ประสบการณ์พี่สู่น้อง)    -->
       <!-- ================================================= -->
       <div id="view-tacit" class="tab-view space-y-4">
         <div class="flex items-center justify-between">
@@ -390,117 +397,13 @@
           </button>
         </div>
 
-        <!-- Tacit Feed -->
         <div class="space-y-3" id="tacitFeed">
-          
-          <!-- Post 1: TAVI -->
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-full bg-sky-100 text-brand-700 font-bold text-xs flex items-center justify-center">
-                  พพ
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-slate-800">พว.พัฒนาพร (CCU ศิริราช)</p>
-                  <p class="text-[10px] text-slate-400">Post-TAVI Phase • การเฝ้าระวัง Stroke & Bleeding</p>
-                </div>
-              </div>
-              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
-                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 34
-              </span>
-            </div>
-            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <strong>Clinical Pearl:</strong> ผู้ป่วยหลังทำ TAVI สิ่งสำคัญที่สุดใน 24 ชั่วโมงแรก:
-              <ul class="list-disc list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
-                <li>ประเมิน Neuro sign บ่อยๆ เฝ้าระวัง Embolic Stroke จากเศษหินปูนลิ้นหัวใจ</li>
-                <li>สังเกต EKG ต่อเนื่อง เฝ้าระวัง Complete Heart Block (มักเกิดจากตัวลิ้นกดเบียด Conduction system)</li>
-                <li>ห้ามงอขาข้างที่ใส่ Sheath และคลำ DP pulse ทุกชั่วโมง</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Post 2: TEER -->
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-full bg-purple-100 text-purple-700 font-bold text-xs flex items-center justify-center">
-                  พท
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-slate-800">พว.ทิพวรรณ (ศูนย์โรคหัวใจ ชั้น 8)</p>
-                  <p class="text-[10px] text-slate-400">TEER MitraClip Care</p>
-                </div>
-              </div>
-              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
-                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 29
-              </span>
-            </div>
-            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <strong>Clinical Pearl:</strong> หัตถการ TEER ทำผ่าน Right Femoral Vein และเจาะทะลุ Septum (Transseptal puncture) ดังนั้นหลังทำต้องระวัง:
-              <ul class="list-disc list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
-                <li>เฝ้าระวัง Pericardial Tamponade (BP ตก, Heart sound เบา, CVP สูง)</li>
-                <li>กดแผลขาหนีบอย่างน้อยตามเวลาที่กำหนดเพื่อป้องกัน Hematoma / Pseudoaneurysm</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Post 3: Pacemaker -->
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-full bg-teal-100 text-teal-700 font-bold text-xs flex items-center justify-center">
-                  พด
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-slate-800">พว.ดารณี เจริญรื่น (CCU ศิริราช)</p>
-                  <p class="text-[10px] text-slate-400">Pacemaker สำหรับน้องใหม่</p>
-                </div>
-              </div>
-              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
-                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 41
-              </span>
-            </div>
-            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <strong>Clinical Pearl:</strong> ท่องจำ 3 ภาวะหลักของ Pacemaker ผิดปกติ:
-              <ol class="list-decimal list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
-                <li><strong>Failure to Pace:</strong> ไม่มี Spike ไฟฟ้าขึ้นมาเลยในเวลาที่ควรปล่อย</li>
-                <li><strong>Failure to Capture:</strong> มี Spike แต่ไม่มีคลื่น P หรือ QRS ตามมา</li>
-                <li><strong>Failure to Sense (Undersensing):</strong> เครื่องไม่ยอมรับรู้จังหวะหัวใจเดิม ปล่อย Spike ทับ T wave (เสี่ยง R-on-T VF Arrest!)</li>
-              </ol>
-            </div>
-          </div>
-
-          <!-- Post 4: Drug Norepi -->
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center">
-                  พช
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-slate-800">พี่ชล (พยาบาลชำนาญการพิเศษ)</p>
-                  <p class="text-[10px] text-slate-400">CCU 14 ปี • เรื่อง: การบริหาร Norepi ชั่วคราว</p>
-                </div>
-              </div>
-              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
-                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 28
-              </span>
-            </div>
-            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <strong>Clinical Pearl:</strong> หากผู้ป่วย Shock ขั้นวิกฤต ยังใส่ C-line ไม่ทัน ต้องให้ Norepi ผ่าน Peripheral Line:
-              <ul class="list-disc list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
-                <li>ใช้เส้นใหญ่ระดับข้อพับ (Antecubital) เท่านั้น ห้ามแทงหลังมือ</li>
-                <li>เช็คดูการรั่วซึม (Extravasation) ทุก 15-30 นาที</li>
-                <li>เตรียมยาแก้พิษ Regitine (Phentolamine) สำรองไว้ทันที</li>
-              </ul>
-            </div>
-          </div>
-
+          <!-- Rendered dynamically -->
         </div>
       </div>
 
       <!-- ================================================= -->
-      <!-- VIEW 4: EMERGENCY SOS (ด่วน! ข้างเตียงวิกฤต)       -->
+      <!-- VIEW 5: EMERGENCY SOS (ด่วน! ข้างเตียงวิกฤต)       -->
       <!-- ================================================= -->
       <div id="view-emergency" class="tab-view space-y-4">
         <div class="bg-rose-600 text-white p-4 rounded-2xl shadow-sm">
@@ -560,7 +463,7 @@
       </div>
 
       <!-- ================================================= -->
-      <!-- SLIDE-UP BOTTOM SHEET / TOPIC DETAILS MODAL       -->
+      <!-- MODAL 1: VIEW DETAILS MODAL                       -->
       <!-- ================================================= -->
       <div id="topicModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
         <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[88vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
@@ -576,13 +479,79 @@
         </div>
       </div>
 
+      <!-- ================================================= -->
+      <!-- MODAL 2: CREATE / EDIT KNOWLEDGE MODAL (หน้าสร้างความรู้) -->
+      <!-- ================================================= -->
+      <div id="createKnowledgeModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
+        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 id="formModalTitle" class="font-heading font-bold text-base text-slate-800">สร้างองค์ความรู้ใหม่</h3>
+            <button onclick="closeCreateKnowledgeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          
+          <form id="knowledgeForm" onsubmit="saveKnowledgeItem(event)" class="p-4 overflow-y-auto text-xs space-y-3.5">
+            <input type="hidden" id="editItemId">
+            
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่องค์ความรู้:</label>
+              <select id="formCategory" required class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-brand-500">
+                <option value="EKG">EKG & Arrhythmia</option>
+                <option value="Drug">Drug & High Alert Drugs</option>
+                <option value="TAVI">TAVI / TAVR Care</option>
+                <option value="TEER">TEER (MitraClip)</option>
+                <option value="ACS">ACS (หลอดเลือดหัวใจ)</option>
+                <option value="Pacemaker">Pacemaker & Devices</option>
+                <option value="Rehabilitation">Cardiovascular Rehabilitation</option>
+                <option value="General">แนวปฏิบัติทั่วไป CCU</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">ชื่อหัวข้อแนวปฏิบัติ / ความรู้:</label>
+              <input type="text" id="formTitle" required placeholder="เช่น การพยาบาลผู้ป่วยหลังทำ TAVI" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">วิทยากร / ผู้สอน / แหล่งอ้างอิง:</label>
+              <input type="text" id="formAuthor" required placeholder="เช่น พว.พัฒนาพร (CCU ศิริราช)" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">คำอธิบายย่อ (แสดงบนการ์ด):</label>
+              <textarea id="formDesc" rows="2" required placeholder="สรุปสั้นๆ 1-2 บรรทัดสำหรับแสดงในรายการ" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">หัวใจสำคัญข้างเตียง (Bedside Essentials):</label>
+              <textarea id="formSummary" rows="4" required placeholder="ข้อควรระวัง, การประเมิน Neuro, การตั้งค่าเครื่อง, ขนาดยา..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">ลิงก์ไฟล์เอกสาร / PDF / Google Drive (ถ้ามี):</label>
+              <input type="text" id="formFile" placeholder="เช่น documents/knowledge/... หรือ ลิงก์ Google Drive" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <div class="pt-2 flex gap-2">
+              <button type="button" onclick="closeCreateKnowledgeModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-semibold rounded-xl text-xs">
+                ยกเลิก
+              </button>
+              <button type="submit" class="w-1/2 py-2.5 bg-brand-600 text-white font-semibold rounded-xl text-xs active:bg-brand-700 shadow-sm">
+                บันทึกองค์ความรู้
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </main>
 
     <!-- ================================================= -->
     <!-- MOBILE BOTTOM NAVIGATION BAR                     -->
     <!-- ================================================= -->
     <nav class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 safe-bottom shadow-lg">
-      <div class="max-w-md mx-auto grid grid-cols-4 h-14 text-center">
+      <div class="max-w-md mx-auto grid grid-cols-5 h-14 text-center">
         
         <!-- Nav 1: Home -->
         <button onclick="switchTab('home')" id="nav-home" class="nav-item active flex flex-col items-center justify-center text-brand-600 transition-colors">
@@ -596,13 +565,19 @@
           <span class="text-[10px] font-medium mt-0.5">คลังความรู้</span>
         </button>
 
-        <!-- Nav 3: Tacit Pearls -->
+        <!-- Nav 3: Manage KM (NEW) -->
+        <button onclick="switchTab('manage')" id="nav-manage" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+          <i class="fa-solid fa-pen-to-square text-base"></i>
+          <span class="text-[10px] font-medium mt-0.5">จัดการ KM</span>
+        </button>
+
+        <!-- Nav 4: Tacit Pearls -->
         <button onclick="switchTab('tacit')" id="nav-tacit" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
           <i class="fa-solid fa-lightbulb text-base"></i>
           <span class="text-[10px] font-medium mt-0.5">พี่สู่น้อง</span>
         </button>
 
-        <!-- Nav 4: Emergency SOS -->
+        <!-- Nav 5: Emergency SOS -->
         <button onclick="switchTab('emergency')" id="nav-emergency" class="nav-item flex flex-col items-center justify-center text-rose-500 hover:text-rose-600 transition-colors">
           <i class="fa-solid fa-bolt text-base"></i>
           <span class="text-[10px] font-semibold mt-0.5">ด่วนวิกฤต</span>
@@ -614,8 +589,8 @@
 
   <!-- JAVASCRIPT LOGIC & KNOWLEDGE DATABASE -->
   <script>
-    // Knowledge Base Data Catalog (All 29 files from documents/knowledge)
-    const KNOWLEDGE_CATALOG = [
+    // Initial Base Catalog (All 29 documents from documents/knowledge)
+    const INITIAL_CATALOG = [
       // 1. EKG & Arrhythmia
       {
         id: "ekg-1",
@@ -640,11 +615,11 @@
         author: "อ.ศุภชัย / CCU",
         file: "documents/knowledge/EKG/bradycardia.pdf",
         size: "134.5 MB",
-        desc: "การวินิจฉัยและดูแลผู้ป่วย Sinus Bradycardia, Sick Sinus Syndrome, AV Block (First, Second Mobitz I/II, Third degree Complete AV Block)",
+        desc: "การวินิจฉัยและดูแลผู้ป่วย Sinus Bradycardia, Sick Sinus Syndrome, AV Block (Mobitz I/II, Complete AV Block)",
         summaryHtml: `
           <div class="space-y-2 text-xs">
             <p><strong>First line drug:</strong> Atropine 1 mg IV push (ให้ซ้ำได้ทุก 3-5 นาที สูงสุด 3 mg)</p>
-            <p>• หากเป็น High-degree AV Block (Mobitz II หรือ Complete AV Block) มักไม่ตอบสนองต่อ Atropine ให้เตรียม Transcutaneous Pacing (TCP) หรือ Dopamine/Epi drip ทันที</p>
+            <p>• หากเป็น High-degree AV Block (Mobitz II หรือ Complete AV Block) ให้เตรียม Transcutaneous Pacing (TCP) หรือ Dopamine/Epi drip ทันที</p>
           </div>
         `
       },
@@ -697,7 +672,6 @@
         desc: "Hemodynamics in Shock, MAP = CO x SVR, Receptor Actions (Alpha, Beta-1, Beta-2, V1) และการเลือกใช้ยาตามชนิดของ Shock",
         summaryHtml: `
           <div class="space-y-2 text-xs">
-            <p><strong>Shock Management:</strong></p>
             <p>• Distributive Shock: Norepinephrine คือยาหลัก</p>
             <p>• Cardiogenic Shock: Norepinephrine + Inotrope (Dobutamine หรือ Milrinone) เมื่อ MAP ได้ระดับ</p>
           </div>
@@ -710,10 +684,10 @@
         author: "ภก. เอกภรณ์ สรณ์คำพันธ์ (Clinical Pharmacist ศิริราช)",
         file: "documents/knowledge/Drug /2025_Drug related to cardiac arrest.pdf",
         size: "3.0 MB",
-        desc: "ยากลุ่มช่วยชีวิตตามแนวทาง ACLS ล่าสุด: Adrenaline, Amiodarone, Lidocaine, Atropine, Adenosine, Calcium, Sodium Bicarbonate",
+        desc: "ยากลุ่มช่วยชีวิตตามแนวทาง ACLS ล่าสุด: Adrenaline, Amiodarone, Lidocaine, Atropine, Adenosine",
         summaryHtml: `
           <div class="space-y-2 text-xs">
-            <p>• <strong>Adrenaline:</strong> 1 mg IV push ทุก 3-5 นาที (ใน Shockable ให้หลัง Shock ครั้งที่ 2)</p>
+            <p>• <strong>Adrenaline:</strong> 1 mg IV push ทุก 3-5 นาที</p>
             <p>• <strong>Amiodarone:</strong> 300 mg push หลัง Shock ครั้งที่ 3 และ 150 mg หลัง Shock ครั้งที่ 5</p>
           </div>
         `
@@ -725,18 +699,8 @@
         author: "CCU Siriraj Pharmacotherapy",
         file: "documents/knowledge/Drug /ยาละลายลิ่มเลือด.pdf",
         size: "2.6 MB",
-        desc: "การให้ Streptokinase, Alteplase (rt-PA), Tenecteplase (TNK) ข้อบ่งชี้ ข้อห้ามใช้ และการเฝ้าระวัง Intracranial Bleeding",
+        desc: "การให้ Streptokinase, Alteplase (rt-PA), Tenecteplase (TNK) ข้อบ่งชี้ และการเฝ้าระวัง Bleeding",
         summaryHtml: `<p class="text-xs">เฝ้าระวัง Major bleeding และ Neuro sign ทุก 15 นาทีระหว่างให้ยาและ 2 ชั่วโมงแรกหลังให้ยา</p>`
-      },
-      {
-        id: "drug-5",
-        category: "Drug",
-        title: "Anti-hypertensive in Emergencies 11.2025",
-        author: "ฝ่ายเภสัชกรรม ศิริราช",
-        file: "documents/knowledge/Drug /Anti-hypertensive agents used in hypertensive emergencies 11.2025.pdf",
-        size: "2.2 MB",
-        desc: "ยา Nicardipine, Labetalol, Nitroglycerin, Sodium Nitroprusside และการควบคุม MAP ใน Aortic dissection",
-        summaryHtml: `<p class="text-xs">Nicardipine drip: เริ่ม 5 mg/hr titrate ทุก 5-15 นาที (เป้าหมายลด BP ไม่เกิน 25% ในชั่วโมงแรก ยกเว้น Aortic Dissection ต้องกด SBP &lt; 120 ทันที)</p>`
       },
 
       // 3. TAVI / TAVR
@@ -747,7 +711,7 @@
         author: "พว.พัฒนาพร สุพินา (CCU ศิริราช)",
         file: "documents/knowledge/TAVI/Post TAVR Nursing care & Monitoring (Part lI) พว.พัฒนาพร.pdf",
         size: "1.0 MB",
-        desc: "การพยาบาลผู้ป่วยหลังทำ TAVI: Immediate Phase, เฝ้าระวัง Stroke, Complete Heart Block, Puncture site hematoma และ Recovery phase",
+        desc: "การพยาบาลผู้ป่วยหลังทำ TAVI: Immediate Phase, เฝ้าระวัง Stroke, Complete Heart Block, Puncture site hematoma",
         summaryHtml: `
           <div class="space-y-2 text-xs">
             <p><strong>ข้อเฝ้าระวังสำคัญใน CCU:</strong></p>
@@ -767,32 +731,21 @@
         desc: "ภาพรวมกระบวนการพยาบาลผู้ป่วยเปลี่ยนลิ้นหัวใจทางสายสวน TAVI/TAVR ตั้งแต่เตรียมตัวจนถึงจำหน่าย",
         summaryHtml: `<p class="text-xs">ครอบคลุมการประเมินความเสี่ยง, การเตรียมอุปกรณ์พิเศษ, การประสานงาน Heart Team</p>`
       },
-      {
-        id: "tavi-3",
-        category: "TAVI",
-        title: "Patient Flow & Preoperative TAVR",
-        author: "พว.วริศรา & ทีม TAVR ศิริราช",
-        file: "documents/knowledge/TAVI/Patient flow of TAVR.pdf",
-        size: "0.5 MB",
-        desc: "ผังกระบวนการผู้ป่วย (Patient Flow) และการคัดกรองตรวจประเมินก่อนทำ TAVI",
-        summaryHtml: `<p class="text-xs">ขั้นตอนการส่งต่อผู้ป่วยจาก OPD สู่ Ward CCU และห้องสวนหัวใจ Cath Lab</p>`
-      },
 
       // 4. TEER (MitraClip)
       {
         id: "teer-1",
         category: "TEER",
         title: "Nursing Management of TEER (MitraClip)",
-        author: "พว.ทิพวรรณ แก้วทินกร (หอผู้ป่วยกึ่งวิกฤตศูนย์โรคหัวใจ ชั้น 8)",
+        author: "พว.ทิพวรรณ แก้วทินกร (ศูนย์โรคหัวใจ ชั้น 8)",
         file: "documents/knowledge/TEER/Nursing Management of TEER พว.ทิพวรรณ.pdf",
         size: "24.3 MB",
         desc: "การพยาบาลผู้ป่วยซ่อมลิ้นหัวใจไมตรัลผ่านสายสวน TEER (Transcatheter Edge-to-Edge Repair)",
         summaryHtml: `
           <div class="space-y-2 text-xs">
-            <p><strong>การดูแลก่อนและหลังทำ:</strong></p>
             <p>• ทำผ่าน Right Femoral Vein ผ่านการเจาะ Transseptal puncture</p>
-            <p>• <strong>ภาวะแทรกซ้อนที่ต้องเฝ้าระวัง:</strong> Cardiac Tamponade, Iatrogenic ASD, Clip detachment, Femoral hematoma</p>
-            <p>• จัดท่านอนราบอย่างน้อย 4-6 ชั่วโมงหลังดึง Sheath</p>
+            <p>• <strong>เฝ้าระวัง:</strong> Cardiac Tamponade, Iatrogenic ASD, Clip detachment, Femoral hematoma</p>
+            <p>• นอนราบนิ่งอย่างน้อย 4-6 ชั่วโมงหลังดึง Sheath</p>
           </div>
         `
       },
@@ -809,19 +762,9 @@
         summaryHtml: `
           <div class="space-y-2 text-xs">
             <p>• <strong>Door-to-Balloon Time:</strong> &lt; 90 นาทีสำหรับ Primary PCI</p>
-            <p>• <strong>Antiplatelet Dual Therapy (DAPT):</strong> Aspirin + P2Y12 inhibitor (Ticagrelor หรือ Clopidogrel)</p>
+            <p>• <strong>Antiplatelet Dual Therapy (DAPT):</strong> Aspirin + P2Y12 inhibitor</p>
           </div>
         `
-      },
-      {
-        id: "acs-2",
-        category: "ACS",
-        title: "ACS Comprehensive Care in CCU",
-        author: "ศูนย์โรคหัวใจสมเด็จพระบรมราชินีนาถ ศิริราช",
-        file: "documents/knowledge/ACS/ACS .pdf",
-        size: "27.3 MB",
-        desc: "การดูแลผู้ป่วยโรคหลอดเลือดหัวใจตีบเฉียบพลันใน CCU ภาวะแทรกซ้อน Cardiogenic Shock และ Mechanical Complications",
-        summaryHtml: `<p class="text-xs">เฝ้าระวัง Free wall rupture, VSD, Acute MR และการดูแลหลังทำ Coronary Angiography</p>`
       },
 
       // 6. Pacemaker
@@ -829,16 +772,15 @@
         id: "pm-1",
         category: "Pacemaker",
         title: "Pacemaker Nursing Care สำหรับน้องใหม่",
-        author: "พว.ดารณี เจริญรื่น (หออภิบาลโรคหัวใจ CCU ศิริราช)",
+        author: "พว.ดารณี เจริญรื่น (CCU ศิริราช)",
         file: "documents/knowledge/Pacemaker /Pacemaker nursing care presentation สำหรับน้องใหม่.pdf",
         size: "5.6 MB",
-        desc: "คู่มือเครื่องกระตุ้นไฟฟ้าหัวใจ: ชนิด Temporary & Permanent Pacemaker, โหมดการทำงาน (VVI, DDD), การพยาบาลก่อน-หลังผ่าตัด",
+        desc: "คู่มือเครื่องกระตุ้นไฟฟ้าหัวใจ: ชนิด Temporary & Permanent Pacemaker, โหมดการทำงาน (VVI, DDD)",
         summaryHtml: `
           <div class="space-y-2 text-xs">
-            <p><strong>การเฝ้าระวัง Malfunction 3 ประการ:</strong></p>
-            <p>1. <strong>Failure to Pace:</strong> ไม่มี Spike ปล่อยออกมา (เช็คสายหลุด, แบตเตอรี่หมด)</p>
-            <p>2. <strong>Failure to Capture:</strong> มี Spike แต่ไม่มี QRS ตอบสนอง (เช็ค Threshold, เลือดออกรอบ Lead)</p>
-            <p>3. <strong>Failure to Sense:</strong> ปล่อย Spike ทับจังหวะคนไข้ เสี่ยง R-on-T เกิด VF (ต้องปรับ Sensitivity)</p>
+            <p>1. <strong>Failure to Pace:</strong> ไม่มี Spike ปล่อยออกมา (เช็คสายหลุด, แบตหมด)</p>
+            <p>2. <strong>Failure to Capture:</strong> มี Spike แต่ไม่มี QRS ตอบสนอง</p>
+            <p>3. <strong>Failure to Sense:</strong> ปล่อย Spike ทับจังหวะคนไข้ เสี่ยง R-on-T เกิด VF</p>
           </div>
         `
       },
@@ -848,21 +790,36 @@
         id: "rehab-1",
         category: "Rehabilitation",
         title: "Role of Nurse for Cardiovascular Rehabilitation 2569",
-        author: "พว.เบญจมาส ธรรมวาระ (หอผู้ป่วยมัธยาภิบาลโรคหัวใจ ICCU ศิริราช)",
+        author: "พว.เบญจมาส ธรรมวาระ (ICCU ศิริราช)",
         file: "documents/knowledge/Rehabilitation /1Role of nurse for rehabilitation in cardiovascular patients 2569.pptx",
         size: "0.3 MB",
-        desc: "บทบาทพยาบาลในการฟื้นฟูสมรรถภาพหัวใจ (Cardiac Rehabilitation Phase I ในหอผู้ป่วยวิกฤต), กิจกรรมบำบัด และการป้องกัน Deconditioning",
+        desc: "บทบาทพยาบาลในการฟื้นฟูสมรรถภาพหัวใจ (Phase I ในหอผู้ป่วยวิกฤต), กิจกรรมบำบัด และการป้องกัน Deconditioning",
         summaryHtml: `
           <div class="space-y-2 text-xs">
-            <p><strong>Cardiac Rehab Phase 1 ใน CCU/ICCU:</strong></p>
             <p>• วันที่ 1: นั่งข้างเตียง (Dangling legs), บริหารกล้ามเนื้อมือเท้าเบาๆ</p>
-            <p>• วันที่ 2-3: ยืนข้างเตียง เดินรอบเตียง พร้อมมอนิเตอร์ HR, BP, SpO2 (หยุดทันทีถ้า HR เพิ่ม &gt; 20 bpm หรือ BP drop &gt; 10 mmHg)</p>
+            <p>• วันที่ 2-3: ยืนข้างเตียง เดินรอบเตียง พร้อมมอนิเตอร์ HR, BP, SpO2</p>
           </div>
         `
       }
     ];
 
-    // Valid Logins
+    // Local Storage Knowledge Store
+    function getKnowledgeCatalog() {
+      const stored = localStorage.getItem('ccu_knowledge_catalog');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e) { }
+      }
+      return INITIAL_CATALOG;
+    }
+
+    function saveKnowledgeCatalog(catalog) {
+      localStorage.setItem('ccu_knowledge_catalog', JSON.stringify(catalog));
+      updateCounts();
+    }
+
+    let currentCatalog = getKnowledgeCatalog();
+
+    // Accounts
     const VALID_ACCOUNTS = [
       { user: 'nurse', pass: 'ccu7' },
       { user: 'fah', pass: 'ccu7' },
@@ -870,14 +827,26 @@
       { user: 'ccu', pass: 'siriraj' }
     ];
 
-    // Check Login State
     document.addEventListener("DOMContentLoaded", () => {
       const loggedInUser = localStorage.getItem('ccu_user');
       if (loggedInUser) {
         showApp(loggedInUser);
       }
-      renderKnowledgeCatalog(KNOWLEDGE_CATALOG);
+      renderKnowledgeCatalog(currentCatalog);
+      renderManageCatalog(currentCatalog);
+      renderTacitFeed();
+      updateCounts();
     });
+
+    function updateCounts() {
+      const total = currentCatalog.length;
+      const countEl = document.getElementById('catalogCount');
+      const badgeEl = document.getElementById('totalBadgeCount');
+      const statEl = document.getElementById('statTotalKm');
+      if (countEl) countEl.innerText = total;
+      if (badgeEl) badgeEl.innerText = total;
+      if (statEl) statEl.innerText = total;
+    }
 
     function handleLogin(e) {
       e.preventDefault();
@@ -953,9 +922,13 @@
           activeNav.classList.add('text-brand-600');
         }
       }
+
+      if (viewId === 'manage') {
+        renderManageCatalog(currentCatalog);
+      }
     }
 
-    // Render Catalog Items
+    // Render Knowledge Catalog
     function renderKnowledgeCatalog(items) {
       const container = document.getElementById('knowledgeListContainer');
       if (!container) return;
@@ -985,7 +958,7 @@
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
             <span class="text-[10px] font-bold ${badgeColor} px-2 py-0.5 rounded">${item.category}</span>
-            <span class="text-[10px] text-slate-400">${item.size}</span>
+            <span class="text-[10px] text-slate-400">${item.size || 'KM Doc'}</span>
           </div>
           <div>
             <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">${item.title}</h3>
@@ -996,17 +969,50 @@
             <button onclick="openKnowledgeModal('${item.id}')" class="text-xs font-bold text-brand-600 flex items-center gap-1 active:text-brand-800">
               <i class="fa-solid fa-eye"></i> ดูสรุปแนวปฏิบัติ
             </button>
-            <a href="${item.file}" target="_blank" class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf text-rose-500"></i> เปิดไฟล์
-            </a>
+            ${item.file ? `
+              <a href="${item.file}" target="_blank" class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1">
+                <i class="fa-solid fa-file-pdf text-rose-500"></i> เปิดไฟล์
+              </a>
+            ` : ''}
           </div>
         `;
         container.appendChild(card);
       });
     }
 
+    // Render Manage Catalog Console
+    function renderManageCatalog(items) {
+      const container = document.getElementById('manageListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2";
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">${item.category}</span>
+              <h4 class="font-heading font-bold text-xs text-slate-800 mt-1">${item.title}</h4>
+              <p class="text-[10px] text-slate-400">โดย: ${item.author}</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="editKnowledgeItem('${item.id}')" title="แก้ไข" class="w-7 h-7 rounded-lg bg-sky-50 text-brand-600 flex items-center justify-center text-xs active:bg-sky-100">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button onclick="deleteKnowledgeItem('${item.id}')" title="ลบ" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs active:bg-rose-100">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Modal Actions
     function openKnowledgeModal(id) {
-      const item = KNOWLEDGE_CATALOG.find(k => k.id === id);
+      const item = currentCatalog.find(k => k.id === id);
       if (!item) return;
 
       document.getElementById('modalTitle').innerText = item.title;
@@ -1017,7 +1023,7 @@
               <span class="text-[10px] font-bold bg-brand-50 text-brand-700 px-2 py-0.5 rounded">${item.category}</span>
               <p class="text-xs text-slate-600 mt-1"><i class="fa-solid fa-user-check text-brand-600"></i> โดย: ${item.author}</p>
             </div>
-            <span class="text-xs text-slate-400">${item.size}</span>
+            <span class="text-xs text-slate-400">${item.size || ''}</span>
           </div>
 
           <div class="p-3 bg-white border rounded-xl space-y-2">
@@ -1025,22 +1031,114 @@
             ${item.summaryHtml}
           </div>
 
-          <a href="${item.file}" target="_blank" class="block w-full py-2.5 bg-brand-600 text-white font-semibold text-center rounded-xl text-xs active:bg-brand-700 shadow-sm">
-            <i class="fa-solid fa-file-pdf"></i> เปิดอ่านเอกสารทางการฉบับเต็ม (${item.size})
-          </a>
+          ${item.file ? `
+            <a href="${item.file}" target="_blank" class="block w-full py-2.5 bg-brand-600 text-white font-semibold text-center rounded-xl text-xs active:bg-brand-700 shadow-sm">
+              <i class="fa-solid fa-file-pdf"></i> เปิดอ่านเอกสารทางการฉบับเต็ม
+            </a>
+          ` : ''}
         </div>
       `;
       document.getElementById('topicModal').classList.remove('hidden');
-    }
-
-    function openCategoryModal(cat) {
-      filterTag(cat);
     }
 
     function closeTopicModal() {
       document.getElementById('topicModal').classList.add('hidden');
     }
 
+    // Create & Edit Knowledge Modals
+    function openCreateKnowledgeModal() {
+      document.getElementById('formModalTitle').innerText = "สร้างองค์ความรู้ใหม่";
+      document.getElementById('editItemId').value = "";
+      document.getElementById('knowledgeForm').reset();
+      document.getElementById('createKnowledgeModal').classList.remove('hidden');
+    }
+
+    function closeCreateKnowledgeModal() {
+      document.getElementById('createKnowledgeModal').classList.add('hidden');
+    }
+
+    function editKnowledgeItem(id) {
+      const item = currentCatalog.find(k => k.id === id);
+      if (!item) return;
+
+      document.getElementById('formModalTitle').innerText = "แก้ไของค์ความรู้";
+      document.getElementById('editItemId').value = item.id;
+      document.getElementById('formCategory').value = item.category;
+      document.getElementById('formTitle').value = item.title;
+      document.getElementById('formAuthor').value = item.author;
+      document.getElementById('formDesc').value = item.desc;
+      
+      // strip html for plain edit
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = item.summaryHtml;
+      document.getElementById('formSummary').value = tempDiv.innerText || item.summaryHtml;
+      
+      document.getElementById('formFile').value = item.file || '';
+      document.getElementById('createKnowledgeModal').classList.remove('hidden');
+    }
+
+    function deleteKnowledgeItem(id) {
+      if (confirm("ต้องการลบหัวข้อความรู้นี้ออกจากระบบใช่หรือไม่?")) {
+        currentCatalog = currentCatalog.filter(k => k.id !== id);
+        saveKnowledgeCatalog(currentCatalog);
+        renderKnowledgeCatalog(currentCatalog);
+        renderManageCatalog(currentCatalog);
+      }
+    }
+
+    function saveKnowledgeItem(e) {
+      e.preventDefault();
+      const id = document.getElementById('editItemId').value;
+      const cat = document.getElementById('formCategory').value;
+      const title = document.getElementById('formTitle').value.trim();
+      const author = document.getElementById('formAuthor').value.trim();
+      const desc = document.getElementById('formDesc').value.trim();
+      const summaryText = document.getElementById('formSummary').value.trim();
+      const file = document.getElementById('formFile').value.trim();
+
+      const summaryHtml = `
+        <div class="space-y-1 text-xs text-slate-700">
+          <p>${summaryText.replace(/\n/g, '<br>')}</p>
+        </div>
+      `;
+
+      if (id) {
+        // Edit existing
+        const idx = currentCatalog.findIndex(k => k.id === id);
+        if (idx !== -1) {
+          currentCatalog[idx] = {
+            ...currentCatalog[idx],
+            category: cat,
+            title: title,
+            author: author,
+            desc: desc,
+            summaryHtml: summaryHtml,
+            file: file || currentCatalog[idx].file
+          };
+        }
+      } else {
+        // Create new
+        const newId = "km-" + Date.now();
+        currentCatalog.unshift({
+          id: newId,
+          category: cat,
+          title: title,
+          author: author,
+          desc: desc,
+          summaryHtml: summaryHtml,
+          file: file || "",
+          size: "KM Custom"
+        });
+      }
+
+      saveKnowledgeCatalog(currentCatalog);
+      renderKnowledgeCatalog(currentCatalog);
+      renderManageCatalog(currentCatalog);
+      closeCreateKnowledgeModal();
+      alert("บันทึกองค์ความรู้สำเร็จเรียบร้อยครับ!");
+    }
+
+    // Filter & Search
     function filterTag(cat) {
       document.querySelectorAll('.tag-chip').forEach(btn => {
         btn.classList.remove('bg-brand-600', 'text-white');
@@ -1051,11 +1149,15 @@
 
       switchTab('knowledge');
       if (cat === 'all') {
-        renderKnowledgeCatalog(KNOWLEDGE_CATALOG);
+        renderKnowledgeCatalog(currentCatalog);
       } else {
-        const filtered = KNOWLEDGE_CATALOG.filter(k => k.category === cat);
+        const filtered = currentCatalog.filter(k => k.category === cat);
         renderKnowledgeCatalog(filtered);
       }
+    }
+
+    function openCategoryModal(cat) {
+      filterTag(cat);
     }
 
     function handleSearch(e) {
@@ -1069,7 +1171,7 @@
 
       if (e.key === 'Enter' || q.length > 1) {
         switchTab('knowledge');
-        const filtered = KNOWLEDGE_CATALOG.filter(k => 
+        const filtered = currentCatalog.filter(k => 
           k.title.toLowerCase().includes(q) || 
           k.desc.toLowerCase().includes(q) ||
           k.category.toLowerCase().includes(q) ||
@@ -1082,14 +1184,92 @@
     function clearSearch() {
       document.getElementById('mobileSearch').value = '';
       document.getElementById('clearBtn').classList.add('hidden');
-      renderKnowledgeCatalog(KNOWLEDGE_CATALOG);
+      renderKnowledgeCatalog(currentCatalog);
+    }
+
+    // Tacit Pearls Logic
+    const INITIAL_TACIT = [
+      {
+        id: "t1",
+        author: "พว.พัฒนาพร (CCU ศิริราช)",
+        tag: "Post-TAVI Phase",
+        likes: 34,
+        pearl: "ผู้ป่วยหลังทำ TAVI สิ่งสำคัญที่สุดใน 24 ชั่วโมงแรก: ประเมิน Neuro sign บ่อยๆ เฝ้าระวัง Embolic Stroke จากเศษหินปูน, เฝ้าระวัง Complete Heart Block (มักเกิดจากตัวลิ้นกดเบียด Conduction system) และห้ามงอขาข้างที่ใส่ Sheath เด็ดขาด"
+      },
+      {
+        id: "t2",
+        author: "พว.ทิพวรรณ (ศูนย์โรคหัวใจ ชั้น 8)",
+        tag: "TEER MitraClip Care",
+        likes: 29,
+        pearl: "หัตถการ TEER ทำผ่าน Right Femoral Vein และเจาะทะลุ Septum (Transseptal puncture) ดังนั้นหลังทำต้องระวัง: เฝ้าระวัง Pericardial Tamponade (BP ตก, Heart sound เบา, CVP สูง) และกดแผลขาหนีบให้แน่นตามเวลา"
+      },
+      {
+        id: "t3",
+        author: "พว.ดารณี เจริญรื่น (CCU ศิริราช)",
+        tag: "Pacemaker Care",
+        likes: 41,
+        pearl: "ท่องจำ 3 ภาวะหลักของ Pacemaker ผิดปกติ: 1. Failure to Pace (ไม่มี Spike) 2. Failure to Capture (มี Spike แต่ไม่มี QRS) 3. Failure to Sense (ปล่อย Spike ทับ T wave คนไข้ เสี่ยง R-on-T เกิด VF Arrest!)"
+      },
+      {
+        id: "t4",
+        author: "พี่ชล (พยาบาลชำนาญการพิเศษ 14 ปี)",
+        tag: "Norepinephrine",
+        likes: 28,
+        pearl: "หากคนไข้ Shock วิกฤต ยังใส่ C-line ไม่ทัน ต้องให้ Norepi ผ่าน Peripheral Line: ให้เลือกเส้นใหญ่ระดับข้อพับ (Antecubital) เท่านั้น ห้ามแทงหลังมือ ตรวจการรั่วซึมทุก 15 นาที และเตรียมยาแก้พิษ Regitine (Phentolamine) สำรองไว้เสมอ"
+      }
+    ];
+
+    function renderTacitFeed() {
+      const container = document.getElementById('tacitFeed');
+      if (!container) return;
+      const stored = localStorage.getItem('ccu_tacit_feed');
+      const list = stored ? JSON.parse(stored) : INITIAL_TACIT;
+
+      container.innerHTML = '';
+      list.forEach(t => {
+        const item = document.createElement('div');
+        item.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2";
+        item.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-brand-100 text-brand-700 font-bold text-xs flex items-center justify-center">
+                <i class="fa-solid fa-user-nurse"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-800">${t.author}</p>
+                <p class="text-[10px] text-slate-400">${t.tag}</p>
+              </div>
+            </div>
+            <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
+              <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ ${t.likes || 1}
+            </span>
+          </div>
+          <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+            <strong>Clinical Pearl:</strong> ${t.pearl}
+          </div>
+        `;
+        container.appendChild(item);
+      });
     }
 
     function openAddTacitModal() {
-      const text = prompt("พิมพ์เกร็ดความรู้ (Clinical Pearls) ที่ต้องการส่งต่อให้น้องๆ ใน CCU:");
-      if (text) {
-        alert("บันทึกเกร็ดความรู้สำเร็จ! ข้อมูลถูกจัดเก็บเข้าคลัง Tacit Knowledge ประจำวอร์ด CCU ทันที");
-      }
+      const author = prompt("ชื่อผู้ถ่ายทอดประสบการณ์ (เช่น พี่ฟ้า CCU):", "พว. CCU ศิริราช");
+      if (!author) return;
+      const pearl = prompt("พิมพ์เกร็ดความรู้ / Clinical Pearl ที่ต้องการส่งต่อให้น้องๆ:");
+      if (!pearl) return;
+
+      const stored = localStorage.getItem('ccu_tacit_feed');
+      const list = stored ? JSON.parse(stored) : INITIAL_TACIT;
+      list.unshift({
+        id: "t-" + Date.now(),
+        author: author,
+        tag: "Senior Pearl",
+        likes: 1,
+        pearl: pearl
+      });
+      localStorage.setItem('ccu_tacit_feed', JSON.stringify(list));
+      renderTacitFeed();
+      alert("บันทึกเกร็ดความรู้สำเร็จ! เพิ่มลงสู่ระบบเรียบร้อยครับ");
     }
   </script>
 </body>
