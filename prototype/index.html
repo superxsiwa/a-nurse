@@ -833,7 +833,15 @@
     ];
 
     // Local Storage Knowledge Store
+    const CATALOG_VERSION = "v2.1";
     function getKnowledgeCatalog() {
+      const currentVer = localStorage.getItem('ccu_catalog_version');
+      if (currentVer !== CATALOG_VERSION) {
+        // Force refresh catalog to update Drive links
+        localStorage.setItem('ccu_catalog_version', CATALOG_VERSION);
+        localStorage.setItem('ccu_knowledge_catalog', JSON.stringify(INITIAL_CATALOG));
+        return INITIAL_CATALOG;
+      }
       const stored = localStorage.getItem('ccu_knowledge_catalog');
       if (stored) {
         try { return JSON.parse(stored); } catch(e) { }
