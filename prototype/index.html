@@ -68,6 +68,8 @@
 
     .safe-top { padding-top: env(safe-area-inset-top, 0px); }
     .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
@@ -138,10 +140,10 @@
         </button>
       </form>
 
-      <!-- Security Notice & Hint -->
+      <!-- Security Notice -->
       <div class="mt-5 pt-4 border-t border-slate-100 text-center">
         <p class="text-[11px] text-slate-400 flex items-center justify-center gap-1">
-          <i class="fa-solid fa-shield-halved text-emerald-600"></i> ระบบสำหรับบุคลากรพยาบาล CCU เท่านั้น
+          <i class="fa-solid fa-shield-halved text-emerald-600"></i> คลังความรู้พยาบาล CCU ศิริราช
         </p>
         <p class="text-[10px] text-slate-400 mt-1">
           (รหัสผ่านเริ่มต้น: <span class="font-mono text-brand-700 font-bold">ccu7</span> หรือ <span class="font-mono text-brand-700 font-bold">1234</span>)
@@ -152,24 +154,23 @@
   </div>
 
   <!-- ================================================= -->
-  <!-- SCREEN 2: MAIN APP INTERFACE (ซ่อนไว้จนกว่าจะ Login) -->
+  <!-- SCREEN 2: MAIN APP INTERFACE                      -->
   <!-- ================================================= -->
   <div id="appContainer" class="hidden min-h-screen pb-[78px]">
 
     <!-- TOP APP BAR -->
     <header class="bg-brand-700 text-white sticky top-0 z-40 shadow-md safe-top">
       <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-        <!-- Title & Unit Badge -->
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-rose-300 border border-white/20 shadow-inner">
             <i class="fa-solid fa-heart-pulse text-lg animate-pulse"></i>
           </div>
           <div>
             <div class="flex items-center gap-1.5 leading-none">
-              <span class="font-heading font-bold text-base tracking-tight">CCU Pocket Guide</span>
+              <span class="font-heading font-bold text-base tracking-tight">CCU Siriraj Guide</span>
               <span class="text-[10px] bg-rose-500/90 text-white font-medium px-1.5 py-0.5 rounded">นวมินทร์ ชั้น 7</span>
             </div>
-            <p class="text-[11px] text-sky-200 mt-0.5">ศิริราชพยาบาล • User: <span id="displayUser" class="font-semibold text-white">nurse</span></p>
+            <p class="text-[11px] text-sky-200 mt-0.5">คลังความรู้พยาบาลวิกฤตหัวใจ • <span id="displayUser" class="font-semibold text-white">nurse</span></p>
           </div>
         </div>
 
@@ -191,17 +192,17 @@
     <main class="max-w-md mx-auto px-4 pt-3 pb-6">
 
       <!-- ================================================= -->
-      <!-- VIEW 1: HOME (หน้าหลัก / Quick Actions & Search)  -->
+      <!-- VIEW 1: HOME (หน้าหลัก / Dashboard & Quick Search)-->
       <!-- ================================================= -->
       <div id="view-home" class="tab-view active space-y-4">
         
-        <!-- Bedside Search Bar -->
+        <!-- Search Bar -->
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
           <input 
             type="text" 
             id="mobileSearch" 
-            placeholder="ค้นหาด่วน: EKG, VT, Delirium, Norepi, IABP..." 
+            placeholder="ค้นหา: EKG, TAVI, TEER, Norepi, ACS, Pacemaker..." 
             onkeyup="handleSearch(event)"
             class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-sm border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-slate-400"
           >
@@ -210,85 +211,116 @@
           </button>
         </div>
 
-        <!-- Quick Filter Chips -->
+        <!-- Quick Filter Tags -->
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs whitespace-nowrap">
-          <button onclick="filterTag('all')" class="tag-chip active px-3 py-1 rounded-full bg-brand-600 text-white font-medium shadow-sm">ทั้งหมด</button>
-          <button onclick="filterTag('arrhythmia')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">คลื่นหัวใจ EKG</button>
-          <button onclick="filterTag('med')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">ยา High Alert</button>
-          <button onclick="filterTag('device')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">IABP & เครื่องพยุงชีพ</button>
-          <button onclick="filterTag('delirium')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">CAM-ICU</button>
+          <button onclick="filterTag('all')" class="tag-chip active px-3 py-1 rounded-full bg-brand-600 text-white font-medium shadow-sm">ทั้งหมด (29)</button>
+          <button onclick="filterTag('EKG')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">EKG (8)</button>
+          <button onclick="filterTag('Drug')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Drug / HAD (10)</button>
+          <button onclick="filterTag('TAVI')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">TAVI (6)</button>
+          <button onclick="filterTag('TEER')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">TEER (1)</button>
+          <button onclick="filterTag('ACS')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">ACS (2)</button>
+          <button onclick="filterTag('Pacemaker')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Pacemaker (1)</button>
+          <button onclick="filterTag('Rehabilitation')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Rehab (1)</button>
         </div>
 
-        <!-- Welcome Banner for Bedside -->
-        <div class="bg-gradient-to-br from-brand-600 to-brand-800 text-white p-4 rounded-2xl shadow-sm relative overflow-hidden">
+        <!-- Hero Card -->
+        <div class="bg-gradient-to-br from-brand-700 via-brand-800 to-sky-900 text-white p-4 rounded-2xl shadow-sm relative overflow-hidden">
           <div class="relative z-10">
             <span class="inline-block text-[10px] bg-white/20 text-sky-100 font-semibold px-2 py-0.5 rounded mb-1">
-              <i class="fa-solid fa-user-nurse"></i> คู่มือปฏิบัติการพยาบาลประจำเวร
+              <i class="fa-solid fa-book-bookmark"></i> คลังองค์ความรู้พยาบาล CCU ศิริราช
             </span>
-            <h2 class="font-heading text-lg font-bold">คลังแนวปฏิบัติข้างเตียง CCU</h2>
+            <h2 class="font-heading text-lg font-bold">คู่มือพกพาข้างเตียงพยาบาล</h2>
             <p class="text-xs text-sky-100 mt-1 line-clamp-2">
-              สรุปกระชับ พร้อมใช้ข้างเตียงคนไข้ เพื่อการดูแลผู้ป่วยวิกฤตหัวใจที่ถูกต้องแม่นยำ
+              รวบรวม 29 เอกสารแนวปฏิบัติเฉพาะทางด้านโรคหัวใจและหัตถการขั้นสูง เพื่อการบริบาลผู้ป่วยอย่างมั่นใจและปลอดภัยสูงสุด
             </p>
           </div>
-          <i class="fa-solid fa-notes-medical absolute -right-3 -bottom-3 text-7xl text-white/10 pointer-events-none"></i>
+          <i class="fa-solid fa-heart-pulse absolute -right-3 -bottom-3 text-7xl text-white/10 pointer-events-none"></i>
         </div>
 
-        <!-- 4 Quick Action Grids -->
+        <!-- 6 Main Topic Grids -->
         <div class="grid grid-cols-2 gap-2.5">
           
-          <!-- Action 1: Arrhythmia -->
-          <div onclick="openTopicDetail('arrhythmia')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <!-- EKG & Arrhythmia -->
+          <div onclick="openCategoryModal('EKG')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
             <div>
               <div class="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-lg mb-2">
                 <i class="fa-solid fa-heart-pulse"></i>
               </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">Arrhythmia EKG</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">แปลผลคลื่นไฟฟ้า & ตั้งค่า Defib</p>
+              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">EKG & Arrhythmia</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">แปลผลคลื่นไฟฟ้าหัวใจ & Bradycardia</p>
             </div>
             <span class="mt-2 text-[10px] text-rose-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-book-open"></i> มีคู่มือ PDF ฉบับเต็ม
+              <i class="fa-solid fa-file-pdf"></i> 8 เอกสาร (อ.ศุภชัย / น้องICU)
             </span>
           </div>
 
-          <!-- Action 2: High Alert Drugs -->
-          <div onclick="openTopicDetail('med')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <!-- Drug & HAD -->
+          <div onclick="openCategoryModal('Drug')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
             <div>
               <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-2">
                 <i class="fa-solid fa-syringe"></i>
               </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">High Alert Drugs</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">Norepi, Dobutamine, Cordarone</p>
+              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">Drug & HAD</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">Inotrope, ละลายลิ่มเลือด, Arrest Drugs</p>
             </div>
             <span class="mt-2 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-calculator"></i> ตาราง Rate & Double check
+              <i class="fa-solid fa-file-pdf"></i> 10 เอกสารเภสัชกรรม
             </span>
           </div>
 
-          <!-- Action 3: IABP & Devices -->
-          <div onclick="openTopicDetail('device')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <!-- TAVI Nursing -->
+          <div onclick="openCategoryModal('TAVI')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
             <div>
               <div class="w-9 h-9 rounded-lg bg-sky-50 text-brand-600 flex items-center justify-center text-lg mb-2">
-                <i class="fa-solid fa-microchip"></i>
+                <i class="fa-solid fa-circle-radiation"></i>
               </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">IABP & เครื่องพยุงชีพ</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">Waveform, Timing & เฝ้าระวังขาซีด</p>
+              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">TAVI / TAVR Care</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">Pre-Post OP, Monitoring & เฝ้าระวัง Stroke</p>
             </div>
             <span class="mt-2 text-[10px] text-brand-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-list-check"></i> Checklist ข้างเตียง
+              <i class="fa-solid fa-file-pdf"></i> 6 เอกสารทีมพยาบาล CCU
             </span>
           </div>
 
-          <!-- Action 4: Delirium CAM-ICU -->
-          <div onclick="openTopicDetail('delirium')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <!-- TEER Nursing -->
+          <div onclick="openCategoryModal('TEER')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="w-9 h-9 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg mb-2">
+                <i class="fa-solid fa-code-merge"></i>
+              </div>
+              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">TEER (MitraClip)</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">การพยาบาลก่อน-หลังทำหัตถการ TEER</p>
+            </div>
+            <span class="mt-2 text-[10px] text-purple-600 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-file-pdf"></i> พว.ทิพวรรณ ศิริราช
+            </span>
+          </div>
+
+          <!-- ACS -->
+          <div onclick="openCategoryModal('ACS')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
             <div>
               <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg mb-2">
-                <i class="fa-solid fa-brain"></i>
+                <i class="fa-solid fa-lungs-virus"></i>
               </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">CAM-ICU Delirium</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">ประเมินสับสนเฉียบพลัน 4 ขั้นตอน</p>
+              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">ACS (หลอดเลือดหัวใจ)</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">2025 ACS Clinical Update & Care</p>
             </div>
             <span class="mt-2 text-[10px] text-amber-700 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-circle-check"></i> ขั้นตอนประเมินด่วน
+              <i class="fa-solid fa-file-pdf"></i> 2 เอกสาร Update 2025
+            </span>
+          </div>
+
+          <!-- Pacemaker -->
+          <div onclick="openCategoryModal('Pacemaker')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="w-9 h-9 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-lg mb-2">
+                <i class="fa-solid fa-microchip"></i>
+              </div>
+              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">Pacemaker Care</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">เครื่องกระตุ้นหัวใจสำหรับน้องใหม่</p>
+            </div>
+            <span class="mt-2 text-[10px] text-teal-700 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-file-pdf"></i> พว.ดารณี CCU ศิริราช
             </span>
           </div>
 
@@ -303,25 +335,25 @@
             <button onclick="switchTab('tacit')" class="text-xs text-brand-600 font-semibold">ดูเพิ่ม &rarr;</button>
           </div>
 
-          <!-- Mini Card 1 -->
+          <!-- Mini Card 1: Drug HAD -->
           <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1 mb-2">
             <div class="flex justify-between items-center text-[10px] text-slate-500">
-              <span class="font-semibold text-brand-700"><i class="fa-solid fa-user-check"></i> พี่ชล (พยาบาลชำนาญการพิเศษ 14 ปี)</span>
-              <span class="bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded font-medium">VT Alarm</span>
+              <span class="font-semibold text-brand-700"><i class="fa-solid fa-user-check"></i> เภสัชกร / พี่ CCU ศิริราช</span>
+              <span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-medium">ยา HAD & Inotrope</span>
             </div>
             <p class="text-slate-700 leading-relaxed font-medium">
-              "Alarm ดังอย่าเพิ่งตกใจ มองหน้าคนไข้ก่อน 1 วินาทีเสมอ ถ้าคนไข้ยังยิ้มหรือแปรงฟันอยู่ แปลว่าสาย Lead หลุดหรือสั่น (Artifact)"
+              "Dobutamine Low dose (2-5 mcg/kg/min) ระวังทำให้เกิด Hypotension! และหาก BP drop ในคนไข้ Sepsis ให้เลือก Norepinephrine ก่อนเป็นอันดับแรก"
             </p>
           </div>
 
-          <!-- Mini Card 2 -->
+          <!-- Mini Card 2: TAVI Stroke -->
           <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1">
             <div class="flex justify-between items-center text-[10px] text-slate-500">
-              <span class="font-semibold text-brand-700"><i class="fa-solid fa-user-check"></i> พี่ฟ้า (CCU Nurse)</span>
-              <span class="bg-sky-100 text-brand-700 px-1.5 py-0.2 rounded font-medium">IABP Care</span>
+              <span class="font-semibold text-brand-700"><i class="fa-solid fa-user-check"></i> พว.พัฒนาพร (CCU ศิริราช)</span>
+              <span class="bg-sky-100 text-brand-700 px-1.5 py-0.2 rounded font-medium">Post-TAVI</span>
             </div>
             <p class="text-slate-700 leading-relaxed font-medium">
-              "อย่าลืมคลำ Dorsalis Pedis Pulse ขาข้างที่ใส่ IABP ทุก 1 ชั่วโมง ถ้าคลำเบาลงหรือขาเย็น รีบแจ้งแพทย์ทันที"
+              "หลังทำ TAVI ให้ประเมิน Neurological Deficit ทันทีเพื่อเฝ้าระวัง Stroke (สังเกตความรู้สึกตัว, แขนขาอ่อนแรง, ปากเบี้ยว) และตรวจ Puncture site ทุก 15-30 นาที"
             </p>
           </div>
         </div>
@@ -329,91 +361,18 @@
       </div>
 
       <!-- ================================================= -->
-      <!-- VIEW 2: KNOWLEDGE LIST & TOPIC DETAILS            -->
+      <!-- VIEW 2: KNOWLEDGE CATALOG (คลังเอกสาร & คู่มือฉบับเต็ม) -->
       <!-- ================================================= -->
       <div id="view-knowledge" class="tab-view space-y-4">
-        <div>
-          <h2 class="font-heading text-lg font-bold text-slate-800">คลังแนวปฏิบัติ CCU</h2>
-          <p class="text-xs text-slate-500">แตะดูสรุปแนวปฏิบัติ หรือเปิดอ่านเอกสารฉบับเต็ม</p>
-        </div>
-
-        <!-- Card 1: Arrhythmia E-book -->
-        <div class="topic-item arrhythmia bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="p-4">
-            <div class="flex items-start justify-between gap-2 mb-1.5">
-              <span class="text-[10px] font-bold bg-rose-50 text-rose-600 px-2 py-0.5 rounded">PDF คู่มือทางการ</span>
-              <span class="text-[10px] text-slate-400">13.9 MB</span>
-            </div>
-            <h3 class="font-heading font-bold text-base text-slate-800">คู่มือ Arrhythmia น้อง ICU & CCU</h3>
-            <p class="text-xs text-slate-600 mt-1 line-clamp-2">
-              ครอบคลุม: กลไกการเกิด Arrhythmia, Sinus / Atrial / Ventricular Rhythms, AV Blocks และการตั้งค่า Defibrillator
-            </p>
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <button onclick="openTopicDetail('arrhythmia')" class="text-xs font-bold text-brand-600 flex items-center gap-1">
-                <i class="fa-solid fa-eye"></i> ดูเนื้อหาย่อ
-              </button>
-              <a href="Arrhythmia น้องICU.pdf" target="_blank" class="text-xs font-semibold bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg flex items-center gap-1">
-                <i class="fa-solid fa-file-pdf"></i> เปิดอ่าน PDF ฉบับเต็ม
-              </a>
-            </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-heading text-lg font-bold text-slate-800">คลังเอกสารแนวปฏิบัติ (29 รายการ)</h2>
+            <p class="text-xs text-slate-500">แตะดูสรุป หรือเปิดอ่านไฟล์เอกสารฉบับเต็ม</p>
           </div>
         </div>
 
-        <!-- Card 2: Delirium & CAM-ICU -->
-        <div class="topic-item delirium bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="p-4">
-            <div class="flex items-start justify-between gap-2 mb-1.5">
-              <span class="text-[10px] font-bold bg-amber-50 text-amber-700 px-2 py-0.5 rounded">Bedside Checklist</span>
-              <span class="text-[10px] text-slate-400">อัปเดต 2569</span>
-            </div>
-            <h3 class="font-heading font-bold text-base text-slate-800">การประเมิน CAM-ICU & Delirium</h3>
-            <p class="text-xs text-slate-600 mt-1 line-clamp-2">
-              เกณฑ์ 4 ขั้นตอนการประเมินผู้ป่วยสับสนเฉียบพลันใน CCU และการจัดการแบบไม่ใช้ยา (Non-pharmacological)
-            </p>
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <button onclick="openTopicDetail('delirium')" class="text-xs font-bold text-brand-600 flex items-center gap-1">
-                <i class="fa-solid fa-list-check"></i> เปิดดู Checklist ประเมิน
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3: IABP Care -->
-        <div class="topic-item device bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="p-4">
-            <div class="flex items-start justify-between gap-2 mb-1.5">
-              <span class="text-[10px] font-bold bg-sky-50 text-brand-700 px-2 py-0.5 rounded">Action Protocol</span>
-              <span class="text-[10px] text-slate-400">Advanced CCU</span>
-            </div>
-            <h3 class="font-heading font-bold text-base text-slate-800">การพยาบาลผู้ป่วยใส่สาย IABP</h3>
-            <p class="text-xs text-slate-600 mt-1 line-clamp-2">
-              การดู Waveform Dicrotic Notch, ข้อปฏิบัติห้ามงอขา, การสังเกตภาวะแทรกซ้อน และขั้นตอนแก้ Alarm
-            </p>
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <button onclick="openTopicDetail('device')" class="text-xs font-bold text-brand-600 flex items-center gap-1">
-                <i class="fa-solid fa-file-waveform"></i> ดูขั้นตอนการปฏิบัติ
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 4: High Alert Meds -->
-        <div class="topic-item med bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="p-4">
-            <div class="flex items-start justify-between gap-2 mb-1.5">
-              <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">Medication Safety</span>
-              <span class="text-[10px] text-slate-400">Double Check</span>
-            </div>
-            <h3 class="font-heading font-bold text-base text-slate-800">ยากระตุ้น/ปรับความดัน (Inotropes & Vasopressors)</h3>
-            <p class="text-xs text-slate-600 mt-1 line-clamp-2">
-              สูตรผสม Norepinephrine, Dopamine, Dobutamine, Adrenaline และแนวทาง Titrate ตามค่า MAP
-            </p>
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <button onclick="openTopicDetail('med')" class="text-xs font-bold text-brand-600 flex items-center gap-1">
-                <i class="fa-solid fa-table-list"></i> ดูตารางขนาดยา
-              </button>
-            </div>
-          </div>
+        <div id="knowledgeListContainer" class="space-y-3">
+          <!-- Dynamically populated via JS -->
         </div>
       </div>
 
@@ -423,7 +382,7 @@
       <div id="view-tacit" class="tab-view space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="font-heading text-lg font-bold text-slate-800">ประสบการณ์พี่สู่น้อง (Pearls)</h2>
+            <h2 class="font-heading text-lg font-bold text-slate-800">ประสบการณ์พี่สู่น้อง (Clinical Pearls)</h2>
             <p class="text-xs text-slate-500">เกร็ดความรู้และเทคนิคการพยาบาลจากพี่ในวอร์ด</p>
           </div>
           <button onclick="openAddTacitModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 active:bg-brand-700 shadow-sm">
@@ -433,7 +392,85 @@
 
         <!-- Tacit Feed -->
         <div class="space-y-3" id="tacitFeed">
-          <!-- Post 1 -->
+          
+          <!-- Post 1: TAVI -->
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-sky-100 text-brand-700 font-bold text-xs flex items-center justify-center">
+                  พพ
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-800">พว.พัฒนาพร (CCU ศิริราช)</p>
+                  <p class="text-[10px] text-slate-400">Post-TAVI Phase • การเฝ้าระวัง Stroke & Bleeding</p>
+                </div>
+              </div>
+              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
+                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 34
+              </span>
+            </div>
+            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+              <strong>Clinical Pearl:</strong> ผู้ป่วยหลังทำ TAVI สิ่งสำคัญที่สุดใน 24 ชั่วโมงแรก:
+              <ul class="list-disc list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
+                <li>ประเมิน Neuro sign บ่อยๆ เฝ้าระวัง Embolic Stroke จากเศษหินปูนลิ้นหัวใจ</li>
+                <li>สังเกต EKG ต่อเนื่อง เฝ้าระวัง Complete Heart Block (มักเกิดจากตัวลิ้นกดเบียด Conduction system)</li>
+                <li>ห้ามงอขาข้างที่ใส่ Sheath และคลำ DP pulse ทุกชั่วโมง</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Post 2: TEER -->
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-purple-100 text-purple-700 font-bold text-xs flex items-center justify-center">
+                  พท
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-800">พว.ทิพวรรณ (ศูนย์โรคหัวใจ ชั้น 8)</p>
+                  <p class="text-[10px] text-slate-400">TEER MitraClip Care</p>
+                </div>
+              </div>
+              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
+                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 29
+              </span>
+            </div>
+            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+              <strong>Clinical Pearl:</strong> หัตถการ TEER ทำผ่าน Right Femoral Vein และเจาะทะลุ Septum (Transseptal puncture) ดังนั้นหลังทำต้องระวัง:
+              <ul class="list-disc list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
+                <li>เฝ้าระวัง Pericardial Tamponade (BP ตก, Heart sound เบา, CVP สูง)</li>
+                <li>กดแผลขาหนีบอย่างน้อยตามเวลาที่กำหนดเพื่อป้องกัน Hematoma / Pseudoaneurysm</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Post 3: Pacemaker -->
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-teal-100 text-teal-700 font-bold text-xs flex items-center justify-center">
+                  พด
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-800">พว.ดารณี เจริญรื่น (CCU ศิริราช)</p>
+                  <p class="text-[10px] text-slate-400">Pacemaker สำหรับน้องใหม่</p>
+                </div>
+              </div>
+              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
+                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 41
+              </span>
+            </div>
+            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+              <strong>Clinical Pearl:</strong> ท่องจำ 3 ภาวะหลักของ Pacemaker ผิดปกติ:
+              <ol class="list-decimal list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
+                <li><strong>Failure to Pace:</strong> ไม่มี Spike ไฟฟ้าขึ้นมาเลยในเวลาที่ควรปล่อย</li>
+                <li><strong>Failure to Capture:</strong> มี Spike แต่ไม่มีคลื่น P หรือ QRS ตามมา</li>
+                <li><strong>Failure to Sense (Undersensing):</strong> เครื่องไม่ยอมรับรู้จังหวะหัวใจเดิม ปล่อย Spike ทับ T wave (เสี่ยง R-on-T VF Arrest!)</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- Post 4: Drug Norepi -->
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
@@ -450,7 +487,7 @@
               </span>
             </div>
             <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <strong>เกร็ดปฏิบัติ:</strong> หากผู้ป่วย Shock ขั้นวิกฤต ยังใส่ C-line ไม่ทัน ต้องให้ Norepi ผ่าน Peripheral Line:
+              <strong>Clinical Pearl:</strong> หากผู้ป่วย Shock ขั้นวิกฤต ยังใส่ C-line ไม่ทัน ต้องให้ Norepi ผ่าน Peripheral Line:
               <ul class="list-disc list-inside mt-1 text-[11px] text-slate-600 space-y-0.5">
                 <li>ใช้เส้นใหญ่ระดับข้อพับ (Antecubital) เท่านั้น ห้ามแทงหลังมือ</li>
                 <li>เช็คดูการรั่วซึม (Extravasation) ทุก 15-30 นาที</li>
@@ -459,26 +496,6 @@
             </div>
           </div>
 
-          <!-- Post 2 -->
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-full bg-teal-100 text-teal-700 font-bold text-xs flex items-center justify-center">
-                  พฝ
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-slate-800">พี่ฟ้า (CCU Nurse)</p>
-                  <p class="text-[10px] text-slate-400">CCU • เรื่อง: Post-op CABG Bleeding</p>
-                </div>
-              </div>
-              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
-                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ 22
-              </span>
-            </div>
-            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <strong>เกร็ดปฏิบัติ:</strong> ผู้ป่วยหลังผ่าตัดหัวใจกลับมาวอร์ด สังเกตสาย ICD / Mediastinal drain ถ้าออก &gt; 200 ml/hr ติดต่อกัน 2 ชม. หรือสีแดงสด ให้แจ้งแพทย์เวรทันที และระวัง Cardiac Tamponade ถ้าอยู่ดีๆ เลือดหยุดไหลกะทันหันแต่ BP ตก!
-            </div>
-          </div>
         </div>
       </div>
 
@@ -492,14 +509,14 @@
               <i class="fa-solid fa-triangle-exclamation text-2xl text-amber-300 animate-bounce"></i>
               <div>
                 <h2 class="font-heading font-bold text-base">Quick Action วิกฤตข้างเตียง</h2>
-                <p class="text-xs text-rose-100">ขั้นตอนการพยาบาลเร่งด่วน CCU</p>
+                <p class="text-xs text-rose-100">ขั้นตอนการพยาบาลเร่งด่วน CCU ศิริราช</p>
               </div>
             </div>
             <button onclick="switchTab('home')" class="text-xs bg-white/20 px-2 py-1 rounded">ปิด &times;</button>
           </div>
         </div>
 
-        <!-- Action Card 1 -->
+        <!-- Action Card 1: VT/VF -->
         <div class="bg-white p-4 rounded-xl border-2 border-rose-300 shadow-sm space-y-2">
           <h3 class="font-heading font-bold text-sm text-rose-800 flex items-center gap-1.5">
             <i class="fa-solid fa-bolt text-rose-600"></i> 1. Pulseless VT / VF Arrest
@@ -508,11 +525,11 @@
             <p><strong>1. ร้องเรียกคนช่วย + นำ Defibrillator มาทันที</strong></p>
             <p><strong>2. CPR ทันที:</strong> กดหน้าอกลึก 2-2.4 นิ้ว เร็ว 100-120 bpm</p>
             <p><strong>3. Shock ทันที (Defibrillation):</strong> 200 Joules (Biphasic) แล้ว CPR ต่อ 2 นาทีทันที</p>
-            <p><strong>4. บริหารยา:</strong> Adrenaline 1mg IV ทุก 3-5 นาที, Amiodarone 300mg IV push หลัง Defib ครั้งที่ 3</p>
+            <p><strong>4. บริหารยา (อ้างอิง ACLS 2025):</strong> Adrenaline 1mg IV ทุก 3-5 นาที, Amiodarone 300mg IV push หลัง Defib ครั้งที่ 3 (ซ้ำ 150mg ครั้งที่ 5)</p>
           </div>
         </div>
 
-        <!-- Action Card 2 -->
+        <!-- Action Card 2: Bradycardia -->
         <div class="bg-white p-4 rounded-xl border-2 border-amber-300 shadow-sm space-y-2">
           <h3 class="font-heading font-bold text-sm text-amber-800 flex items-center gap-1.5">
             <i class="fa-solid fa-heart-crack text-amber-600"></i> 2. Symptomatic Bradycardia (HR &lt; 50)
@@ -524,7 +541,7 @@
           </div>
         </div>
 
-        <!-- Action Card 3 -->
+        <!-- Action Card 3: Emergency Contacts -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
           <h3 class="font-heading font-bold text-sm text-brand-800 flex items-center gap-1.5">
             <i class="fa-solid fa-phone-volume text-brand-600"></i> เบอร์โทรศัพท์ฉุกเฉินภายใน
@@ -546,15 +563,13 @@
       <!-- SLIDE-UP BOTTOM SHEET / TOPIC DETAILS MODAL       -->
       <!-- ================================================= -->
       <div id="topicModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
-          <!-- Sheet Header -->
+        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[88vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <h3 id="modalTitle" class="font-heading font-bold text-base text-slate-800">หัวข้อแนวปฏิบัติ</h3>
             <button onclick="closeTopicModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
-          <!-- Sheet Body -->
           <div id="modalBody" class="p-4 overflow-y-auto text-xs text-slate-700 space-y-3">
             <!-- Dynamic Content -->
           </div>
@@ -597,9 +612,257 @@
     </nav>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- JAVASCRIPT LOGIC & KNOWLEDGE DATABASE -->
   <script>
-    // Valid Passwords and Users for Security
+    // Knowledge Base Data Catalog (All 29 files from documents/knowledge)
+    const KNOWLEDGE_CATALOG = [
+      // 1. EKG & Arrhythmia
+      {
+        id: "ekg-1",
+        category: "EKG",
+        title: "คู่มือ Arrhythmia น้องICU",
+        author: "CCU Siriraj Team",
+        file: "documents/knowledge/EKG/Arrhythmia น้องICU (1).pdf",
+        size: "13.3 MB",
+        desc: "สรุปการแปลผลคลื่นไฟฟ้าหัวใจผิดจังหวะ, กลไก EKG, Narrow vs Wide QRS, SVT, AF, VT, VF และการตั้งค่า Defibrillator",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p><strong>หัวใจสำคัญ:</strong> ประเมิน 3 ข้อหลัก: 1. Rate สม่ำเสมอไหม? 2. P wave นำหน้า QRS ไหม? 3. QRS กว้างหรือแคบ (&lt; 0.12s)?</p>
+            <p>• <strong>Narrow Tachycardia:</strong> SVT (Adenosine 6mg IV rapid push), AF with RVR (Rate control ด้วย Amiodarone/Beta-blocker)</p>
+            <p>• <strong>Wide Tachycardia:</strong> VT with Pulse (Amiodarone 150mg drip 10 min), Pulseless VT/VF (Defib 200J Biphasic ทันที!)</p>
+          </div>
+        `
+      },
+      {
+        id: "ekg-2",
+        category: "EKG",
+        title: "Bradycardia (หัวใจเต้นช้า)",
+        author: "อ.ศุภชัย / CCU",
+        file: "documents/knowledge/EKG/bradycardia.pdf",
+        size: "134.5 MB",
+        desc: "การวินิจฉัยและดูแลผู้ป่วย Sinus Bradycardia, Sick Sinus Syndrome, AV Block (First, Second Mobitz I/II, Third degree Complete AV Block)",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p><strong>First line drug:</strong> Atropine 1 mg IV push (ให้ซ้ำได้ทุก 3-5 นาที สูงสุด 3 mg)</p>
+            <p>• หากเป็น High-degree AV Block (Mobitz II หรือ Complete AV Block) มักไม่ตอบสนองต่อ Atropine ให้เตรียม Transcutaneous Pacing (TCP) หรือ Dopamine/Epi drip ทันที</p>
+          </div>
+        `
+      },
+      {
+        id: "ekg-3",
+        category: "EKG",
+        title: "E-basic68 & Arrhythmias New RN",
+        author: "งานการพยาบาลอายุรศาสตร์ ศิริราช",
+        file: "documents/knowledge/EKG/E-basic68.pdf",
+        size: "77.9 MB",
+        desc: "หลักสูตร EKG พื้นฐานสำหรับพยาบาลใหม่ การอ่านแกนหัวใจ หัวใจขาดเลือด (STEMI/NSTEMI) และ Arrhythmias",
+        summaryHtml: `<p class="text-xs">ปูพื้นฐานการอ่าน 12-lead ECG, Bundle Branch Blocks (RBBB, LBBB) และการเฝ้าระวังข้างเตียง</p>`
+      },
+      {
+        id: "ekg-4",
+        category: "EKG",
+        title: "การแปลผล EKG ขั้นสูง (อ.ศุภชัย)",
+        author: "ศ.นพ.ศุภชัย ถนอมทรัพย์",
+        file: "documents/knowledge/EKG/31 ต.ค.65-อ.ศุภชัย.pdf",
+        size: "294.7 MB",
+        desc: "ชุดบรรยาย EKG ฉบับเจาะลึก 31 ต.ค. - 2 พ.ย. สำหรับพยาบาลและแพทย์ประจำบ้านโรคหัวใจ",
+        summaryHtml: `<p class="text-xs">บรรยายเคสจริง EKG complex, Electrolyte imbalance effects (Hyperkalemia, Hypokalemia) และ Drug toxicity</p>`
+      },
+
+      // 2. Cardiovascular Drugs & HAD
+      {
+        id: "drug-1",
+        category: "Drug",
+        title: "ยา HAD และ Inotrope ในหอผู้ป่วยวิกฤต",
+        author: "หน่วยบริบาลเภสัชกรรม ศิริราช",
+        file: "documents/knowledge/Drug /ยาHAD.pdf",
+        size: "1.5 MB",
+        desc: "แนวทางบริหารยา High Alert Drugs (Norepinephrine, Dobutamine, Dopamine, Adrenaline) กฎความปลอดภัยและการ Titrate",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p><strong>Double Check เสมอ:</strong> ห้ามผสมผิดความเข้มข้น และต้องให้ผ่าน Infusion Pump เสมอ</p>
+            <p>• <strong>Norepinephrine (Levophed):</strong> First-line ใน Sepsis / Cardiogenic shock with low SVR. ให้ผ่าน C-line เป็นหลัก</p>
+            <p>• <strong>Dobutamine:</strong> เพิ่ม Contractility และ Inodilator (ระวัง Low dose 2-5 mcg อาจทำให้ BP drop เล็กน้อย)</p>
+            <p>• <strong>Dopamine:</strong> ระวัง Tachycardia / Arrhythmia หากให้เกิน 10 mcg/kg/min</p>
+          </div>
+        `
+      },
+      {
+        id: "drug-2",
+        category: "Drug",
+        title: "Vasopressor and Inotropes 11.2025",
+        author: "ภกญ. ปนัดดา ภาณุสิทธิกร (ฝ่ายเภสัชกรรม ศิริราช)",
+        file: "documents/knowledge/Drug /Vasopressor and Inotropes 11.2025.pdf",
+        size: "4.6 MB",
+        desc: "Hemodynamics in Shock, MAP = CO x SVR, Receptor Actions (Alpha, Beta-1, Beta-2, V1) และการเลือกใช้ยาตามชนิดของ Shock",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p><strong>Shock Management:</strong></p>
+            <p>• Distributive Shock: Norepinephrine คือยาหลัก</p>
+            <p>• Cardiogenic Shock: Norepinephrine + Inotrope (Dobutamine หรือ Milrinone) เมื่อ MAP ได้ระดับ</p>
+          </div>
+        `
+      },
+      {
+        id: "drug-3",
+        category: "Drug",
+        title: "2025 Drug Related to Cardiac Arrest",
+        author: "ภก. เอกภรณ์ สรณ์คำพันธ์ (Clinical Pharmacist ศิริราช)",
+        file: "documents/knowledge/Drug /2025_Drug related to cardiac arrest.pdf",
+        size: "3.0 MB",
+        desc: "ยากลุ่มช่วยชีวิตตามแนวทาง ACLS ล่าสุด: Adrenaline, Amiodarone, Lidocaine, Atropine, Adenosine, Calcium, Sodium Bicarbonate",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p>• <strong>Adrenaline:</strong> 1 mg IV push ทุก 3-5 นาที (ใน Shockable ให้หลัง Shock ครั้งที่ 2)</p>
+            <p>• <strong>Amiodarone:</strong> 300 mg push หลัง Shock ครั้งที่ 3 และ 150 mg หลัง Shock ครั้งที่ 5</p>
+          </div>
+        `
+      },
+      {
+        id: "drug-4",
+        category: "Drug",
+        title: "ยาละลายลิ่มเลือด (Fibrinolytic Therapy)",
+        author: "CCU Siriraj Pharmacotherapy",
+        file: "documents/knowledge/Drug /ยาละลายลิ่มเลือด.pdf",
+        size: "2.6 MB",
+        desc: "การให้ Streptokinase, Alteplase (rt-PA), Tenecteplase (TNK) ข้อบ่งชี้ ข้อห้ามใช้ และการเฝ้าระวัง Intracranial Bleeding",
+        summaryHtml: `<p class="text-xs">เฝ้าระวัง Major bleeding และ Neuro sign ทุก 15 นาทีระหว่างให้ยาและ 2 ชั่วโมงแรกหลังให้ยา</p>`
+      },
+      {
+        id: "drug-5",
+        category: "Drug",
+        title: "Anti-hypertensive in Emergencies 11.2025",
+        author: "ฝ่ายเภสัชกรรม ศิริราช",
+        file: "documents/knowledge/Drug /Anti-hypertensive agents used in hypertensive emergencies 11.2025.pdf",
+        size: "2.2 MB",
+        desc: "ยา Nicardipine, Labetalol, Nitroglycerin, Sodium Nitroprusside และการควบคุม MAP ใน Aortic dissection",
+        summaryHtml: `<p class="text-xs">Nicardipine drip: เริ่ม 5 mg/hr titrate ทุก 5-15 นาที (เป้าหมายลด BP ไม่เกิน 25% ในชั่วโมงแรก ยกเว้น Aortic Dissection ต้องกด SBP &lt; 120 ทันที)</p>`
+      },
+
+      // 3. TAVI / TAVR
+      {
+        id: "tavi-1",
+        category: "TAVI",
+        title: "Post TAVR Nursing Care & Monitoring (Part II)",
+        author: "พว.พัฒนาพร สุพินา (CCU ศิริราช)",
+        file: "documents/knowledge/TAVI/Post TAVR Nursing care & Monitoring (Part lI) พว.พัฒนาพร.pdf",
+        size: "1.0 MB",
+        desc: "การพยาบาลผู้ป่วยหลังทำ TAVI: Immediate Phase, เฝ้าระวัง Stroke, Complete Heart Block, Puncture site hematoma และ Recovery phase",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p><strong>ข้อเฝ้าระวังสำคัญใน CCU:</strong></p>
+            <p>1. <strong>Stroke:</strong> ประเมินอาการทางระบบประสาททันทีที่รับย้าย</p>
+            <p>2. <strong>Conduction Disturbance:</strong> เฝ้าระวัง LBBB และ Complete Heart Block (มักเกิดใน 24-48 ชม.)</p>
+            <p>3. <strong>Vascular Complication:</strong> ตรวจดูแผลขาหนีบ, คลำ DP pulse ทุก 15-30 นาที, นอนราบห้ามงอขา</p>
+          </div>
+        `
+      },
+      {
+        id: "tavi-2",
+        category: "TAVI",
+        title: "Nursing Management TAVR",
+        author: "พว.วิยะดา (CCU ศิริราช)",
+        file: "documents/knowledge/TAVI/Nursing Management TAVR พว.วิยะดา.pdf",
+        size: "102.1 MB",
+        desc: "ภาพรวมกระบวนการพยาบาลผู้ป่วยเปลี่ยนลิ้นหัวใจทางสายสวน TAVI/TAVR ตั้งแต่เตรียมตัวจนถึงจำหน่าย",
+        summaryHtml: `<p class="text-xs">ครอบคลุมการประเมินความเสี่ยง, การเตรียมอุปกรณ์พิเศษ, การประสานงาน Heart Team</p>`
+      },
+      {
+        id: "tavi-3",
+        category: "TAVI",
+        title: "Patient Flow & Preoperative TAVR",
+        author: "พว.วริศรา & ทีม TAVR ศิริราช",
+        file: "documents/knowledge/TAVI/Patient flow of TAVR.pdf",
+        size: "0.5 MB",
+        desc: "ผังกระบวนการผู้ป่วย (Patient Flow) และการคัดกรองตรวจประเมินก่อนทำ TAVI",
+        summaryHtml: `<p class="text-xs">ขั้นตอนการส่งต่อผู้ป่วยจาก OPD สู่ Ward CCU และห้องสวนหัวใจ Cath Lab</p>`
+      },
+
+      // 4. TEER (MitraClip)
+      {
+        id: "teer-1",
+        category: "TEER",
+        title: "Nursing Management of TEER (MitraClip)",
+        author: "พว.ทิพวรรณ แก้วทินกร (หอผู้ป่วยกึ่งวิกฤตศูนย์โรคหัวใจ ชั้น 8)",
+        file: "documents/knowledge/TEER/Nursing Management of TEER พว.ทิพวรรณ.pdf",
+        size: "24.3 MB",
+        desc: "การพยาบาลผู้ป่วยซ่อมลิ้นหัวใจไมตรัลผ่านสายสวน TEER (Transcatheter Edge-to-Edge Repair)",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p><strong>การดูแลก่อนและหลังทำ:</strong></p>
+            <p>• ทำผ่าน Right Femoral Vein ผ่านการเจาะ Transseptal puncture</p>
+            <p>• <strong>ภาวะแทรกซ้อนที่ต้องเฝ้าระวัง:</strong> Cardiac Tamponade, Iatrogenic ASD, Clip detachment, Femoral hematoma</p>
+            <p>• จัดท่านอนราบอย่างน้อย 4-6 ชั่วโมงหลังดึง Sheath</p>
+          </div>
+        `
+      },
+
+      // 5. ACS
+      {
+        id: "acs-1",
+        category: "ACS",
+        title: "2025 ACS Clinical Update Guideline",
+        author: "ACC/AHA/SCAI Guideline (ศิริราช Update)",
+        file: "documents/knowledge/ACS/2025 ACS Clinical Update Slide Set.pdf",
+        size: "1.7 MB",
+        desc: "แนวปฏิบัติการรักษาผู้ป่วย Acute Coronary Syndrome ฉบับอัปเดต 2025: STEMI, NSTEMI, Unstable Angina และ PCI Timing",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p>• <strong>Door-to-Balloon Time:</strong> &lt; 90 นาทีสำหรับ Primary PCI</p>
+            <p>• <strong>Antiplatelet Dual Therapy (DAPT):</strong> Aspirin + P2Y12 inhibitor (Ticagrelor หรือ Clopidogrel)</p>
+          </div>
+        `
+      },
+      {
+        id: "acs-2",
+        category: "ACS",
+        title: "ACS Comprehensive Care in CCU",
+        author: "ศูนย์โรคหัวใจสมเด็จพระบรมราชินีนาถ ศิริราช",
+        file: "documents/knowledge/ACS/ACS .pdf",
+        size: "27.3 MB",
+        desc: "การดูแลผู้ป่วยโรคหลอดเลือดหัวใจตีบเฉียบพลันใน CCU ภาวะแทรกซ้อน Cardiogenic Shock และ Mechanical Complications",
+        summaryHtml: `<p class="text-xs">เฝ้าระวัง Free wall rupture, VSD, Acute MR และการดูแลหลังทำ Coronary Angiography</p>`
+      },
+
+      // 6. Pacemaker
+      {
+        id: "pm-1",
+        category: "Pacemaker",
+        title: "Pacemaker Nursing Care สำหรับน้องใหม่",
+        author: "พว.ดารณี เจริญรื่น (หออภิบาลโรคหัวใจ CCU ศิริราช)",
+        file: "documents/knowledge/Pacemaker /Pacemaker nursing care presentation สำหรับน้องใหม่.pdf",
+        size: "5.6 MB",
+        desc: "คู่มือเครื่องกระตุ้นไฟฟ้าหัวใจ: ชนิด Temporary & Permanent Pacemaker, โหมดการทำงาน (VVI, DDD), การพยาบาลก่อน-หลังผ่าตัด",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p><strong>การเฝ้าระวัง Malfunction 3 ประการ:</strong></p>
+            <p>1. <strong>Failure to Pace:</strong> ไม่มี Spike ปล่อยออกมา (เช็คสายหลุด, แบตเตอรี่หมด)</p>
+            <p>2. <strong>Failure to Capture:</strong> มี Spike แต่ไม่มี QRS ตอบสนอง (เช็ค Threshold, เลือดออกรอบ Lead)</p>
+            <p>3. <strong>Failure to Sense:</strong> ปล่อย Spike ทับจังหวะคนไข้ เสี่ยง R-on-T เกิด VF (ต้องปรับ Sensitivity)</p>
+          </div>
+        `
+      },
+
+      // 7. Rehabilitation
+      {
+        id: "rehab-1",
+        category: "Rehabilitation",
+        title: "Role of Nurse for Cardiovascular Rehabilitation 2569",
+        author: "พว.เบญจมาส ธรรมวาระ (หอผู้ป่วยมัธยาภิบาลโรคหัวใจ ICCU ศิริราช)",
+        file: "documents/knowledge/Rehabilitation /1Role of nurse for rehabilitation in cardiovascular patients 2569.pptx",
+        size: "0.3 MB",
+        desc: "บทบาทพยาบาลในการฟื้นฟูสมรรถภาพหัวใจ (Cardiac Rehabilitation Phase I ในหอผู้ป่วยวิกฤต), กิจกรรมบำบัด และการป้องกัน Deconditioning",
+        summaryHtml: `
+          <div class="space-y-2 text-xs">
+            <p><strong>Cardiac Rehab Phase 1 ใน CCU/ICCU:</strong></p>
+            <p>• วันที่ 1: นั่งข้างเตียง (Dangling legs), บริหารกล้ามเนื้อมือเท้าเบาๆ</p>
+            <p>• วันที่ 2-3: ยืนข้างเตียง เดินรอบเตียง พร้อมมอนิเตอร์ HR, BP, SpO2 (หยุดทันทีถ้า HR เพิ่ม &gt; 20 bpm หรือ BP drop &gt; 10 mmHg)</p>
+          </div>
+        `
+      }
+    ];
+
+    // Valid Logins
     const VALID_ACCOUNTS = [
       { user: 'nurse', pass: 'ccu7' },
       { user: 'fah', pass: 'ccu7' },
@@ -607,15 +870,15 @@
       { user: 'ccu', pass: 'siriraj' }
     ];
 
-    // Check Login State on Page Load
+    // Check Login State
     document.addEventListener("DOMContentLoaded", () => {
       const loggedInUser = localStorage.getItem('ccu_user');
       if (loggedInUser) {
         showApp(loggedInUser);
       }
+      renderKnowledgeCatalog(KNOWLEDGE_CATALOG);
     });
 
-    // Handle Login Submit
     function handleLogin(e) {
       e.preventDefault();
       const u = document.getElementById('usernameInput').value.trim().toLowerCase();
@@ -632,7 +895,6 @@
       }
     }
 
-    // Toggle Password Visibility
     function togglePasswordVisibility() {
       const input = document.getElementById('passwordInput');
       const icon = document.getElementById('eyeIcon');
@@ -647,7 +909,6 @@
       }
     }
 
-    // Show App Interface
     function showApp(userName) {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('appContainer').classList.remove('hidden');
@@ -655,7 +916,6 @@
       switchTab('home');
     }
 
-    // Handle Logout
     function handleLogout() {
       if (confirm("ต้องการออกจากระบบคู่มือข้างเตียงใช่หรือไม่?")) {
         localStorage.removeItem('ccu_user');
@@ -666,7 +926,6 @@
       }
     }
 
-    // Tab Switching
     function switchTab(viewId) {
       document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(btn => {
@@ -696,120 +955,92 @@
       }
     }
 
-    // Modal Content Database
-    const topics = {
-      arrhythmia: {
-        title: "คู่มือ Arrhythmia น้อง ICU & CCU",
-        content: `
-          <div class="space-y-3">
-            <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-900">
-              <p class="font-bold text-xs"><i class="fa-solid fa-heart-pulse text-rose-600"></i> สรุปหลักการอ่านคลื่นไฟฟ้าหัวใจ</p>
-              <p class="text-[11px] mt-1">อ้างอิงจากคู่มือ 'Arrhythmia น้องICU' เน้นดู 3 สเต็ป: Rate สม่ำเสมอไหม? P wave นำหน้า QRS ไหม? และ QRS กว้างหรือแคบ?</p>
-            </div>
-            
-            <div class="space-y-2">
-              <div class="p-2.5 border rounded-lg">
-                <span class="font-bold text-slate-800 text-[11px]">1. Narrow Complex Tachycardia (QRS &lt; 0.12s)</span>
-                <p class="text-[11px] text-slate-600 mt-0.5">• SVT: อัตราเต้นเร็วสม่ำเสมอ 150-250 bpm -&gt; ทำ Vagal maneuver หรือ Adenosine 6mg rapid IV push</p>
-                <p class="text-[11px] text-slate-600">• AF with RVR: ไม่สม่ำเสมอ ไม่มี P wave ชัดเจน -&gt; ควบคุม Rate ด้วย Amiodarone หรือ Beta-blocker</p>
-              </div>
+    // Render Catalog Items
+    function renderKnowledgeCatalog(items) {
+      const container = document.getElementById('knowledgeListContainer');
+      if (!container) return;
+      container.innerHTML = '';
 
-              <div class="p-2.5 border rounded-lg bg-rose-50/50">
-                <span class="font-bold text-rose-800 text-[11px]">2. Wide Complex Tachycardia (QRS &gt; 0.12s)</span>
-                <p class="text-[11px] text-slate-600 mt-0.5">• VT with Pulse: Amiodarone 150 mg drip ใน 10 นาที หรือ เตรียม Synchronized Cardioversion</p>
-                <p class="text-[11px] text-rose-600 font-semibold">• Pulseless VT / VF: Defibrillation 200J Biphasic ทันที!</p>
-              </div>
-            </div>
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-400">
+            <i class="fa-solid fa-file-circle-xmark text-3xl mb-2"></i>
+            <p class="text-xs">ไม่พบเอกสารที่ค้นหา</p>
+          </div>
+        `;
+        return;
+      }
 
-            <a href="Arrhythmia น้องICU.pdf" target="_blank" class="block w-full py-2.5 bg-rose-600 text-white font-semibold text-center rounded-xl text-xs active:bg-rose-700">
-              <i class="fa-solid fa-file-pdf"></i> เปิดอ่านสไลด์ E-Book ฉบับเต็ม (13.9 MB)
+      items.forEach(item => {
+        let badgeColor = "bg-brand-50 text-brand-700";
+        if (item.category === "EKG") badgeColor = "bg-rose-50 text-rose-700";
+        if (item.category === "Drug") badgeColor = "bg-emerald-50 text-emerald-700";
+        if (item.category === "TAVI") badgeColor = "bg-sky-50 text-brand-700";
+        if (item.category === "TEER") badgeColor = "bg-purple-50 text-purple-700";
+        if (item.category === "Pacemaker") badgeColor = "bg-teal-50 text-teal-700";
+        if (item.category === "ACS") badgeColor = "bg-amber-50 text-amber-700";
+
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2";
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-[10px] font-bold ${badgeColor} px-2 py-0.5 rounded">${item.category}</span>
+            <span class="text-[10px] text-slate-400">${item.size}</span>
+          </div>
+          <div>
+            <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">${item.title}</h3>
+            <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-chalkboard-user"></i> ${item.author}</p>
+            <p class="text-xs text-slate-600 mt-1 line-clamp-2">${item.desc}</p>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <button onclick="openKnowledgeModal('${item.id}')" class="text-xs font-bold text-brand-600 flex items-center gap-1 active:text-brand-800">
+              <i class="fa-solid fa-eye"></i> ดูสรุปแนวปฏิบัติ
+            </button>
+            <a href="${item.file}" target="_blank" class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1">
+              <i class="fa-solid fa-file-pdf text-rose-500"></i> เปิดไฟล์
             </a>
           </div>
-        `
-      },
-      med: {
-        title: "High Alert Drugs (ยากระตุ้น/ปรับความดัน)",
-        content: `
-          <div class="space-y-3">
-            <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-[11px]">
-              <strong>หลักความปลอดภัย:</strong> ต้อง Double check 2 คนเสมอ ทั้งชื่อยา, ความเข้มข้น, อัตราหยด (Rate) และให้ผ่าน Infusion Pump เสมอ
-            </div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-            <div class="space-y-2 text-[11px]">
-              <div class="p-2.5 border rounded-lg">
-                <strong class="text-slate-800">1. Norepinephrine (Levophed) 4:250</strong>
-                <p class="text-slate-600 mt-0.5">• ขนาดยา: 0.05 - 1 mcg/kg/min</p>
-                <p class="text-slate-600">• เป้าหมาย: MAP &ge; 65 mmHg</p>
-                <p class="text-rose-600 font-medium">• ข้อควรระวัง: ให้ผ่าน Central Line เป็นหลักเพื่อป้องกันเนื้อตาย</p>
-              </div>
-
-              <div class="p-2.5 border rounded-lg">
-                <strong class="text-slate-800">2. Dobutamine 250:250</strong>
-                <p class="text-slate-600 mt-0.5">• ขนาดยา: 2.5 - 20 mcg/kg/min (Inodilator ช่วยเพิ่ม CO)</p>
-                <p class="text-amber-700">• ข้อควรระวัง: อาจทำให้ BP drop เล็กน้อย และระวัง Tachycardia</p>
-              </div>
-
-              <div class="p-2.5 border rounded-lg">
-                <strong class="text-slate-800">3. Amiodarone (Cordarone)</strong>
-                <p class="text-slate-600 mt-0.5">• Arrest: 300mg IV push, ซ้ำ 150mg</p>
-                <p class="text-slate-600">• Maintenance: 900mg ใน 24 ชม. (ระวัง Phlebitis ต้องใช้ In-line filter)</p>
-              </div>
-            </div>
-          </div>
-        `
-      },
-      device: {
-        title: "การพยาบาลผู้ป่วยใส่เครื่อง IABP / เครื่องพยุงชีพ",
-        content: `
-          <div class="space-y-3">
-            <div class="p-3 bg-sky-50 border border-sky-200 rounded-xl text-brand-900 text-[11px]">
-              <strong>เป้าหมายของ IABP:</strong> ช่วยเพิ่มเลือดไปเลี้ยงกล้ามเนื้อหัวใจ (ช่วง Diastole) และลดภาระหัวใจบีบตัว (ช่วง Systole)
-            </div>
-
-            <div class="space-y-2 text-[11px]">
-              <p><strong>1. ท่าทางของผู้ป่วย:</strong> จัดท่านอนศีรษะสูงไม่เกิน 30 องศา และ <u>ห้ามงอข้อสะโพก</u> ข้างที่ใส่สายเด็ดขาด</p>
-              <p><strong>2. เฝ้าระวัง Limb Ischemia:</strong> ตรวจสีผิว, ความอุ่น, Capillary refill และคลำ Dorsalis pedis pulse ขาข้างที่ใส่สายทุก 1 ชม.</p>
-              <p><strong>3. การดู Helium Leak:</strong> หากพบเลือดสดหรือหยดน้ำในสายก๊าซฮีเลียม ให้รีบกดหยุดเครื่องและแจ้งแพทย์ทันที</p>
-            </div>
-          </div>
-        `
-      },
-      delirium: {
-        title: "แนวทางประเมิน CAM-ICU ใน CCU",
-        content: `
-          <div class="space-y-3">
-            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px]">
-              <strong>วินิจฉัย Delirium เมื่อ:</strong> พบ Feature 1 + 2 และมี (Feature 3 หรือ Feature 4) อย่างใดอย่างหนึ่ง
-            </div>
-
-            <ol class="list-decimal list-inside space-y-1.5 text-[11px] text-slate-700">
-              <li><strong>Feature 1: อาการเปลี่ยนแปลงเฉียบพลัน</strong> หรือมีอาการขึ้นๆ ลงๆ ภายใน 24 ชม.</li>
-              <li><strong>Feature 2: ความสนใจบกพร่อง (Inattention)</strong> ให้บีบมือเมื่อได้ยินตัว 'A' ในคำว่า "S-A-V-E-A-H-A-A-R-T" ผิด &gt; 2 ครั้ง</li>
-              <li><strong>Feature 3: ระดับความรู้สึกตัวเปลี่ยน</strong> ค่า RASS ไม่ใช่ 0 (เช่น กระวนกระวาย หรือซึม)</li>
-              <li><strong>Feature 4: ความคิดสับสน (Disorganized)</strong> ถามคำถามตรรกะง่ายๆ 4 ข้อ (หินลอยน้ำได้ไหม? ปลามีปีกไหม?) ผิด &gt; 1 ข้อ</li>
-            </ol>
-
-            <div class="p-2.5 bg-slate-50 rounded-lg text-[11px] text-slate-600">
-              <strong>การดูแลไม่ใช้ยา:</strong> เปิดม่านรับแสงกลางวัน ลดเสียง Alarm ตอนกลางคืน ให้ใส่แว่น/ฟันปลอม และให้ญาติคุ้นเคยพูดคุย
-            </div>
-          </div>
-        `
-      }
-    };
-
-    function openTopicDetail(key) {
-      const item = topics[key];
+    function openKnowledgeModal(id) {
+      const item = KNOWLEDGE_CATALOG.find(k => k.id === id);
       if (!item) return;
+
       document.getElementById('modalTitle').innerText = item.title;
-      document.getElementById('modalBody').innerHTML = item.content;
+      document.getElementById('modalBody').innerHTML = `
+        <div class="space-y-3">
+          <div class="p-2.5 bg-slate-50 border rounded-xl flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold bg-brand-50 text-brand-700 px-2 py-0.5 rounded">${item.category}</span>
+              <p class="text-xs text-slate-600 mt-1"><i class="fa-solid fa-user-check text-brand-600"></i> โดย: ${item.author}</p>
+            </div>
+            <span class="text-xs text-slate-400">${item.size}</span>
+          </div>
+
+          <div class="p-3 bg-white border rounded-xl space-y-2">
+            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-notes-medical text-brand-600"></i> หัวใจสำคัญทางคลินิก (Bedside Essentials):</h4>
+            ${item.summaryHtml}
+          </div>
+
+          <a href="${item.file}" target="_blank" class="block w-full py-2.5 bg-brand-600 text-white font-semibold text-center rounded-xl text-xs active:bg-brand-700 shadow-sm">
+            <i class="fa-solid fa-file-pdf"></i> เปิดอ่านเอกสารทางการฉบับเต็ม (${item.size})
+          </a>
+        </div>
+      `;
       document.getElementById('topicModal').classList.remove('hidden');
+    }
+
+    function openCategoryModal(cat) {
+      filterTag(cat);
     }
 
     function closeTopicModal() {
       document.getElementById('topicModal').classList.add('hidden');
     }
 
-    // Filter by tag
     function filterTag(cat) {
       document.querySelectorAll('.tag-chip').forEach(btn => {
         btn.classList.remove('bg-brand-600', 'text-white');
@@ -819,17 +1050,14 @@
       event.target.classList.remove('bg-white', 'text-slate-600');
 
       switchTab('knowledge');
-      const items = document.querySelectorAll('.topic-item');
-      items.forEach(item => {
-        if (cat === 'all' || item.classList.contains(cat)) {
-          item.style.display = 'block';
-        } else {
-          item.style.display = 'none';
-        }
-      });
+      if (cat === 'all') {
+        renderKnowledgeCatalog(KNOWLEDGE_CATALOG);
+      } else {
+        const filtered = KNOWLEDGE_CATALOG.filter(k => k.category === cat);
+        renderKnowledgeCatalog(filtered);
+      }
     }
 
-    // Search logic
     function handleSearch(e) {
       const q = e.target.value.toLowerCase().trim();
       const clearBtn = document.getElementById('clearBtn');
@@ -839,29 +1067,28 @@
         clearBtn.classList.add('hidden');
       }
 
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' || q.length > 1) {
         switchTab('knowledge');
-        const items = document.querySelectorAll('.topic-item');
-        items.forEach(item => {
-          if (item.innerText.toLowerCase().includes(q)) {
-            item.style.display = 'block';
-          } else {
-            item.style.display = 'none';
-          }
-        });
+        const filtered = KNOWLEDGE_CATALOG.filter(k => 
+          k.title.toLowerCase().includes(q) || 
+          k.desc.toLowerCase().includes(q) ||
+          k.category.toLowerCase().includes(q) ||
+          k.author.toLowerCase().includes(q)
+        );
+        renderKnowledgeCatalog(filtered);
       }
     }
 
     function clearSearch() {
       document.getElementById('mobileSearch').value = '';
       document.getElementById('clearBtn').classList.add('hidden');
-      document.querySelectorAll('.topic-item').forEach(i => i.style.display = 'block');
+      renderKnowledgeCatalog(KNOWLEDGE_CATALOG);
     }
 
     function openAddTacitModal() {
-      const text = prompt("พิมพ์เกร็ดความรู้ (Pearls) ที่ต้องการส่งต่อให้น้องๆ ใน CCU:");
+      const text = prompt("พิมพ์เกร็ดความรู้ (Clinical Pearls) ที่ต้องการส่งต่อให้น้องๆ ใน CCU:");
       if (text) {
-        alert("บันทึกเกร็ดความรู้สำเร็จ! ข้อมูลถูกเพิ่มลงในระบบเรียบร้อยครับ");
+        alert("บันทึกเกร็ดความรู้สำเร็จ! ข้อมูลถูกจัดเก็บเข้าคลัง Tacit Knowledge ประจำวอร์ด CCU ทันที");
       }
     }
   </script>
