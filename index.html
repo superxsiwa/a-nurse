@@ -233,6 +233,9 @@
               รวบรวมเอกสารแนวปฏิบัติเฉพาะทางด้านโรคหัวใจและหัตถการขั้นสูง เพื่อการบริบาลผู้ป่วยอย่างมั่นใจและปลอดภัยสูงสุด
             </p>
             <div class="mt-3 flex items-center gap-2">
+              <button onclick="switchTab('knowledge')" class="bg-white text-brand-800 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm active:bg-slate-100 transition-all">
+                <i class="fa-solid fa-book-medical"></i> เปิดดูคลังความรู้
+              </button>
               <button onclick="switchTab('manage')" class="bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 backdrop-blur-sm border border-white/30 transition-all">
                 <i class="fa-solid fa-pen-to-square"></i> จัดการ/สร้างความรู้ใหม่
               </button>
@@ -336,10 +339,18 @@
       <!-- VIEW 2: KNOWLEDGE CATALOG (คลังเอกสาร & คู่มือฉบับเต็ม) -->
       <!-- ================================================= -->
       <div id="view-knowledge" class="tab-view space-y-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="font-heading text-lg font-bold text-slate-800">คลังเอกสารแนวปฏิบัติ (<span id="catalogCount">29</span> รายการ)</h2>
-            <p class="text-xs text-slate-500">แตะดูสรุป หรือเปิดอ่านไฟล์เอกสารฉบับเต็ม</p>
+        
+        <!-- Header with BACK BUTTON -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2.5">
+            <!-- Back to Home Button -->
+            <button onclick="switchTab('home')" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-600 hover:border-brand-300 flex items-center justify-center shadow-xs active:bg-slate-50 transition-all">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+              <h2 class="font-heading font-bold text-base text-slate-800 leading-tight">คลังเอกสารแนวปฏิบัติ</h2>
+              <p class="text-[11px] text-slate-500">พบ <span id="catalogCount" class="font-bold text-brand-700">29</span> รายการ</p>
+            </div>
           </div>
           <button onclick="openCreateKnowledgeModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-brand-700">
             <i class="fa-solid fa-plus"></i> เพิ่มความรู้
@@ -355,10 +366,18 @@
       <!-- VIEW 3: MANAGE KNOWLEDGE (หน้าจัดการ & สร้างความรู้)-->
       <!-- ================================================= -->
       <div id="view-manage" class="tab-view space-y-4">
-        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
-          <div>
-            <h2 class="font-heading text-lg font-bold text-slate-800">จัดการองค์ความรู้ (KM Management)</h2>
-            <p class="text-xs text-slate-500">เพิ่ม แก้ไข และปรับปรุงแนวปฏิบัติในวอร์ด CCU</p>
+        
+        <!-- Header with BACK BUTTON -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2.5">
+            <!-- Back to Home Button -->
+            <button onclick="switchTab('home')" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-600 hover:border-brand-300 flex items-center justify-center shadow-xs active:bg-slate-50 transition-all">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+              <h2 class="font-heading font-bold text-base text-slate-800 leading-tight">จัดการองค์ความรู้</h2>
+              <p class="text-[11px] text-slate-500">เพิ่ม แก้ไข และปรับปรุงแนวปฏิบัติ CCU</p>
+            </div>
           </div>
           <button onclick="openCreateKnowledgeModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-brand-700">
             <i class="fa-solid fa-plus"></i> สร้างใหม่
@@ -387,13 +406,20 @@
       <!-- VIEW 4: TACIT KNOWLEDGE (ประสบการณ์พี่สู่น้อง)    -->
       <!-- ================================================= -->
       <div id="view-tacit" class="tab-view space-y-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="font-heading text-lg font-bold text-slate-800">ประสบการณ์พี่สู่น้อง (Clinical Pearls)</h2>
-            <p class="text-xs text-slate-500">เกร็ดความรู้และเทคนิคการพยาบาลจากพี่ในวอร์ด</p>
+        
+        <!-- Header with BACK BUTTON -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2.5">
+            <button onclick="switchTab('home')" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-600 hover:border-brand-300 flex items-center justify-center shadow-xs active:bg-slate-50 transition-all">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+              <h2 class="font-heading font-bold text-base text-slate-800 leading-tight">ประสบการณ์พี่สู่น้อง</h2>
+              <p class="text-[11px] text-slate-500">เกร็ดความรู้ทางคลินิก (Clinical Pearls)</p>
+            </div>
           </div>
           <button onclick="openAddTacitModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 active:bg-brand-700 shadow-sm">
-            <i class="fa-solid fa-plus"></i> เพิ่มเกร็ดความรู้
+            <i class="fa-solid fa-plus"></i> เพิ่มเกร็ด
           </button>
         </div>
 
@@ -565,7 +591,7 @@
           <span class="text-[10px] font-medium mt-0.5">คลังความรู้</span>
         </button>
 
-        <!-- Nav 3: Manage KM (NEW) -->
+        <!-- Nav 3: Manage KM -->
         <button onclick="switchTab('manage')" id="nav-manage" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
           <i class="fa-solid fa-pen-to-square text-base"></i>
           <span class="text-[10px] font-medium mt-0.5">จัดการ KM</span>
@@ -1068,7 +1094,6 @@
       document.getElementById('formAuthor').value = item.author;
       document.getElementById('formDesc').value = item.desc;
       
-      // strip html for plain edit
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = item.summaryHtml;
       document.getElementById('formSummary').value = tempDiv.innerText || item.summaryHtml;
@@ -1103,7 +1128,6 @@
       `;
 
       if (id) {
-        // Edit existing
         const idx = currentCatalog.findIndex(k => k.id === id);
         if (idx !== -1) {
           currentCatalog[idx] = {
@@ -1117,7 +1141,6 @@
           };
         }
       } else {
-        // Create new
         const newId = "km-" + Date.now();
         currentCatalog.unshift({
           id: newId,
