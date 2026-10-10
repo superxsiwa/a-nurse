@@ -244,6 +244,16 @@
           <i class="fa-solid fa-heart-pulse absolute -right-3 -bottom-3 text-7xl text-white/10 pointer-events-none"></i>
         </div>
 
+        <!-- AI Assistant Shortcut -->
+        <button onclick="switchTab('ai')" class="w-full text-left bg-gradient-to-r from-violet-600 to-indigo-600 text-white p-3.5 rounded-2xl shadow-sm flex items-center gap-3 active:scale-[0.99] transition-all">
+          <div class="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center text-xl"><i class="fa-solid fa-robot"></i></div>
+          <div class="flex-1">
+            <div class="font-heading font-bold text-sm">CCU Nurse AI Assistant</div>
+            <div class="text-[11px] text-indigo-100">ถาม-ตอบอ้างอิง CPG ของหอผู้ป่วย พร้อมแหล่งที่มา</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-white/70"></i>
+        </button>
+
         <!-- 6 Main Topic Grids -->
         <div class="grid grid-cols-2 gap-2.5">
           
@@ -573,18 +583,51 @@
         </div>
       </div>
 
+      <!-- ================================================= -->
+      <!-- AI ASSISTANT VIEW (RAG prototype)                  -->
+      <!-- ================================================= -->
+      <section id="view-ai" class="tab-view space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center"><i class="fa-solid fa-robot"></i></div>
+          <div>
+            <h2 class="font-heading font-bold text-slate-800 text-base leading-tight">CCU Nurse AI Assistant</h2>
+            <p class="text-[11px] text-slate-500">ตอบจากคลังความรู้ CPG ของหอผู้ป่วยเท่านั้น (Grounded)</p>
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 text-amber-800 text-[11px] p-2.5 rounded-xl flex gap-2">
+          <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
+          <span><strong>Disclaimer:</strong> เป็นเครื่องมือช่วยทบทวนความรู้ ไม่ใช่คำสั่งการรักษา ต้องยืนยันกับแผนการรักษาของแพทย์/แนวปฏิบัติหอผู้ป่วยทุกครั้ง ห้ามใส่ชื่อ-HN หรือข้อมูลระบุตัวผู้ป่วย (PDPA)</span>
+        </div>
+
+        <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1" id="aiSuggest"></div>
+
+        <div id="aiChat" class="space-y-2.5 min-h-[40vh]"></div>
+
+        <form onsubmit="sendAiMessage(event)" class="sticky bottom-16 bg-slate-50 pt-2 flex gap-2">
+          <input id="aiInput" type="text" autocomplete="off" placeholder="ถามเรื่อง EKG, ยา High-alert, TAVI, TEER..." class="flex-1 text-sm px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
+          <button type="submit" class="bg-indigo-600 text-white px-4 rounded-xl active:bg-indigo-700"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+      </section>
+
     </main>
 
     <!-- ================================================= -->
     <!-- MOBILE BOTTOM NAVIGATION BAR                     -->
     <!-- ================================================= -->
     <nav class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 safe-bottom shadow-lg">
-      <div class="max-w-md mx-auto grid grid-cols-5 h-14 text-center">
+      <div class="max-w-md mx-auto grid grid-cols-6 h-14 text-center">
         
         <!-- Nav 1: Home -->
         <button onclick="switchTab('home')" id="nav-home" class="nav-item active flex flex-col items-center justify-center text-brand-600 transition-colors">
           <i class="fa-solid fa-house text-base"></i>
           <span class="text-[10px] font-medium mt-0.5">หน้าหลัก</span>
+        </button>
+
+        <!-- Nav AI -->
+        <button onclick="switchTab('ai')" id="nav-ai" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+          <i class="fa-solid fa-robot text-base"></i>
+          <span class="text-[10px] font-medium mt-0.5">ถาม AI</span>
         </button>
 
         <!-- Nav 2: Knowledge -->
@@ -934,7 +977,100 @@
       }
     }
 
+    // ===== AI Assistant (prototype: retrieval จากคลังความรู้ในเครื่อง, ยังไม่ต่อ LLM จริง) =====
+    const AI_SUGGESTIONS = [
+      "VT มีชีพจร ให้ยาอะไร",
+      "ดูแลหลังทำ TAVI",
+      "Bradycardia ทำอย่างไร",
+      "TEER ภาวะแทรกซ้อน",
+      "ยา High-alert ในหอ",
+      "ส่งเวร SBAR"
+    ];
+    const AI_SYNONYMS = {
+      "ยา": ["drug", "dose", "ยา"], "หัวใจเต้นช้า": ["brady", "pacemaker"], "เต้นช้า": ["brady"],
+      "tavr": ["tavi"], "mitraclip": ["teer"], "ฟื้นฟู": ["rehabilitation", "rehab"],
+      "ส่งเวร": ["sbar"], "acs": ["acs", "stemi", "mi"], "เจ็บหน้าอก": ["acs", "stemi"]
+    };
+    let aiInited = false;
+
+    function initAi() {
+      if (aiInited) return;
+      aiInited = true;
+      document.getElementById('aiSuggest').innerHTML = AI_SUGGESTIONS.map(q =>
+        `<button onclick="askAi('${q}')" class="shrink-0 text-[11px] bg-white border border-indigo-200 text-indigo-700 px-2.5 py-1 rounded-full">${q}</button>`
+      ).join('');
+      appendAiBubble('bot', 'สวัสดีค่ะ ถามเรื่องการพยาบาลใน CCU ได้เลย ระบบจะตอบจากเอกสารในคลังความรู้ของหอผู้ป่วย พร้อมแนบแหล่งอ้างอิงทุกครั้ง');
+    }
+
+    function appendAiBubble(role, html) {
+      const chat = document.getElementById('aiChat');
+      const div = document.createElement('div');
+      div.className = role === 'user'
+        ? 'ml-auto max-w-[85%] bg-indigo-600 text-white text-sm px-3 py-2 rounded-2xl rounded-br-sm'
+        : 'max-w-[92%] bg-white border border-slate-200 text-slate-700 text-sm px-3 py-2.5 rounded-2xl rounded-bl-sm shadow-sm';
+      div.innerHTML = html;
+      chat.appendChild(div);
+      div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function aiRetrieve(query) {
+      const q = query.toLowerCase();
+      let terms = q.split(/[\s,?]+/).filter(t => t.length > 1);
+      Object.keys(AI_SYNONYMS).forEach(k => { if (q.includes(k)) terms = terms.concat(AI_SYNONYMS[k]); });
+      return currentCatalog.map(item => {
+        const text = (item.title + ' ' + item.category + ' ' + (item.desc || '') + ' ' + (item.summaryHtml || '').replace(/<[^>]+>/g, ' ')).toLowerCase();
+        let score = 0;
+        terms.forEach(t => { if (text.includes(t)) score += (item.title + item.category).toLowerCase().includes(t) ? 3 : 1; });
+        return { item, score };
+      }).filter(r => r.score > 0).sort((a, b) => b.score - a.score).slice(0, 3);
+    }
+
+    function askAi(q) {
+      document.getElementById('aiInput').value = q;
+      sendAiMessage();
+    }
+
+    function sendAiMessage(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('aiInput');
+      const q = input.value.trim();
+      if (!q) return;
+      input.value = '';
+      appendAiBubble('user', escapeHtml(q));
+
+      if (/\bhn\b|\d{6,}/i.test(q)) {
+        appendAiBubble('bot', '<i class="fa-solid fa-shield-halved text-rose-500"></i> พบข้อมูลที่อาจระบุตัวผู้ป่วย (HN/เลขประจำตัว) กรุณาลบออกก่อนถาม ตามนโยบาย PDPA');
+        return;
+      }
+
+      const results = aiRetrieve(q);
+      setTimeout(() => {
+        if (!results.length) {
+          appendAiBubble('bot', 'ไม่พบข้อมูลนี้ในคลังความรู้ของหอผู้ป่วย จึงไม่สามารถตอบได้ (ระบบไม่ตอบนอกเหนือเอกสาร CPG) กรุณาปรึกษาพยาบาลอาวุโส/APN หรือแพทย์เวร');
+          return;
+        }
+        const top = results[0].item;
+        const body = top.summaryHtml ? top.summaryHtml : `<p class="text-xs">${top.desc || ''}</p>`;
+        const refs = results.map((r, i) =>
+          `<button onclick="openKnowledgeModal('${r.item.id}')" class="block w-full text-left text-[11px] text-indigo-700 hover:underline">[${i + 1}] ${r.item.title} <span class="text-slate-400">(${r.item.category})</span></button>`
+        ).join('');
+        appendAiBubble('bot', `
+          ${body}
+          <div class="mt-2 pt-2 border-t border-slate-100">
+            <div class="text-[10px] font-semibold text-slate-500 mb-1"><i class="fa-solid fa-book"></i> แหล่งอ้างอิง</div>
+            ${refs}
+          </div>
+          <div class="mt-2 text-[10px] text-amber-700"><i class="fa-solid fa-circle-info"></i> โปรดยืนยันกับแผนการรักษาของแพทย์ก่อนปฏิบัติ</div>
+        `);
+      }, 400);
+    }
+
     function switchTab(viewId) {
+      if (viewId === 'ai') initAi();
       document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(btn => {
         btn.classList.remove('text-brand-600', 'text-rose-600');
