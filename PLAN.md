@@ -113,3 +113,4 @@ flowchart TD
 1. **Sprint 1 (ทันที):** จัดโครงสร้างไฟล์และเตรียมเชื่อมต่อ Cloud Database (Supabase) สำหรับ User Auth & CPG Metadata
 2. **Sprint 2:** ติดตั้ง Serverless API Proxy เพื่อต่อเชื่อม Gemini API สำหรับค้นหาข้อมูล CPG อัตโนมัติ
 3. **Sprint 3:** สร้างหน้าจอทำแบบทดสอบ Pre/Post Test สำหรับงานวิจัย R2R ในตัวเว็บ
+

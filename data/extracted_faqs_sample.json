@@ -1,0 +1,14 @@
+[
+  {
+    "cpg_id": "CPG-TAVI-SIRIRAJ-2024",
+    "question": "การพยาบาลผู้ป่วยหลังทำ TAVI ในช่วงวิกฤต 24 ชั่วโมงแรก มีข้อควรระวังสำคัญอย่างไร?",
+    "answer": "1. เฝ้าระวัง Hemodynamic stability สังเกต BP, HR, Rhythm ทาง Continuous Monitor\n2. ตรวจสอบแผลเจาะตรวจและคลำหา Hematoma บริเวณ Vascular access\n3. สังเกตอาการทางระบบประสาท (Neuro signs) เฝ้าระวังภาวะ Embolic stroke\n4. ปฏิบัติตามคำสั่งการให้ Antithrombotic therapy อย่างเคร่งครัด",
+    "reference_doc": "คู่มือการพยาบาลผู้ป่วยหลังทำ TAVI ศิริราช (Post TAVR Monitoring)",
+    "page_number": "หน้า 1-3",
+    "category": "TAVI",
+    "metadata": {
+      "alert_level": "high",
+      "source": "Mock Generator Engine"
+    }
+  }
+]

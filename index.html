@@ -888,17 +888,50 @@
       <!-- AI ASSISTANT VIEW (RAG prototype)                  -->
       <!-- ================================================= -->
       <section id="view-ai" class="tab-view space-y-3">
-        <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center"><i class="fa-solid fa-robot"></i></div>
-          <div>
-            <h2 class="font-heading font-bold text-slate-800 text-base leading-tight">CCU Nurse AI Assistant</h2>
-            <p class="text-[11px] text-slate-500">ตอบจากคลังความรู้ CPG ของหอผู้ป่วยเท่านั้น (Grounded)</p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs"><i class="fa-solid fa-robot"></i></div>
+            <div>
+              <h2 class="font-heading font-bold text-slate-800 text-base leading-tight">CCU Nurse AI Assistant</h2>
+              <p class="text-[11px] text-slate-500">ตอบจากคลังความรู้ CPG ศิริราช & Vector FAQs</p>
+            </div>
           </div>
+          <button type="button" onclick="toggleFaqDrawer()" id="btnToggleFaqDrawer" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-2.5 py-1.5 rounded-lg border border-indigo-200/60 flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-layer-group text-indigo-600"></i>
+            <span>คลัง FAQ ข้างเตียง</span>
+            <i id="faqDrawerChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+          </button>
         </div>
 
         <div class="bg-amber-50 border border-amber-200 text-amber-800 text-[11px] p-2.5 rounded-xl flex gap-2">
           <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
           <span><strong>Disclaimer:</strong> เป็นเครื่องมือช่วยทบทวนความรู้ ไม่ใช่คำสั่งการรักษา ต้องยืนยันกับแผนการรักษาของแพทย์/แนวปฏิบัติหอผู้ป่วยทุกครั้ง ห้ามใส่ชื่อ-HN หรือข้อมูลระบุตัวผู้ป่วย (PDPA)</span>
+        </div>
+
+        <!-- Bedside Clinical FAQs Quick Panel (Drawer) -->
+        <div id="bedsideFaqPanel" class="bg-gradient-to-br from-indigo-50/70 to-slate-50 border border-indigo-100/80 rounded-2xl p-3 space-y-2.5 shadow-2xs">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1">
+                <i class="fa-solid fa-bolt text-amber-500"></i> คำถามพบบ่อยข้างเตียง (Bedside FAQs)
+              </span>
+            </div>
+            <span class="text-[10px] text-indigo-600 font-medium">คลิกถามทันที</span>
+          </div>
+
+          <!-- FAQ Category Pills -->
+          <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[11px]" id="faqCategoryFilter">
+            <button type="button" onclick="filterFaqCategory('ALL')" class="faq-cat-btn active px-2.5 py-1 rounded-full bg-indigo-600 text-white font-medium shadow-2xs">ทั้งหมด</button>
+            <button type="button" onclick="filterFaqCategory('TAVI')" class="faq-cat-btn px-2.5 py-1 rounded-full bg-white text-slate-600 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-700">TAVI</button>
+            <button type="button" onclick="filterFaqCategory('TEER')" class="faq-cat-btn px-2.5 py-1 rounded-full bg-white text-slate-600 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-700">TEER</button>
+            <button type="button" onclick="filterFaqCategory('Drug')" class="faq-cat-btn px-2.5 py-1 rounded-full bg-white text-slate-600 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-700">ยาเสี่ยงสูง</button>
+            <button type="button" onclick="filterFaqCategory('EKG')" class="faq-cat-btn px-2.5 py-1 rounded-full bg-white text-slate-600 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-700">EKG ด่วน</button>
+            <button type="button" onclick="filterFaqCategory('ACS')" class="faq-cat-btn px-2.5 py-1 rounded-full bg-white text-slate-600 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-700">ACS/STEMI</button>
+          </div>
+
+          <!-- FAQ Items List (Rendered by JS) -->
+          <div id="bedsideFaqList" class="grid grid-cols-1 gap-1.5 max-h-48 overflow-y-auto pr-0.5"></div>
         </div>
 
         <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1" id="aiSuggest"></div>
@@ -1654,7 +1687,137 @@
       if (statApprovedEl) statApprovedEl.innerText = approvedKm;
     }
 
-    // ===== AI Assistant (prototype: retrieval จากคลังความรู้ในเครื่อง, ยังไม่ต่อ LLM จริง) =====
+    // ===== BEDSIDE CLINICAL FAQS (Issue #04: คลังคำถามพบบ่อยข้างเตียง) =====
+    const BEDSIDE_FAQS = [
+      {
+        id: 'faq-tavi-01',
+        category: 'TAVI',
+        badge: 'TAVI',
+        color: 'sky',
+        icon: 'fa-heart-pulse',
+        question: 'คนไข้ Post-TAVI 24 ชม. แรก ต้องเฝ้าระวังอะไรเป็นพิเศษ?',
+        quickAnswer: 'เฝ้าระวัง Complete Heart Block (CHB), New LBBB, เช็คแผล Femoral/Hematoma, Pulse เท้า และตรวจ Neuro signs เฝ้าระวัง Stroke',
+        reference: 'CPG การพยาบาลผู้ป่วยหลังทำ TAVI ศิริราช (Part II หน้า 4-8)'
+      },
+      {
+        id: 'faq-tavi-02',
+        category: 'TAVI',
+        badge: 'TAVI TPM',
+        color: 'sky',
+        icon: 'fa-bolt',
+        question: 'เมื่อไหร่ต้องเตรียม Temporary Pacemaker (TPM) หลังทำ TAVI?',
+        quickAnswer: 'มี High-grade AV block / CHB, New LBBB + PR prolongation หรือเดิมมี RBBB ตั้ง Back up rate 50-60 bpm และล็อกปุ่ม Generator',
+        reference: 'Nursing Management TAVR ศิริราช หน้า 12-14'
+      },
+      {
+        id: 'faq-teER-01',
+        category: 'TEER',
+        badge: 'TEER / MitraClip',
+        color: 'indigo',
+        icon: 'fa-paperclip',
+        question: 'การดูแลผู้ป่วยหลังทำ TEER (MitraClip) มีข้อปฏิบัติและข้อห้ามอย่างไร?',
+        quickAnswer: 'นอนราบศีรษะสูงไม่เกิน 30 องศา ห้ามงอขา 6-8 ชม. สังเกตเหนื่อย/ฟังปอดระวัง Acute Pulmonary Edema จาก ASD หรือ Clip Detachment',
+        reference: 'Nursing Management of TEER ศิริราช หน้า 7-10'
+      },
+      {
+        id: 'faq-drug-ne',
+        category: 'Drug',
+        badge: 'High-Alert Drug',
+        color: 'emerald',
+        icon: 'fa-syringe',
+        question: 'การบริหารยา Norepinephrine (Levophed) มีข้อควรระวัง High-Alert อะไร?',
+        quickAnswer: 'ผสม D5W เสมอ ให้ทาง Central line เท่านั้น หากรั่วหยุดยาทันทีแล้วฉีด Phentolamine 5-10 mg Subcut รอบจุดรั่ว Titrate ตาม MAP >= 65',
+        reference: 'CPG ยา High-Alert Drug และ Vasopressor CCU ศิริราช หน้า 15-18'
+      },
+      {
+        id: 'faq-ekg-vt',
+        category: 'EKG',
+        badge: 'EKG ด่วน',
+        color: 'rose',
+        icon: 'fa-wave-square',
+        question: 'พบ Wide QRS Tachycardia / VT บน Monitor ต้องทำอย่างไรเป็นลำดับแรก?',
+        quickAnswer: 'Check Patient ทันที! คลำ Carotid pulse หาก Pulseless CPR+Defib 200J ทันที หากมีชีพจรแต่ Unstable ทำ Synchronized Cardioversion 100-200J',
+        reference: 'CPG การจัดการภาวะ Arrhythmia CCU ศิริราช หน้า 22-25'
+      },
+      {
+        id: 'faq-acs-stemi',
+        category: 'ACS',
+        badge: 'ACS Post-PCI',
+        color: 'amber',
+        icon: 'fa-heart-crack',
+        question: 'ผู้ป่วย STEMI มีอาการแน่นหน้าอกซ้ำ (Recurrent Chest Pain) หลัง PCI ต้องทำอย่างไร?',
+        quickAnswer: 'ทำ EKG 12-lead ทันทีดู Re-elevation (สงสัย Acute Stent Thrombosis) วัด V/S รายงานแพทย์ด่วน เตรียมเปิด Cath Lab ฉุกเฉิน',
+        reference: '2025 ACS Clinical Update และ CPG STEMI ศิริราช หน้า 30-33'
+      }
+    ];
+
+    let currentFaqCategory = 'ALL';
+    let isFaqDrawerOpen = true;
+
+    function toggleFaqDrawer() {
+      const panel = document.getElementById('bedsideFaqPanel');
+      const chevron = document.getElementById('faqDrawerChevron');
+      if (!panel) return;
+      isFaqDrawerOpen = !isFaqDrawerOpen;
+      if (isFaqDrawerOpen) {
+        panel.classList.remove('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      } else {
+        panel.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(-90deg)';
+      }
+    }
+
+    function filterFaqCategory(cat) {
+      currentFaqCategory = cat;
+      document.querySelectorAll('.faq-cat-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-indigo-600', 'text-white');
+        btn.classList.add('bg-white', 'text-slate-600');
+      });
+      event.currentTarget.classList.add('active', 'bg-indigo-600', 'text-white');
+      event.currentTarget.classList.remove('bg-white', 'text-slate-600');
+      renderBedsideFaqs();
+    }
+
+    function renderBedsideFaqs() {
+      const listEl = document.getElementById('bedsideFaqList');
+      if (!listEl) return;
+      const filtered = currentFaqCategory === 'ALL'
+        ? BEDSIDE_FAQS
+        : BEDSIDE_FAQS.filter(f => f.category === currentFaqCategory);
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div class="text-[11px] text-slate-400 py-2 text-center">ไม่มีคำถามในหมวดนี้</div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(faq => {
+        const safeQ = escapeHtml(faq.question);
+        return `
+          <button type="button" onclick="askBedsideFaq('${faq.id}')" class="w-full text-left bg-white hover:bg-indigo-50/80 p-2 rounded-xl border border-slate-200/90 hover:border-indigo-300 shadow-2xs transition-all flex items-start gap-2 active:scale-[0.99]">
+            <div class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5">
+              <i class="fa-solid ${faq.icon} text-[11px]"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200/50">${faq.badge}</span>
+                <span class="text-[9px] text-slate-400 truncate">${escapeHtml(faq.reference)}</span>
+              </div>
+              <p class="text-xs font-semibold text-slate-800 leading-snug line-clamp-2">${safeQ}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 shrink-0 mt-1"></i>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function askBedsideFaq(faqId) {
+      const faq = BEDSIDE_FAQS.find(f => f.id === faqId);
+      if (!faq) return;
+      askAi(faq.question);
+    }
+
+    // ===== AI Assistant (Hybrid Vector Search + Catalog RAG) =====
     const AI_SUGGESTIONS = [
       "VT มีชีพจร ให้ยาอะไร",
       "ดูแลหลังทำ TAVI",
@@ -1676,8 +1839,9 @@
       document.getElementById('aiSuggest').innerHTML = AI_SUGGESTIONS.map(q =>
         `<button onclick="askAi('${q}')" class="shrink-0 text-[11px] bg-white border border-indigo-200 text-indigo-700 px-2.5 py-1 rounded-full">${q}</button>`
       ).join('');
+      renderBedsideFaqs();
       renderAiRecentQuestions();
-      appendAiBubble('bot', 'สวัสดีค่ะ ถามเรื่องการพยาบาลใน CCU ได้เลย ระบบจะตอบจากเอกสารในคลังความรู้ของหอผู้ป่วย พร้อมแนบแหล่งอ้างอิงทุกครั้ง');
+      appendAiBubble('bot', 'สวัสดีค่ะ ถามเรื่องการพยาบาลใน CCU ได้เลย ระบบจะตอบจากคู่มือ CPG ศิริราช และคลัง FAQ อัตโนมัติ พร้อมแสดงเอกสารอ้างอิงทุกครั้งค่ะ');
     }
 
     function appendAiBubble(role, html) {
@@ -1776,6 +1940,11 @@
         return;
       }
 
+      // ตรวจสอบกับ Bedside Quick FAQ ในเครื่องก่อน เพื่อตอบรวดเร็วแบบ Instant
+      const localMatchedFaq = BEDSIDE_FAQS.find(f => 
+        q.toLowerCase().includes(f.question.toLowerCase()) || f.question.toLowerCase().includes(q.toLowerCase())
+      );
+
       // 2. ดึงบริบทจาก CPG ในระบบ (Local RAG Context)
       const results = aiRetrieve(q);
       let cpgContext = "";
@@ -1790,7 +1959,7 @@
       const loadingDiv = document.createElement('div');
       loadingDiv.id = 'aiLoadingBubble';
       loadingDiv.className = 'max-w-[92%] bg-white border border-slate-200 text-slate-500 text-xs px-3 py-2.5 rounded-2xl rounded-bl-sm shadow-xs flex items-center gap-2';
-      loadingDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-brand-600"></i> กำลังสืบค้น CPG ศิริราช และประมวลผลคำตอบจาก Gemini AI...`;
+      loadingDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-brand-600"></i> กำลังสืบค้น CPG ศิริราช & คลัง FAQ Vector ด้วย Gemini AI...`;
       chat.appendChild(loadingDiv);
       loadingDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
@@ -1815,32 +1984,61 @@
           return;
         }
 
-        if (data.error) {
+        if (data.error && !localMatchedFaq) {
           appendAiBubble('bot', `<div class="text-amber-700 text-xs"><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถติดต่อเกตเวย์ AI ได้ชั่วคราว: ${escapeHtml(data.error)}</div>`);
           return;
         }
 
-        // แปลง Markdown จาก Gemini (ตัวหนาและ bullet points) เป็น HTML สวยงาม
-        let formattedAnswer = (data.answer || '')
-          .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
-          .replace(/^\* (.*?)$/gm, '<li class="ml-3 list-disc text-slate-700">$1</li>')
-          .replace(/\n\n/g, '<div class="h-2"></div>')
-          .replace(/\n/g, '<br>');
+        // จัดการกรณีตอบด้วย Direct FAQ Vector Match หรือ Grounded Answer
+        let formattedAnswer = '';
+        let refHtml = '';
+        const isDirectMatch = data.directMatch || (data.source === 'cpg_faq_vector_match');
 
-        const refs = results.map((r, i) =>
-          `<button onclick="openKnowledgeModal('${r.item.id}')" class="block w-full text-left text-[11px] text-brand-700 hover:underline"><i class="fa-solid fa-file-lines text-slate-400"></i> [${i + 1}] ${r.item.title} <span class="text-slate-400">(${r.item.category})</span></button>`
-        ).join('');
+        if (isDirectMatch && data.reference) {
+          formattedAnswer = (data.answer || '')
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
+            .replace(/^\* (.*?)$/gm, '<li class="ml-3 list-disc text-slate-700">$1</li>')
+            .replace(/\n\n/g, '<div class="h-2"></div>')
+            .replace(/\n/g, '<br>');
+
+          refHtml = `
+            <div class="mt-2.5 pt-2 border-t border-slate-100">
+              <div class="text-[10px] font-bold text-emerald-700 mb-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-check text-emerald-600"></i> พบคำตอบตรงจากคลัง FAQ ศิริราช (${Math.round((data.similarity || 0.95) * 100)}% Match)
+              </div>
+              <div class="text-[11px] text-slate-700 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                <i class="fa-solid fa-book-medical text-brand-600"></i> ${escapeHtml(data.reference.title || '')} 
+                <span class="text-slate-400">(${data.reference.page || '-'})</span>
+              </div>
+            </div>
+          `;
+        } else {
+          // แปลง Markdown จาก Gemini (ตัวหนาและ bullet points) เป็น HTML สวยงาม
+          formattedAnswer = (data.answer || (localMatchedFaq ? localMatchedFaq.quickAnswer : ''))
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
+            .replace(/^\* (.*?)$/gm, '<li class="ml-3 list-disc text-slate-700">$1</li>')
+            .replace(/\n\n/g, '<div class="h-2"></div>')
+            .replace(/\n/g, '<br>');
+
+          const refs = results.map((r, i) =>
+            `<button onclick="openKnowledgeModal('${r.item.id}')" class="block w-full text-left text-[11px] text-brand-700 hover:underline"><i class="fa-solid fa-file-lines text-slate-400"></i> [${i + 1}] ${r.item.title} <span class="text-slate-400">(${r.item.category})</span></button>`
+          ).join('');
+
+          if (refs) {
+            refHtml = `
+              <div class="mt-2.5 pt-2 border-t border-slate-100">
+                <div class="text-[10px] font-bold text-slate-500 mb-1 flex items-center gap-1"><i class="fa-solid fa-book-medical text-brand-600"></i> แหล่งอ้างอิง CPG ในระบบ</div>
+                ${refs}
+              </div>
+            `;
+          }
+        }
 
         appendAiBubble('bot', `
           <div class="space-y-1.5 text-xs text-slate-800 leading-relaxed">
             ${formattedAnswer}
           </div>
-          ${refs ? `
-            <div class="mt-2.5 pt-2 border-t border-slate-100">
-              <div class="text-[10px] font-bold text-slate-500 mb-1 flex items-center gap-1"><i class="fa-solid fa-book-medical text-brand-600"></i> แหล่งอ้างอิง CPG ในระบบ</div>
-              ${refs}
-            </div>
-          ` : ''}
+          ${refHtml}
           <div class="mt-2 text-[10px] text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-200/60 flex items-center gap-1.5">
             <i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i>
             <span>คำแนะนำข้างเตียง: โปรดยืนยันกับแผนการรักษาของแพทย์และพี่ In-charge ก่อนปฏิบัติ</span>
@@ -1850,7 +2048,26 @@
       } catch (err) {
         const currentLoading = document.getElementById('aiLoadingBubble');
         if (currentLoading) currentLoading.remove();
-        appendAiBubble('bot', `<div class="text-rose-600 text-xs"><i class="fa-solid fa-circle-exclamation"></i> เกิดข้อผิดพลาดในการเชื่อมต่อ: ${escapeHtml(err.message)}</div>`);
+
+        // กรณีออฟไลน์หรือเกตเวย์ยังไม่เปิด ให้ Fallback ใช้คู่มือข้างเตียงถ้ามีตรงกัน
+        if (localMatchedFaq) {
+          appendAiBubble('bot', `
+            <div class="space-y-1.5 text-xs text-slate-800 leading-relaxed">
+              <span class="inline-block text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.2 rounded font-bold mb-1">คำตอบทันทีข้างเตียง (Bedside Mode)</span><br>
+              ${localMatchedFaq.quickAnswer}
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[11px] text-slate-700">
+              <div class="text-[10px] font-bold text-brand-700 mb-0.5"><i class="fa-solid fa-book-medical"></i> เอกสารอ้างอิง:</div>
+              ${escapeHtml(localMatchedFaq.reference)}
+            </div>
+            <div class="mt-2 text-[10px] text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-200/60 flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i>
+              <span>คำแนะนำข้างเตียง: โปรดยืนยันกับแผนการรักษาของแพทย์และพี่ In-charge ก่อนปฏิบัติ</span>
+            </div>
+          `);
+        } else {
+          appendAiBubble('bot', `<div class="text-rose-600 text-xs"><i class="fa-solid fa-circle-exclamation"></i> เกิดข้อผิดพลาดในการเชื่อมต่อ: ${escapeHtml(err.message)}</div>`);
+        }
       }
     }
 
