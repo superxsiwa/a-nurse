@@ -85,10 +85,20 @@
           <i class="fa-solid fa-heart-pulse animate-pulse"></i>
         </div>
         <h1 class="font-heading font-bold text-xl text-slate-900">CCU Nurse Pocket</h1>
-        <p class="text-xs text-slate-500 mt-0.5">หอผู้ป่วยโรคหัวใจ นวมินทรบพิตร ชั้น 7</p>
+        <p class="text-xs text-slate-500 mt-0.5">หอผู้ป่วยวิกฤตหัวใจ (CCU)</p>
         <span class="inline-block mt-2 text-[10px] bg-sky-50 text-brand-700 font-semibold px-2.5 py-0.5 rounded-full border border-brand-200">
           โรงพยาบาลศิริราช (Siriraj Hospital)
         </span>
+      </div>
+
+      <!-- Login / Register Tabs -->
+      <div class="flex rounded-xl bg-slate-100 p-1 mb-4 text-xs font-semibold">
+        <button type="button" id="tabBtnLogin" onclick="switchAuthTab('login')" class="flex-1 py-1.5 rounded-lg bg-white text-brand-700 shadow-xs transition-all">
+          เข้าสู่ระบบ
+        </button>
+        <button type="button" id="tabBtnRegister" onclick="switchAuthTab('register')" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition-all">
+          ลงทะเบียนพยาบาลใหม่
+        </button>
       </div>
 
       <!-- Login Form -->
@@ -118,7 +128,7 @@
               placeholder="กรอกรหัสผ่าน" 
               class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50 placeholder:text-slate-400"
             >
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm">
+            <button type="button" onclick="togglePasswordVisibility('passwordInput','eyeIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm">
               <i id="eyeIcon" class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -127,7 +137,7 @@
         <!-- Error Alert -->
         <div id="loginError" class="hidden p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
           <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
-          <span>ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</span>
+          <span id="loginErrorMsg">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</span>
         </div>
 
         <button 
@@ -139,14 +149,154 @@
         </button>
       </form>
 
-      <!-- Security Notice -->
-      <div class="mt-5 pt-4 border-t border-slate-100 text-center">
-        <p class="text-[11px] text-slate-400 flex items-center justify-center gap-1">
-          <i class="fa-solid fa-shield-halved text-emerald-600"></i> คลังความรู้พยาบาล CCU ศิริราช
-        </p>
-        <p class="text-[10px] text-slate-400 mt-1">
-          (รหัสผ่านเริ่มต้น: <span class="font-mono text-brand-700 font-bold">ccu7</span> หรือ <span class="font-mono text-brand-700 font-bold">1234</span>)
-        </p>
+      <!-- Register Form -->
+      <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">
+            <i class="fa-solid fa-id-card text-brand-600 mr-1"></i> ชื่อ-นามสกุล
+          </label>
+          <input 
+            type="text" 
+            id="regFullName" 
+            required 
+            placeholder="เช่น พว.สมหญิง วงศ์ใจ" 
+            class="w-full text-sm px-3.5 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50"
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">
+            <i class="fa-solid fa-user-tag text-brand-600 mr-1"></i> ชื่อผู้ใช้งานที่ต้องการ (Username)
+          </label>
+          <input 
+            type="text" 
+            id="regUsername" 
+            required 
+            placeholder="เช่น somying (ตัวพิมพ์เล็ก/ตัวเลข)" 
+            class="w-full text-sm px-3.5 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50"
+          >
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-700 mb-1">
+              ประสบการณ์ CCU
+            </label>
+            <select id="regExp" class="w-full text-xs px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50">
+              <option value="1-3ปี">1 - 3 ปี (พยาบาลใหม่)</option>
+              <option value="3-5ปี">3 - 5 ปี</option>
+              <option value=">5ปี">> 5 ปี (พยาบาลอาวุโส)</option>
+              <option value="APN/Incharge">APN / Incharge</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-700 mb-1">
+              สังกัด / วอร์ด
+            </label>
+            <input type="text" value="หอผู้ป่วย CCU" readonly class="w-full text-xs px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">
+            <i class="fa-solid fa-lock text-brand-600 mr-1"></i> กำหนดรหัสผ่าน
+          </label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="regPassword" 
+              required 
+              placeholder="อย่างน้อย 4 ตัวอักษร" 
+              class="w-full text-sm px-3.5 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50"
+            >
+            <button type="button" onclick="togglePasswordVisibility('regPassword','regEyeIcon')" class="absolute right-3 top-2 text-slate-400 hover:text-slate-600 text-sm">
+              <i id="regEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="regSuccess" class="hidden p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xl flex items-center gap-2">
+          <i class="fa-solid fa-circle-check text-emerald-500"></i>
+          <span>ลงทะเบียนสำเร็จ! กรุณารอ Admin อนุมัติการเข้าใช้งาน</span>
+        </div>
+
+        <div id="regError" class="hidden p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
+          <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
+          <span id="regErrorMsg">ชื่อผู้ใช้นี้มีอยู่ในระบบแล้ว</span>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 active:from-emerald-700 text-white font-semibold text-sm py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-user-plus"></i>
+          <span>ส่งคำขอลงทะเบียนพยาบาล</span>
+        </button>
+      </form>
+
+      <!-- Quick Role Login (ทดสอบระบบสะดวก) -->
+      <div class="mt-4 pt-3.5 border-t border-slate-100">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+            <i class="fa-solid fa-key text-brand-600"></i> บัญชีทดสอบระบบ (คลิกเพื่อเข้าทันที):
+          </span>
+          <span class="text-[9px] text-slate-400">คลิกเลือกบทบาท</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5 text-left">
+          <!-- 1. Admin (Fah Payap) -->
+          <button type="button" onclick="quickFillLogin('admin', '1234')" class="p-2 rounded-xl bg-purple-50 hover:bg-purple-100/80 border border-purple-200 text-left transition-all active:scale-[0.98]">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-purple-700 flex items-center gap-1">
+                <i class="fa-solid fa-user-shield"></i> ผู้ดูแล (Admin)
+              </span>
+              <span class="text-[8px] bg-purple-200/70 text-purple-800 font-mono px-1 rounded">1234</span>
+            </div>
+            <div class="text-[9px] text-purple-600 font-mono mt-0.5">user: <strong>admin</strong></div>
+            <div class="text-[8px] text-slate-500 truncate">พว.ฟ้าพายัพ (ผู้ดูแลระบบ)</div>
+          </button>
+
+          <!-- 2. Senior Nurse -->
+          <button type="button" onclick="quickFillLogin('senior', 'ccu7')" class="p-2 rounded-xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-left transition-all active:scale-[0.98]">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-amber-800 flex items-center gap-1">
+                <i class="fa-solid fa-user-nurse"></i> พยาบาลรุ่นพี่
+              </span>
+              <span class="text-[8px] bg-amber-200/70 text-amber-900 font-mono px-1 rounded">ccu7</span>
+            </div>
+            <div class="text-[9px] text-amber-700 font-mono mt-0.5">user: <strong>senior</strong></div>
+            <div class="text-[8px] text-slate-500 truncate">พว.วิยะดา (จัดการคลัง CPG)</div>
+          </button>
+
+          <!-- 3. Junior Nurse (CCU Nurse) -->
+          <button type="button" onclick="quickFillLogin('nurse', 'ccu7')" class="p-2 rounded-xl bg-sky-50 hover:bg-sky-100/80 border border-sky-200 text-left transition-all active:scale-[0.98]">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-sky-700 flex items-center gap-1">
+                <i class="fa-solid fa-heart-pulse"></i> พยาบาลรุ่นน้อง
+              </span>
+              <span class="text-[8px] bg-sky-200/70 text-sky-800 font-mono px-1 rounded">ccu7</span>
+            </div>
+            <div class="text-[9px] text-sky-600 font-mono mt-0.5">user: <strong>nurse</strong></div>
+            <div class="text-[8px] text-slate-500 truncate">พว.พยาบาล CCU (ผู้ใช้ข้างเตียง)</div>
+          </button>
+
+          <!-- 4. Pending Nurse -->
+          <button type="button" onclick="quickFillLogin('somying', 'ccu7')" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-all active:scale-[0.98]">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-slate-600 flex items-center gap-1">
+                <i class="fa-solid fa-hourglass-half text-amber-500"></i> รออนุมัติ
+              </span>
+              <span class="text-[8px] bg-slate-200 text-slate-700 font-mono px-1 rounded">ccu7</span>
+            </div>
+            <div class="text-[9px] text-slate-500 font-mono mt-0.5">user: <strong>somying</strong></div>
+            <div class="text-[8px] text-amber-600 truncate">พว.สมหญิง (บล็อกรออนุมัติ)</div>
+          </button>
+        </div>
+
+        <div class="mt-3 pt-2 border-t border-slate-100 text-center">
+          <p class="text-[10px] text-slate-400 flex items-center justify-center gap-1">
+            <i class="fa-solid fa-shield-halved text-emerald-600"></i> ระบบความปลอดภัย CCU ศิริราช
+          </p>
+        </div>
       </div>
 
     </div>
@@ -160,14 +310,14 @@
     <!-- TOP APP BAR -->
     <header class="bg-brand-700 text-white sticky top-0 z-40 shadow-md safe-top">
       <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
+        <div onclick="switchTab('home')" class="flex items-center gap-2.5 cursor-pointer active:opacity-80 transition-opacity" title="กลับสู่หน้าหลัก">
           <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-rose-300 border border-white/20 shadow-inner">
             <i class="fa-solid fa-heart-pulse text-lg animate-pulse"></i>
           </div>
           <div>
             <div class="flex items-center gap-1.5 leading-none">
               <span class="font-heading font-bold text-base tracking-tight">CCU Siriraj Guide</span>
-              <span class="text-[10px] bg-rose-500/90 text-white font-medium px-1.5 py-0.5 rounded">นวมินทร์ ชั้น 7</span>
+              <span class="text-[10px] bg-rose-500/90 text-white font-medium px-1.5 py-0.5 rounded">ศิริราช</span>
             </div>
             <p class="text-[11px] text-sky-200 mt-0.5">คลังความรู้พยาบาลวิกฤตหัวใจ • <span id="displayUser" class="font-semibold text-white">nurse</span></p>
           </div>
@@ -210,17 +360,6 @@
           </button>
         </div>
 
-        <!-- Quick Filter Tags -->
-        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs whitespace-nowrap">
-          <button onclick="filterTag('all')" class="tag-chip active px-3 py-1 rounded-full bg-brand-600 text-white font-medium shadow-sm">ทั้งหมด (<span id="totalBadgeCount">29</span>)</button>
-          <button onclick="filterTag('EKG')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">EKG</button>
-          <button onclick="filterTag('Drug')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Drug / HAD</button>
-          <button onclick="filterTag('TAVI')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">TAVI</button>
-          <button onclick="filterTag('TEER')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">TEER</button>
-          <button onclick="filterTag('ACS')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">ACS</button>
-          <button onclick="filterTag('Pacemaker')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Pacemaker</button>
-          <button onclick="filterTag('Rehabilitation')" class="tag-chip px-3 py-1 rounded-full bg-white text-slate-600 border border-slate-200 font-medium">Rehab</button>
-        </div>
 
         <!-- Hero Card with Manage KM Shortcut -->
         <div class="bg-gradient-to-br from-brand-700 via-brand-800 to-sky-900 text-white p-4 rounded-2xl shadow-sm relative overflow-hidden">
@@ -233,11 +372,8 @@
               รวบรวมเอกสารแนวปฏิบัติเฉพาะทางด้านโรคหัวใจและหัตถการขั้นสูง เพื่อการบริบาลผู้ป่วยอย่างมั่นใจและปลอดภัยสูงสุด
             </p>
             <div class="mt-3 flex items-center gap-2">
-              <button onclick="switchTab('knowledge')" class="bg-white text-brand-800 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm active:bg-slate-100 transition-all">
+              <button onclick="switchTab('knowledge')" class="bg-white text-brand-800 text-xs font-semibold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm active:bg-slate-100 transition-all">
                 <i class="fa-solid fa-book-medical"></i> เปิดดูคลังความรู้
-              </button>
-              <button onclick="switchTab('manage')" class="bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 backdrop-blur-sm border border-white/30 transition-all">
-                <i class="fa-solid fa-pen-to-square"></i> จัดการ/สร้างความรู้ใหม่
               </button>
             </div>
           </div>
@@ -254,90 +390,62 @@
           <i class="fa-solid fa-chevron-right text-white/70"></i>
         </button>
 
-        <!-- 6 Main Topic Grids -->
+        <!-- 4 Main Proposal Categories Grid (ตรงตามขอบเขต Proposal 100%) -->
         <div class="grid grid-cols-2 gap-2.5">
           
-          <!-- EKG & Arrhythmia -->
-          <div onclick="openCategoryModal('EKG')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <!-- Category 1: Emergency & Arrhythmia -->
+          <div onclick="filterCategoryGroup('emergency_ekg')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-rose-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
             <div>
-              <div class="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-lg mb-2">
+              <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg mb-2">
                 <i class="fa-solid fa-heart-pulse"></i>
               </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">EKG & Arrhythmia</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">แปลผลคลื่นไฟฟ้าหัวใจ & Bradycardia</p>
+              <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">1. ด่วนวิกฤต & EKG</h3>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">แปลผล EKG อันตราย, VT/VF, Bradycardia, กู้ชีพ ACLS</p>
             </div>
-            <span class="mt-2 text-[10px] text-rose-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> เอกสาร อ.ศุภชัย / น้องICU
+            <span class="mt-2.5 text-[10px] text-rose-600 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-file-medical"></i> 4 เอกสารแนวปฏิบัติ
             </span>
           </div>
 
-          <!-- Drug & HAD -->
-          <div onclick="openCategoryModal('Drug')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <!-- Category 2: High-Alert Drugs -->
+          <div onclick="filterCategoryGroup('high_alert_drug')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-emerald-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
             <div>
-              <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-2">
+              <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-2">
                 <i class="fa-solid fa-syringe"></i>
               </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">Drug & HAD</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">Inotrope, ละลายลิ่มเลือด, Arrest Drugs</p>
+              <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">2. ยาความเสี่ยงสูง</h3>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Norepinephrine, Dobutamine, Cordarone, Heparin</p>
             </div>
-            <span class="mt-2 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> เภสัชกรรม ศิริราช
+            <span class="mt-2.5 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-file-medical"></i> 4 เอกสาร & โปรโตคอล
             </span>
           </div>
 
-          <!-- TAVI Nursing -->
-          <div onclick="openCategoryModal('TAVI')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
+          <!-- Category 3: Devices & Specialized Procedures -->
+          <div onclick="filterCategoryGroup('devices_procedures')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-sky-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
             <div>
-              <div class="w-9 h-9 rounded-lg bg-sky-50 text-brand-600 flex items-center justify-center text-lg mb-2">
-                <i class="fa-solid fa-circle-radiation"></i>
-              </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">TAVI / TAVR Care</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">Pre-Post OP, Monitoring & เฝ้าระวัง Stroke</p>
-            </div>
-            <span class="mt-2 text-[10px] text-brand-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> ทีมพยาบาล CCU ศิริราช
-            </span>
-          </div>
-
-          <!-- TEER Nursing -->
-          <div onclick="openCategoryModal('TEER')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-9 h-9 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg mb-2">
-                <i class="fa-solid fa-code-merge"></i>
-              </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">TEER (MitraClip)</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">การพยาบาลก่อน-หลังทำหัตถการ TEER</p>
-            </div>
-            <span class="mt-2 text-[10px] text-purple-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> พว.ทิพวรรณ ศิริราช
-            </span>
-          </div>
-
-          <!-- ACS -->
-          <div onclick="openCategoryModal('ACS')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg mb-2">
-                <i class="fa-solid fa-lungs-virus"></i>
-              </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">ACS (หลอดเลือดหัวใจ)</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">2025 ACS Clinical Update & Care</p>
-            </div>
-            <span class="mt-2 text-[10px] text-amber-700 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> Update 2025
-            </span>
-          </div>
-
-          <!-- Pacemaker -->
-          <div onclick="openCategoryModal('Pacemaker')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm active:bg-slate-50 transition-colors cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-9 h-9 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-lg mb-2">
+              <div class="w-9 h-9 rounded-xl bg-sky-50 text-brand-600 flex items-center justify-center text-lg mb-2">
                 <i class="fa-solid fa-microchip"></i>
               </div>
-              <h3 class="font-heading font-semibold text-sm text-slate-800 leading-snug">Pacemaker Care</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">เครื่องกระตุ้นหัวใจสำหรับน้องใหม่</p>
+              <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">3. เครื่องมือ & หัตถการ</h3>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">IABP, Pacemaker, TAVI, TEER (MitraClip), PCI</p>
             </div>
-            <span class="mt-2 text-[10px] text-teal-700 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-pdf"></i> พว.ดารณี CCU ศิริราช
+            <span class="mt-2.5 text-[10px] text-brand-600 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-file-medical"></i> 5 คู่มือเฉพาะทาง
+            </span>
+          </div>
+
+          <!-- Category 4: Clinical Pearls (พี่สู่น้อง) -->
+          <div onclick="filterCategoryGroup('clinical_pearls')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-amber-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg mb-2">
+                <i class="fa-solid fa-lightbulb"></i>
+              </div>
+              <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">4. พี่สู่น้อง</h3>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">อาการเตือนก่อน Arrest, ส่งเวร SBAR, การฟื้นฟูสภาพ</p>
+            </div>
+            <span class="mt-2.5 text-[10px] text-amber-700 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-comments"></i> ฟีดเกร็ดความรู้ & Rehab
             </span>
           </div>
 
@@ -362,12 +470,60 @@
               <p class="text-[11px] text-slate-500">พบ <span id="catalogCount" class="font-bold text-brand-700">29</span> รายการ</p>
             </div>
           </div>
-          <button onclick="openCreateKnowledgeModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-brand-700">
-            <i class="fa-solid fa-plus"></i> เพิ่มความรู้
+        </div>
+
+        <!-- Search Bar (คลังความรู้) -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+          <input 
+            type="text" 
+            id="knowledgeSearch" 
+            placeholder="ค้นหา: EKG, TAVI, TEER, Norepi, ACS, Pacemaker..." 
+            onkeyup="handleKnowledgeSearch(event)"
+            class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-sm border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-slate-400"
+          >
+          <button onclick="clearKnowledgeSearch()" id="clearKnowledgeBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm">
+            <i class="fa-solid fa-circle-xmark"></i>
           </button>
         </div>
 
+        <!-- Category Icon Filter Bar (5 Items: Icon + Short Text) -->
+        <div class="grid grid-cols-5 gap-1.5 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80">
+          <!-- 1. All -->
+          <button onclick="filterCategoryGroup('all')" id="chip-all" class="tag-chip active flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white text-brand-700 shadow-xs border border-brand-200 transition-all">
+            <i class="fa-solid fa-layer-group text-sm mb-1"></i>
+            <span class="text-[10px] font-bold leading-tight">ทั้งหมด</span>
+            <span class="text-[9px] text-slate-400 mt-0.5">(29)</span>
+          </button>
 
+          <!-- 2. Emergency & EKG -->
+          <button onclick="filterCategoryGroup('emergency_ekg')" id="chip-emergency_ekg" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
+            <i class="fa-solid fa-heart-pulse text-sm mb-1 text-rose-500"></i>
+            <span class="text-[10px] font-semibold leading-tight text-center">ด่วน/EKG</span>
+            <span class="text-[9px] text-slate-400 mt-0.5">(4)</span>
+          </button>
+
+          <!-- 3. High-Alert Drug -->
+          <button onclick="filterCategoryGroup('high_alert_drug')" id="chip-high_alert_drug" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
+            <i class="fa-solid fa-syringe text-sm mb-1 text-emerald-500"></i>
+            <span class="text-[10px] font-semibold leading-tight text-center">ยาเสี่ยงสูง</span>
+            <span class="text-[9px] text-slate-400 mt-0.5">(4)</span>
+          </button>
+
+          <!-- 4. Devices & Procedures -->
+          <button onclick="filterCategoryGroup('devices_procedures')" id="chip-devices_procedures" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
+            <i class="fa-solid fa-microchip text-sm mb-1 text-sky-500"></i>
+            <span class="text-[10px] font-semibold leading-tight text-center">หัตถการ</span>
+            <span class="text-[9px] text-slate-400 mt-0.5">(5)</span>
+          </button>
+
+          <!-- 5. Clinical Pearls (พี่สู่น้อง) -->
+          <button onclick="filterCategoryGroup('clinical_pearls')" id="chip-clinical_pearls" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
+            <i class="fa-solid fa-lightbulb text-sm mb-1 text-amber-500"></i>
+            <span class="text-[10px] font-semibold leading-tight text-center">พี่สู่น้อง</span>
+            <span class="text-[9px] text-slate-400 mt-0.5">(เกร็ด)</span>
+          </button>
+        </div>
 
         <div id="knowledgeListContainer" class="space-y-3">
           <!-- Dynamically populated via JS -->
@@ -387,30 +543,152 @@
               <i class="fa-solid fa-arrow-left"></i>
             </button>
             <div>
-              <h2 class="font-heading font-bold text-base text-slate-800 leading-tight">จัดการองค์ความรู้</h2>
-              <p class="text-[11px] text-slate-500">เพิ่ม แก้ไข และปรับปรุงแนวปฏิบัติ CCU</p>
+              <div class="flex items-center gap-1.5">
+                <h2 class="font-heading font-bold text-base text-slate-800 leading-tight">แผงควบคุมผู้ดูแล</h2>
+                <span id="adminRoleBadge" class="text-[10px] bg-purple-100 text-purple-700 font-bold px-1.5 py-0.2 rounded border border-purple-200">Admin</span>
+              </div>
+              <p id="adminHeaderDesc" class="text-[11px] text-slate-500">จัดการข้อมูลผู้ใช้งานพยาบาลในระบบ CCU</p>
             </div>
           </div>
-          <button onclick="openCreateKnowledgeModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-brand-700">
-            <i class="fa-solid fa-plus"></i> สร้างใหม่
+          <button id="adminCreateKmBtn" onclick="openCreateKnowledgeModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-brand-700">
+            <i class="fa-solid fa-plus"></i> สร้าง CPG
+          </button>
+          <button id="adminCreatePearlBtn" onclick="openAddTacitModal()" class="hidden bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-amber-700">
+            <i class="fa-solid fa-plus"></i> เพิ่มเกร็ดความรู้
           </button>
         </div>
 
-        <!-- Quick Summary Stats -->
-        <div class="grid grid-cols-2 gap-2.5">
-          <div class="bg-white p-3 rounded-xl border border-slate-200 text-center">
-            <p class="text-[10px] text-slate-400">องค์ความรู้ทั้งหมด</p>
-            <p id="statTotalKm" class="text-xl font-heading font-bold text-brand-700">29</p>
+        <!-- Admin Subtabs (Users vs KM vs Pearls) -->
+        <div class="flex rounded-xl bg-slate-100 p-1 text-xs font-semibold gap-1">
+          <button type="button" id="adminTabUsers" onclick="switchAdminSubtab('users')" class="flex-1 py-1.5 rounded-lg bg-white text-purple-700 shadow-xs transition-all flex items-center justify-center gap-1">
+            <i class="fa-solid fa-users"></i>
+            <span>จัดการผู้ใช้</span>
+            <span id="badgePendingUsers" class="hidden bg-rose-500 text-white text-[9px] px-1.5 py-0.2 rounded-full">0</span>
+          </button>
+          <button type="button" id="adminTabKm" onclick="switchAdminSubtab('km')" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-all flex items-center justify-center gap-1">
+            <i class="fa-solid fa-book-medical"></i>
+            <span>จัดการ CPG</span>
+          </button>
+          <button type="button" id="adminTabPearls" onclick="switchAdminSubtab('pearls')" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-all flex items-center justify-center gap-1">
+            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+            <span>เกร็ดพี่สู่น้อง</span>
+          </button>
+        </div>
+
+        <!-- SECTION A: USER MANAGEMENT -->
+        <div id="adminSectionUsers" class="space-y-3">
+          <!-- Summary user counts -->
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+              <div class="text-[10px] text-slate-400">ผู้ใช้ทั้งหมด</div>
+              <div id="statTotalUsers" class="text-base font-bold text-slate-800">0</div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-amber-200 bg-amber-50/40">
+              <div class="text-[10px] text-amber-700 font-medium">รออนุมัติ</div>
+              <div id="statPendingUsers" class="text-base font-bold text-amber-600">0</div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/40">
+              <div class="text-[10px] text-emerald-700 font-medium">อนุมัติแล้ว</div>
+              <div id="statActiveUsers" class="text-base font-bold text-emerald-600">0</div>
+            </div>
           </div>
-          <div class="bg-white p-3 rounded-xl border border-slate-200 text-center">
-            <p class="text-[10px] text-slate-400">หมวดหมู่หลัก</p>
-            <p class="text-xl font-heading font-bold text-emerald-600">7 หมวด</p>
+
+          <!-- Search Bar (ผู้ใช้งาน) -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            <input 
+              type="text" 
+              id="adminUserSearch" 
+              placeholder="ค้นหาชื่อพยาบาล, username..." 
+              onkeyup="handleAdminUserSearch(event)"
+              class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-sm border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
+            >
+            <button onclick="clearAdminUserSearch()" id="clearAdminUserBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <!-- User List Container -->
+          <div id="adminUserListContainer" class="space-y-2.5">
+            <!-- Rendered by JS -->
           </div>
         </div>
 
-        <!-- Manage List Table / Cards -->
-        <div class="space-y-3" id="manageListContainer">
-          <!-- Dynamically rendered manage cards with edit/delete buttons -->
+        <!-- SECTION B: KM MANAGEMENT (จัดการคลังความรู้: เพิ่ม ลบ แก้ไข อนุมัติ) -->
+        <div id="adminSectionKm" class="space-y-3 hidden">
+          <!-- Quick Summary Stats for KM -->
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+              <div class="text-[10px] text-slate-400">CPG ทั้งหมด</div>
+              <div id="statTotalKm" class="text-base font-bold text-slate-800">29</div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-amber-200 bg-amber-50/40">
+              <div class="text-[10px] text-amber-700 font-medium">รออนุมัติ CPG</div>
+              <div id="statPendingKm" class="text-base font-bold text-amber-600">0</div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/40">
+              <div class="text-[10px] text-emerald-700 font-medium">เผยแพร่แล้ว</div>
+              <div id="statApprovedKm" class="text-base font-bold text-emerald-600">29</div>
+            </div>
+          </div>
+
+          <!-- Search Bar (จัดการคลัง CPG) -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            <input 
+              type="text" 
+              id="adminKmSearch" 
+              placeholder="ค้นหา CPG: ชื่อเรื่อง, ผู้สอน, หมวดหมู่..." 
+              onkeyup="handleAdminKmSearch(event)"
+              class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-sm border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
+            >
+            <button onclick="clearAdminKmSearch()" id="clearAdminKmBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Manage List Table / Cards -->
+          <div class="space-y-3" id="manageListContainer">
+            <!-- Dynamically rendered manage cards with approve/edit/delete buttons -->
+          </div>
+        </div>
+
+        <!-- SECTION C: TACIT PEARLS MANAGEMENT (จัดการเกร็ดพี่สู่น้อง) -->
+        <div id="adminSectionPearls" class="space-y-3 hidden">
+          <div class="bg-amber-50/60 p-3 rounded-2xl border border-amber-200 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-lightbulb"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">เกร็ดความรู้ทางคลินิก (Clinical Pearls)</h4>
+                <p class="text-[10px] text-slate-500">Admin ตรวจสอบและระงับ (Block/Unblock) • เจ้าของเกร็ดแก้ไขได้</p>
+              </div>
+            </div>
+            <button onclick="openAddTacitModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-xs">
+              <i class="fa-solid fa-plus"></i> เพิ่มเกร็ดใหม่
+            </button>
+          </div>
+
+          <!-- Search Bar (จัดการเกร็ดพี่สู่น้อง) -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            <input 
+              type="text" 
+              id="adminPearlsSearch" 
+              placeholder="ค้นหาเกร็ด: คำสำคัญ, ผู้โพสต์, แท็ก..." 
+              onkeyup="handleAdminPearlsSearch(event)"
+              class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-sm border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-slate-400"
+            >
+            <button onclick="clearAdminPearlsSearch()" id="clearAdminPearlsBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Manage Pearls List -->
+          <div class="space-y-2.5" id="adminPearlsListContainer">
+            <!-- Rendered by JS -->
+          </div>
         </div>
       </div>
 
@@ -427,11 +705,23 @@
             </button>
             <div>
               <h2 class="font-heading font-bold text-base text-slate-800 leading-tight">ประสบการณ์พี่สู่น้อง</h2>
-              <p class="text-[11px] text-slate-500">เกร็ดความรู้ทางคลินิก (Clinical Pearls)</p>
+              <p class="text-[11px] text-slate-500">เกร็ดความรู้ทางคลินิก (Clinical Pearls จากพี่สู่รุ่นน้อง)</p>
             </div>
           </div>
-          <button onclick="openAddTacitModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 active:bg-brand-700 shadow-sm">
-            <i class="fa-solid fa-plus"></i> เพิ่มเกร็ด
+        </div>
+
+        <!-- Search Bar (เกร็ดพี่สู่น้อง) -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+          <input 
+            type="text" 
+            id="tacitSearch" 
+            placeholder="ค้นหาเกร็ดความรู้: TAVI, MitraClip, Pacemaker, Norepi..." 
+            onkeyup="handleTacitSearch(event)"
+            class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-sm border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-slate-400"
+          >
+          <button onclick="clearTacitSearch()" id="clearTacitBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm">
+            <i class="fa-solid fa-circle-xmark"></i>
           </button>
         </div>
 
@@ -571,6 +861,14 @@
               <input type="text" id="formFile" placeholder="เช่น documents/knowledge/... หรือ URL เอกสาร" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
             </div>
 
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">สถานะการอนุมัติ / เผยแพร่:</label>
+              <select id="formStatus" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-brand-500">
+                <option value="approved">อนุมัติแล้ว (เผยแพร่ในคลัง CPG ทันที)</option>
+                <option value="pending">รอการตรวจสอบ/อนุมัติ (Pending Review)</option>
+              </select>
+            </div>
+
             <div class="pt-2 flex gap-2">
               <button type="button" onclick="closeCreateKnowledgeModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-600 font-semibold rounded-xl text-xs">
                 ยกเลิก
@@ -604,7 +902,20 @@
 
         <div id="aiChat" class="space-y-2.5 min-h-[40vh]"></div>
 
-        <form onsubmit="sendAiMessage(event)" class="sticky bottom-16 bg-slate-50 pt-2 flex gap-2">
+        <!-- Recent Questions (คำถามล่าสุด 3 คำถาม) -->
+        <div id="aiRecentContainer" class="hidden pt-1">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
+              <i class="fa-solid fa-clock-rotate-left text-indigo-500"></i> คำถามล่าสุด:
+            </span>
+            <button type="button" onclick="clearAiRecentQuestions()" class="text-[9px] text-slate-400 hover:text-rose-500">ล้างประวัติ</button>
+          </div>
+          <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1" id="aiRecentList">
+            <!-- Rendered by JS: max 3 buttons with truncation ellipsis -->
+          </div>
+        </div>
+
+        <form onsubmit="sendAiMessage(event)" class="sticky bottom-16 bg-slate-50 pt-1 flex gap-2">
           <input id="aiInput" type="text" autocomplete="off" placeholder="ถามเรื่อง EKG, ยา High-alert, TAVI, TEER..." class="flex-1 text-sm px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
           <button type="submit" class="bg-indigo-600 text-white px-4 rounded-xl active:bg-indigo-700"><i class="fa-solid fa-paper-plane"></i></button>
         </form>
@@ -616,7 +927,7 @@
     <!-- MOBILE BOTTOM NAVIGATION BAR                     -->
     <!-- ================================================= -->
     <nav class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 safe-bottom shadow-lg">
-      <div class="max-w-md mx-auto grid grid-cols-6 h-14 text-center">
+      <div id="bottomNavGrid" class="max-w-md mx-auto grid grid-cols-4 h-14 text-center">
         
         <!-- Nav 1: Home -->
         <button onclick="switchTab('home')" id="nav-home" class="nav-item active flex flex-col items-center justify-center text-brand-600 transition-colors">
@@ -624,22 +935,16 @@
           <span class="text-[10px] font-medium mt-0.5">หน้าหลัก</span>
         </button>
 
-        <!-- Nav AI -->
+        <!-- Nav 2: AI Assistant -->
         <button onclick="switchTab('ai')" id="nav-ai" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
           <i class="fa-solid fa-robot text-base"></i>
           <span class="text-[10px] font-medium mt-0.5">ถาม AI</span>
         </button>
 
-        <!-- Nav 2: Knowledge -->
+        <!-- Nav 3: Knowledge Catalog -->
         <button onclick="switchTab('knowledge')" id="nav-knowledge" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
           <i class="fa-solid fa-book-medical text-base"></i>
           <span class="text-[10px] font-medium mt-0.5">คลังความรู้</span>
-        </button>
-
-        <!-- Nav 3: Manage KM -->
-        <button onclick="switchTab('manage')" id="nav-manage" class="nav-item flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
-          <i class="fa-solid fa-pen-to-square text-base"></i>
-          <span class="text-[10px] font-medium mt-0.5">จัดการ KM</span>
         </button>
 
         <!-- Nav 4: Tacit Pearls -->
@@ -648,10 +953,11 @@
           <span class="text-[10px] font-medium mt-0.5">พี่สู่น้อง</span>
         </button>
 
-        <!-- Nav 5: Emergency SOS -->
-        <button onclick="switchTab('emergency')" id="nav-emergency" class="nav-item flex flex-col items-center justify-center text-rose-500 hover:text-rose-600 transition-colors">
-          <i class="fa-solid fa-bolt text-base"></i>
-          <span class="text-[10px] font-semibold mt-0.5">ด่วนวิกฤต</span>
+        <!-- Nav 5: Admin (Admin only - hidden by default for regular nurses) -->
+        <button onclick="switchTab('manage')" id="nav-manage" class="nav-item hidden flex flex-col items-center justify-center text-slate-400 hover:text-purple-600 transition-colors relative">
+          <i class="fa-solid fa-users-gear text-base text-purple-600"></i>
+          <span class="text-[10px] font-medium mt-0.5 text-purple-700">Admin</span>
+          <span id="navPendingBadge" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-rose-500"></span>
         </button>
 
       </div>
@@ -901,54 +1207,65 @@
 
     let currentCatalog = getKnowledgeCatalog();
 
-    // Accounts
-    const VALID_ACCOUNTS = [
-      { user: 'nurse', pass: 'ccu7' },
-      { user: 'fah', pass: 'ccu7' },
-      { user: 'admin', pass: '1234' },
-      { user: 'ccu', pass: 'siriraj' }
+    // ===== USER MANAGEMENT & AUTH (Admin / Senior / Nurse / Pending Users) =====
+    const DEFAULT_USERS = [
+      { id: 'u-1', user: 'admin', pass: '1234', name: 'พว.ฟ้าพายัพ อินถาเครือ (Admin)', exp: 'CCU RN / Admin', role: 'admin', status: 'active', registeredAt: '2026-10-01' },
+      { id: 'u-senior', user: 'senior', pass: 'ccu7', name: 'พว.วิยะดา (พยาบาลรุ่นพี่/Incharge)', exp: '>5ปี', role: 'senior', status: 'active', registeredAt: '2026-10-02' },
+      { id: 'u-3', user: 'nurse', pass: 'ccu7', name: 'พว.พยาบาล CCU เวรเช้า', exp: '1-3ปี', role: 'nurse', status: 'active', registeredAt: '2026-10-08' },
+      { id: 'u-4', user: 'somying', pass: 'ccu7', name: 'พว.สมหญิง วงศ์ใจ (รออนุมัติ)', exp: '1-3ปี', role: 'nurse', status: 'pending', registeredAt: '2026-10-10' }
     ];
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const loggedInUser = localStorage.getItem('ccu_user');
-      if (loggedInUser) {
-        showApp(loggedInUser);
+    const USERS_DB_VERSION = "v2.1";
+    function getUsers() {
+      const curVer = localStorage.getItem('ccu_users_ver');
+      if (curVer !== USERS_DB_VERSION) {
+        localStorage.setItem('ccu_users_ver', USERS_DB_VERSION);
+        localStorage.setItem('ccu_users_db', JSON.stringify(DEFAULT_USERS));
+        return DEFAULT_USERS;
       }
-      renderKnowledgeCatalog(currentCatalog);
-      renderManageCatalog(currentCatalog);
-      renderTacitFeed();
-      updateCounts();
-    });
-
-    function updateCounts() {
-      const total = currentCatalog.length;
-      const countEl = document.getElementById('catalogCount');
-      const badgeEl = document.getElementById('totalBadgeCount');
-      const statEl = document.getElementById('statTotalKm');
-      if (countEl) countEl.innerText = total;
-      if (badgeEl) badgeEl.innerText = total;
-      if (statEl) statEl.innerText = total;
+      const stored = localStorage.getItem('ccu_users_db');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e) { }
+      }
+      return DEFAULT_USERS;
     }
 
-    function handleLogin(e) {
-      e.preventDefault();
-      const u = document.getElementById('usernameInput').value.trim().toLowerCase();
-      const p = document.getElementById('passwordInput').value.trim();
-      const errorDiv = document.getElementById('loginError');
+    function saveUsers(users) {
+      localStorage.setItem('ccu_users_db', JSON.stringify(users));
+      updateUserStats();
+    }
 
-      const match = VALID_ACCOUNTS.find(acc => acc.user === u && acc.pass === p);
-      if (match) {
-        errorDiv.classList.add('hidden');
-        localStorage.setItem('ccu_user', match.user);
-        showApp(match.user);
+    let currentUsers = getUsers();
+    let currentLoggedUser = null;
+
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('loginForm');
+      const regForm = document.getElementById('registerForm');
+      const tabLogin = document.getElementById('tabBtnLogin');
+      const tabReg = document.getElementById('tabBtnRegister');
+      const err = document.getElementById('loginError');
+
+      err.classList.add('hidden');
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        regForm.classList.add('hidden');
+        tabLogin.classList.add('bg-white', 'text-brand-700', 'shadow-xs');
+        tabLogin.classList.remove('text-slate-500');
+        tabReg.classList.remove('bg-white', 'text-brand-700', 'shadow-xs');
+        tabReg.classList.add('text-slate-500');
       } else {
-        errorDiv.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        regForm.classList.remove('hidden');
+        tabReg.classList.add('bg-white', 'text-brand-700', 'shadow-xs');
+        tabReg.classList.remove('text-slate-500');
+        tabLogin.classList.remove('bg-white', 'text-brand-700', 'shadow-xs');
+        tabLogin.classList.add('text-slate-500');
       }
     }
 
-    function togglePasswordVisibility() {
-      const input = document.getElementById('passwordInput');
-      const icon = document.getElementById('eyeIcon');
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
       if (input.type === 'password') {
         input.type = 'text';
         icon.classList.remove('fa-eye');
@@ -960,21 +1277,378 @@
       }
     }
 
-    function showApp(userName) {
+    function quickFillLogin(username, password) {
+      switchAuthTab('login');
+      document.getElementById('usernameInput').value = username;
+      document.getElementById('passwordInput').value = password;
+      const fakeEvent = { preventDefault: () => {} };
+      handleLogin(fakeEvent);
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('regFullName').value.trim();
+      const username = document.getElementById('regUsername').value.trim().toLowerCase();
+      const exp = document.getElementById('regExp').value;
+      const pass = document.getElementById('regPassword').value.trim();
+      const errDiv = document.getElementById('regError');
+      const succDiv = document.getElementById('regSuccess');
+
+      errDiv.classList.add('hidden');
+      succDiv.classList.add('hidden');
+
+      if (currentUsers.some(u => u.user === username)) {
+        document.getElementById('regErrorMsg').innerText = `ชื่อผู้ใช้ "${username}" มีอยู่ในระบบแล้ว`;
+        errDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (pass.length < 4) {
+        document.getElementById('regErrorMsg').innerText = 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร';
+        errDiv.classList.remove('hidden');
+        return;
+      }
+
+      const newUser = {
+        id: 'u-' + Date.now(),
+        user: username,
+        pass: pass,
+        name: name,
+        exp: exp,
+        role: 'nurse',
+        status: 'pending', // ต้องรอ Admin อนุมัติ
+        registeredAt: new Date().toISOString().split('T')[0]
+      };
+
+      currentUsers.unshift(newUser);
+      saveUsers(currentUsers);
+
+      succDiv.classList.remove('hidden');
+      document.getElementById('registerForm').reset();
+      setTimeout(() => {
+        succDiv.classList.add('hidden');
+        switchAuthTab('login');
+        document.getElementById('usernameInput').value = username;
+      }, 2500);
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('usernameInput').value.trim().toLowerCase();
+      const p = document.getElementById('passwordInput').value.trim();
+      const errorDiv = document.getElementById('loginError');
+      const errorMsg = document.getElementById('loginErrorMsg');
+
+      const found = currentUsers.find(acc => acc.user === u && acc.pass === p);
+      if (!found) {
+        errorMsg.innerText = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (found.status === 'pending') {
+        errorMsg.innerText = 'บัญชีของคุณอยู่ระหว่างรอ Admin/หัวหน้าหอ อนุมัติการเข้าใช้งาน';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (found.status === 'suspended') {
+        errorMsg.innerText = 'บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อ Admin';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      errorDiv.classList.add('hidden');
+      localStorage.setItem('ccu_user', found.user);
+      currentLoggedUser = found;
+      showApp(found);
+    }
+
+    function showApp(userObj) {
+      if (typeof userObj === 'string') {
+        userObj = currentUsers.find(u => u.user === userObj) || { user: userObj, role: userObj === 'admin' ? 'admin' : 'nurse', name: userObj };
+      }
+      currentLoggedUser = userObj;
+
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('appContainer').classList.remove('hidden');
-      document.getElementById('displayUser').innerText = userName;
+      document.getElementById('displayUser').innerText = userObj.name || userObj.user;
+
+      // ปรับแต่ง UI ตามสิทธิ์ Role
+      applyRolePermissions(userObj);
       switchTab('home');
+    }
+
+    function applyRolePermissions(user) {
+      const manageNav = document.getElementById('nav-manage');
+      const bottomNavGrid = document.getElementById('bottomNavGrid');
+      const adminTabUsers = document.getElementById('adminTabUsers');
+      const adminTabKm = document.getElementById('adminTabKm');
+      const adminRoleBadge = document.getElementById('adminRoleBadge');
+      const adminHeaderDesc = document.getElementById('adminHeaderDesc');
+
+      const isAdmin = user.role === 'admin';
+      const isSenior = user.role === 'senior';
+      const canAccessAdminNav = isAdmin || isSenior;
+
+      if (canAccessAdminNav) {
+        if (manageNav) manageNav.classList.remove('hidden');
+        if (bottomNavGrid) {
+          bottomNavGrid.classList.remove('grid-cols-4');
+          bottomNavGrid.classList.add('grid-cols-5');
+        }
+      } else {
+        if (manageNav) manageNav.classList.add('hidden');
+        if (bottomNavGrid) {
+          bottomNavGrid.classList.remove('grid-cols-5');
+          bottomNavGrid.classList.add('grid-cols-4');
+        }
+      }
+
+      // ปรับ UI ในหน้า Admin ตามบทบาท Admin vs พยาบาลรุ่นพี่
+      if (isSenior) {
+        if (adminTabUsers) adminTabUsers.classList.add('hidden');
+        if (adminRoleBadge) {
+          adminRoleBadge.innerText = 'พยาบาลรุ่นพี่ (Senior RN)';
+          adminRoleBadge.className = 'text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded border border-amber-200';
+        }
+        // พยาบาลรุ่นพี่จะเข้าสู่หน้าจัดการ CPG อัตโนมัติ
+        switchAdminSubtab('km');
+      } else if (isAdmin) {
+        if (adminTabUsers) adminTabUsers.classList.remove('hidden');
+        if (adminRoleBadge) {
+          adminRoleBadge.innerText = 'ผู้ดูแลระบบ (Admin)';
+          adminRoleBadge.className = 'text-[10px] bg-purple-100 text-purple-700 font-bold px-1.5 py-0.2 rounded border border-purple-200';
+        }
+        switchAdminSubtab('users');
+      }
+
+      updateUserStats();
     }
 
     function handleLogout() {
       if (confirm("ต้องการออกจากระบบคู่มือข้างเตียงใช่หรือไม่?")) {
         localStorage.removeItem('ccu_user');
+        currentLoggedUser = null;
         document.getElementById('loginScreen').classList.remove('hidden');
         document.getElementById('appContainer').classList.add('hidden');
         document.getElementById('passwordInput').value = '';
         document.getElementById('loginError').classList.add('hidden');
       }
+    }
+
+    // ===== ADMIN CONSOLE: USER & KM & TACIT MANAGEMENT =====
+    function switchAdminSubtab(subtab) {
+      const secUsers = document.getElementById('adminSectionUsers');
+      const secKm = document.getElementById('adminSectionKm');
+      const secPearls = document.getElementById('adminSectionPearls');
+      const btnUsers = document.getElementById('adminTabUsers');
+      const btnKm = document.getElementById('adminTabKm');
+      const btnPearls = document.getElementById('adminTabPearls');
+      const createKmBtn = document.getElementById('adminCreateKmBtn');
+      const createPearlBtn = document.getElementById('adminCreatePearlBtn');
+
+      // Reset tabs styling
+      [btnUsers, btnKm, btnPearls].forEach(b => {
+        if (b) {
+          b.classList.remove('bg-white', 'text-purple-700', 'shadow-xs');
+          b.classList.add('text-slate-600');
+        }
+      });
+      // Hide all sections
+      if (secUsers) secUsers.classList.add('hidden');
+      if (secKm) secKm.classList.add('hidden');
+      if (secPearls) secPearls.classList.add('hidden');
+      if (createKmBtn) createKmBtn.classList.add('hidden');
+      if (createPearlBtn) createPearlBtn.classList.add('hidden');
+
+      const adminHeaderDesc = document.getElementById('adminHeaderDesc');
+
+      if (subtab === 'users') {
+        if (secUsers) secUsers.classList.remove('hidden');
+        if (btnUsers) {
+          btnUsers.classList.add('bg-white', 'text-purple-700', 'shadow-xs');
+          btnUsers.classList.remove('text-slate-600');
+        }
+        if (adminHeaderDesc) adminHeaderDesc.innerText = 'จัดการข้อมูลผู้ใช้งานพยาบาล และอนุมัติการเข้าใช้งานระบบ CCU';
+        renderAdminUserList();
+      } else if (subtab === 'km') {
+        if (secKm) secKm.classList.remove('hidden');
+        if (btnKm) {
+          btnKm.classList.add('bg-white', 'text-purple-700', 'shadow-xs');
+          btnKm.classList.remove('text-slate-600');
+        }
+        if (createKmBtn) createKmBtn.classList.remove('hidden');
+        if (adminHeaderDesc) adminHeaderDesc.innerText = 'จัดการคลัง CPG (Clinical Practice Guideline : แนวปฏิบัติทางคลินิก)';
+        renderManageCatalog(currentCatalog);
+      } else if (subtab === 'pearls') {
+        if (secPearls) secPearls.classList.remove('hidden');
+        if (btnPearls) {
+          btnPearls.classList.add('bg-white', 'text-purple-700', 'shadow-xs');
+          btnPearls.classList.remove('text-slate-600');
+        }
+        if (createPearlBtn) createPearlBtn.classList.remove('hidden');
+        if (adminHeaderDesc) adminHeaderDesc.innerText = 'ตรวจสอบและระงับ (Block) เกร็ดความรู้ทางคลินิกจากประสบการณ์พี่สู่น้อง';
+        renderAdminPearlsList();
+      }
+    }
+
+    function updateUserStats() {
+      const total = currentUsers.length;
+      const pending = currentUsers.filter(u => u.status === 'pending').length;
+      const active = currentUsers.filter(u => u.status === 'active').length;
+
+      const elTotal = document.getElementById('statTotalUsers');
+      const elPending = document.getElementById('statPendingUsers');
+      const elActive = document.getElementById('statActiveUsers');
+      const badgePending = document.getElementById('badgePendingUsers');
+
+      if (elTotal) elTotal.innerText = total;
+      if (elPending) elPending.innerText = pending;
+      if (elActive) elActive.innerText = active;
+      const navBadge = document.getElementById('navPendingBadge');
+      if (badgePending) {
+        if (pending > 0) {
+          badgePending.innerText = pending;
+          badgePending.classList.remove('hidden');
+          if (navBadge) navBadge.classList.remove('hidden');
+        } else {
+          badgePending.classList.add('hidden');
+          if (navBadge) navBadge.classList.add('hidden');
+        }
+      }
+    }
+
+    function renderAdminUserList(list) {
+      const usersToRender = list || currentUsers;
+      const container = document.getElementById('adminUserListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (usersToRender.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs">ไม่พบผู้ใช้งานที่ตรงกับการค้นหา</div>';
+        return;
+      }
+
+      usersToRender.forEach(u => {
+        const isPending = u.status === 'pending';
+        const isSuspended = u.status === 'suspended';
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-2xl border ${isPending ? 'bg-amber-50/50 border-amber-300' : 'bg-white border-slate-200'} shadow-xs flex flex-col gap-2`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-bold text-xs text-slate-800">${u.name || u.user}</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded ${u.role === 'admin' ? 'bg-purple-100 text-purple-700 font-bold' : u.role === 'senior' ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-100 text-slate-600'}">@${u.user}</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
+                <span><i class="fa-solid fa-clock-rotate-left text-slate-400"></i> ประสบการณ์: ${u.exp || '-'}</span>
+                <span>• สมัครเมื่อ: ${u.registeredAt || '-'}</span>
+              </div>
+            </div>
+            <div>
+              ${isPending 
+                ? '<span class="text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-300"><i class="fa-solid fa-hourglass-half"></i> รออนุมัติ</span>'
+                : isSuspended
+                ? '<span class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-ban"></i> ระงับ</span>'
+                : '<span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-check"></i> อนุมัติแล้ว</span>'}
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div class="text-[10px] text-slate-400">
+              สิทธิ์: <strong class="text-slate-600">${u.role === 'admin' ? 'ผู้ดูแลระบบ (Admin)' : u.role === 'senior' ? 'พยาบาลรุ่นพี่ (Senior RN)' : 'พยาบาลรุ่นน้อง (Junior RN)'}</strong>
+            </div>
+            <div class="flex items-center gap-1.5">
+              ${isPending ? `
+                <button onclick="approveUser('${u.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-xs">
+                  <i class="fa-solid fa-user-check"></i> อนุมัติเข้าใช้งาน
+                </button>
+              ` : ''}
+              ${!isPending && u.user !== 'admin' ? `
+                <button onclick="toggleSuspendUser('${u.id}')" class="text-[11px] px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
+                  ${isSuspended ? 'ปลดระงับ' : 'ระงับสิทธิ์'}
+                </button>
+              ` : ''}
+              ${u.user !== 'admin' ? `
+                <button onclick="deleteUser('${u.id}')" title="ลบผู้ใช้" class="text-slate-400 hover:text-rose-600 p-1 text-xs">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderAdminUserListFiltered(list) {
+      renderAdminUserList(list);
+    }
+
+    function approveUser(userId) {
+      const target = currentUsers.find(u => u.id === userId);
+      if (target) {
+        target.status = 'active';
+        saveUsers(currentUsers);
+        renderAdminUserList();
+        alert(`อนุมัติผู้ใช้งาน "${target.name || target.user}" เรียบร้อยแล้ว สามารถเข้าใช้งานได้ทันที`);
+      }
+    }
+
+    function toggleSuspendUser(userId) {
+      const target = currentUsers.find(u => u.id === userId);
+      if (target) {
+        target.status = target.status === 'suspended' ? 'active' : 'suspended';
+        saveUsers(currentUsers);
+        renderAdminUserList();
+      }
+    }
+
+    function deleteUser(userId) {
+      const target = currentUsers.find(u => u.id === userId);
+      if (target && confirm(`ยืนยันการลบผู้ใช้ "${target.name || target.user}" หรือไม่?`)) {
+        currentUsers = currentUsers.filter(u => u.id !== userId);
+        saveUsers(currentUsers);
+        renderAdminUserList();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const loggedInUser = localStorage.getItem('ccu_user');
+      if (loggedInUser) {
+        const found = currentUsers.find(u => u.user === loggedInUser);
+        if (found) {
+          showApp(found);
+        } else {
+          showApp({ user: loggedInUser, role: loggedInUser === 'admin' ? 'admin' : 'nurse' });
+        }
+      }
+      renderKnowledgeCatalog(currentCatalog);
+      renderAdminUserList();
+      renderTacitFeed();
+      updateCounts();
+      updateUserStats();
+    });
+
+    function updateCounts() {
+      const total = currentCatalog.length;
+      const pendingKm = currentCatalog.filter(k => k.status === 'pending').length;
+      const approvedKm = total - pendingKm;
+
+      const countEl = document.getElementById('catalogCount');
+      const badgeEl = document.getElementById('totalBadgeCount');
+      const statEl = document.getElementById('statTotalKm');
+      const statPendingEl = document.getElementById('statPendingKm');
+      const statApprovedEl = document.getElementById('statApprovedKm');
+
+      if (countEl) countEl.innerText = approvedKm;
+      if (badgeEl) badgeEl.innerText = approvedKm;
+      if (statEl) statEl.innerText = total;
+      if (statPendingEl) statPendingEl.innerText = pendingKm;
+      if (statApprovedEl) statApprovedEl.innerText = approvedKm;
     }
 
     // ===== AI Assistant (prototype: retrieval จากคลังความรู้ในเครื่อง, ยังไม่ต่อ LLM จริง) =====
@@ -999,6 +1673,7 @@
       document.getElementById('aiSuggest').innerHTML = AI_SUGGESTIONS.map(q =>
         `<button onclick="askAi('${q}')" class="shrink-0 text-[11px] bg-white border border-indigo-200 text-indigo-700 px-2.5 py-1 rounded-full">${q}</button>`
       ).join('');
+      renderAiRecentQuestions();
       appendAiBubble('bot', 'สวัสดีค่ะ ถามเรื่องการพยาบาลใน CCU ได้เลย ระบบจะตอบจากเอกสารในคลังความรู้ของหอผู้ป่วย พร้อมแนบแหล่งอ้างอิงทุกครั้ง');
     }
 
@@ -1029,6 +1704,51 @@
       }).filter(r => r.score > 0).sort((a, b) => b.score - a.score).slice(0, 3);
     }
 
+    function getAiRecentQuestions() {
+      const stored = localStorage.getItem('ccu_ai_recent_questions');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e) {}
+      }
+      return ["VT มีชีพจร ให้ยาอะไร", "ดูแลหลังทำ TAVI", "ยา High-alert ในหอ"];
+    }
+
+    function saveAiRecentQuestion(question) {
+      if (!question) return;
+      let list = getAiRecentQuestions();
+      list = list.filter(q => q.toLowerCase() !== question.toLowerCase());
+      list.unshift(question);
+      if (list.length > 3) list = list.slice(0, 3);
+      localStorage.setItem('ccu_ai_recent_questions', JSON.stringify(list));
+      renderAiRecentQuestions();
+    }
+
+    function clearAiRecentQuestions() {
+      localStorage.removeItem('ccu_ai_recent_questions');
+      renderAiRecentQuestions();
+    }
+
+    function renderAiRecentQuestions() {
+      const container = document.getElementById('aiRecentContainer');
+      const listEl = document.getElementById('aiRecentList');
+      if (!container || !listEl) return;
+      const list = getAiRecentQuestions();
+      if (!list || list.length === 0) {
+        container.classList.add('hidden');
+        listEl.innerHTML = '';
+        return;
+      }
+      container.classList.remove('hidden');
+      listEl.innerHTML = list.map(q => {
+        const safeQ = escapeHtml(q);
+        return `
+          <button type="button" onclick="askAi('${safeQ}')" title="${safeQ}" class="max-w-[130px] shrink-0 text-[11px] bg-white hover:bg-indigo-50 border border-indigo-200 text-indigo-700 font-medium px-2.5 py-1 rounded-full shadow-2xs flex items-center gap-1 active:scale-95 transition-all">
+            <i class="fa-solid fa-arrow-rotate-left text-[9px] text-indigo-400 shrink-0"></i>
+            <span class="truncate block text-left">${safeQ}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
     function askAi(q) {
       document.getElementById('aiInput').value = q;
       sendAiMessage();
@@ -1041,6 +1761,9 @@
       if (!q) return;
       input.value = '';
       appendAiBubble('user', escapeHtml(q));
+
+      // บันทึกคำถามล่าสุด 3 รายการ
+      saveAiRecentQuestion(q);
 
       if (/\bhn\b|\d{6,}/i.test(q)) {
         appendAiBubble('bot', '<i class="fa-solid fa-shield-halved text-rose-500"></i> พบข้อมูลที่อาจระบุตัวผู้ป่วย (HN/เลขประจำตัว) กรุณาลบออกก่อนถาม ตามนโยบาย PDPA');
@@ -1089,9 +1812,9 @@
 
       const activeNav = document.getElementById('nav-' + viewId);
       if (activeNav) {
-        if (viewId === 'emergency') {
-          activeNav.classList.remove('text-rose-500');
-          activeNav.classList.add('text-rose-600', 'font-bold');
+        if (viewId === 'manage') {
+          activeNav.classList.remove('text-slate-400');
+          activeNav.classList.add('text-purple-700', 'font-bold');
         } else {
           activeNav.classList.remove('text-slate-400');
           activeNav.classList.add('text-brand-600');
@@ -1099,7 +1822,11 @@
       }
 
       if (viewId === 'manage') {
-        renderManageCatalog(currentCatalog);
+        if (currentLoggedUser && currentLoggedUser.role === 'senior') {
+          switchAdminSubtab('km');
+        } else {
+          switchAdminSubtab('users');
+        }
       }
     }
 
@@ -1155,27 +1882,50 @@
       });
     }
 
-    // Render Manage Catalog Console
+    // Render Manage Catalog Console (Admin: เพิ่ม ลบ แก้ไข อนุมัติ)
     function renderManageCatalog(items) {
       const container = document.getElementById('manageListContainer');
       if (!container) return;
       container.innerHTML = '';
 
       items.forEach(item => {
+        const isApproved = item.status !== 'pending';
         const card = document.createElement('div');
-        card.className = "bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2";
+        card.className = `p-3.5 rounded-2xl border ${!isApproved ? 'bg-amber-50/50 border-amber-300' : 'bg-white border-slate-200'} shadow-xs flex flex-col gap-2.5`;
+        
         card.innerHTML = `
-          <div class="flex items-start justify-between">
+          <div class="flex items-start justify-between gap-2">
             <div>
-              <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">${item.category}</span>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[9px] font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">${item.category}</span>
+                ${isApproved 
+                  ? '<span class="text-[9px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.2 rounded-full"><i class="fa-solid fa-check"></i> เผยแพร่แล้ว</span>'
+                  : '<span class="text-[9px] bg-amber-100 text-amber-700 font-bold px-2 py-0.2 rounded-full border border-amber-300"><i class="fa-solid fa-clock"></i> รออนุมัติ CPG</span>'}
+              </div>
               <h4 class="font-heading font-bold text-xs text-slate-800 mt-1">${item.title}</h4>
-              <p class="text-[10px] text-slate-400">โดย: ${item.author}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-chalkboard-user"></i> ${item.author || '-'}</p>
             </div>
+            <span class="text-[10px] text-slate-400 shrink-0">${item.size || 'KM'}</span>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div>
+              ${!isApproved ? `
+                <button onclick="approveKmItem('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-xs">
+                  <i class="fa-solid fa-circle-check"></i> อนุมัติเผยแพร่
+                </button>
+              ` : `
+                <button onclick="toggleUnpublishKmItem('${item.id}')" class="text-[10px] text-slate-500 hover:text-amber-700 underline">
+                  <i class="fa-solid fa-eye-slash"></i> ซ่อน/พักเผยแพร่
+                </button>
+              `}
+            </div>
+
             <div class="flex items-center gap-1.5">
-              <button onclick="editKnowledgeItem('${item.id}')" title="แก้ไข" class="w-7 h-7 rounded-lg bg-sky-50 text-brand-600 flex items-center justify-center text-xs active:bg-sky-100">
+              <button onclick="editKnowledgeItem('${item.id}')" title="แก้ไข" class="w-7 h-7 rounded-lg bg-sky-50 text-brand-600 flex items-center justify-center text-xs active:bg-sky-100 border border-sky-100">
                 <i class="fa-solid fa-pen"></i>
               </button>
-              <button onclick="deleteKnowledgeItem('${item.id}')" title="ลบ" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs active:bg-rose-100">
+              <button onclick="deleteKnowledgeItem('${item.id}')" title="ลบ" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs active:bg-rose-100 border border-rose-100">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -1183,6 +1933,27 @@
         `;
         container.appendChild(card);
       });
+    }
+
+    function approveKmItem(id) {
+      const target = currentCatalog.find(k => k.id === id);
+      if (target) {
+        target.status = 'approved';
+        saveKnowledgeCatalog(currentCatalog);
+        renderKnowledgeCatalog(currentCatalog);
+        renderManageCatalog(currentCatalog);
+        alert(`อนุมัติและเผยแพร่แนวปฏิบัติ "${target.title}" เข้าสู่คลัง CPG เรียบร้อยแล้ว`);
+      }
+    }
+
+    function toggleUnpublishKmItem(id) {
+      const target = currentCatalog.find(k => k.id === id);
+      if (target) {
+        target.status = 'pending';
+        saveKnowledgeCatalog(currentCatalog);
+        renderKnowledgeCatalog(currentCatalog);
+        renderManageCatalog(currentCatalog);
+      }
     }
 
     // Modal Actions
@@ -1225,6 +1996,7 @@
       document.getElementById('formModalTitle').innerText = "สร้างองค์ความรู้ใหม่";
       document.getElementById('editItemId').value = "";
       document.getElementById('knowledgeForm').reset();
+      document.getElementById('formStatus').value = "approved";
       document.getElementById('createKnowledgeModal').classList.remove('hidden');
     }
 
@@ -1242,6 +2014,7 @@
       document.getElementById('formTitle').value = item.title;
       document.getElementById('formAuthor').value = item.author;
       document.getElementById('formDesc').value = item.desc;
+      document.getElementById('formStatus').value = item.status === 'pending' ? 'pending' : 'approved';
       
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = item.summaryHtml;
@@ -1269,6 +2042,7 @@
       const desc = document.getElementById('formDesc').value.trim();
       const summaryText = document.getElementById('formSummary').value.trim();
       const file = document.getElementById('formFile').value.trim();
+      const status = document.getElementById('formStatus').value;
 
       const summaryHtml = `
         <div class="space-y-1 text-xs text-slate-700">
@@ -1285,6 +2059,7 @@
             title: title,
             author: author,
             desc: desc,
+            status: status,
             summaryHtml: summaryHtml,
             file: file || currentCatalog[idx].file
           };
@@ -1297,6 +2072,7 @@
           title: title,
           author: author,
           desc: desc,
+          status: status,
           summaryHtml: summaryHtml,
           file: file || "",
           size: "KM Custom"
@@ -1310,15 +2086,42 @@
       alert("บันทึกองค์ความรู้สำเร็จเรียบร้อยครับ!");
     }
 
+    // Filter by Proposal 4 Groups
+    const PROPOSAL_GROUPS = {
+      emergency_ekg: ['EKG'],
+      high_alert_drug: ['Drug'],
+      devices_procedures: ['TAVI', 'TEER', 'Pacemaker', 'ACS'],
+      clinical_pearls: ['Rehabilitation']
+    };
+
+    function filterCategoryGroup(groupKey) {
+      document.querySelectorAll('.tag-chip').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-brand-700', 'shadow-xs', 'border', 'border-brand-200');
+        btn.classList.add('bg-transparent', 'text-slate-600');
+      });
+      const activeChip = document.getElementById('chip-' + groupKey);
+      if (activeChip) {
+        activeChip.classList.remove('bg-transparent', 'text-slate-600');
+        activeChip.classList.add('bg-white', 'text-brand-700', 'shadow-xs', 'border', 'border-brand-200');
+      }
+
+      if (groupKey === 'clinical_pearls') {
+        switchTab('tacit');
+        return;
+      }
+
+      switchTab('knowledge');
+      if (groupKey === 'all') {
+        renderKnowledgeCatalog(currentCatalog);
+      } else {
+        const allowed = PROPOSAL_GROUPS[groupKey] || [];
+        const filtered = currentCatalog.filter(k => allowed.includes(k.category));
+        renderKnowledgeCatalog(filtered);
+      }
+    }
+
     // Filter & Search
     function filterTag(cat) {
-      document.querySelectorAll('.tag-chip').forEach(btn => {
-        btn.classList.remove('bg-brand-600', 'text-white');
-        btn.classList.add('bg-white', 'text-slate-600');
-      });
-      event.target.classList.add('bg-brand-600', 'text-white');
-      event.target.classList.remove('bg-white', 'text-slate-600');
-
       switchTab('knowledge');
       if (cat === 'all') {
         renderKnowledgeCatalog(currentCatalog);
@@ -1359,89 +2162,437 @@
       renderKnowledgeCatalog(currentCatalog);
     }
 
-    // Tacit Pearls Logic
+    // Search in View 2: Knowledge Catalog
+    function handleKnowledgeSearch(e) {
+      const q = e.target.value.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearKnowledgeBtn');
+      if (q) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      if (e.key === 'Enter' || q.length > 1) {
+        const filtered = currentCatalog.filter(k => 
+          k.title.toLowerCase().includes(q) || 
+          k.desc.toLowerCase().includes(q) ||
+          k.category.toLowerCase().includes(q) ||
+          k.author.toLowerCase().includes(q)
+        );
+        renderKnowledgeCatalog(filtered);
+      } else if (q.length === 0) {
+        renderKnowledgeCatalog(currentCatalog);
+      }
+    }
+
+    function clearKnowledgeSearch() {
+      document.getElementById('knowledgeSearch').value = '';
+      document.getElementById('clearKnowledgeBtn').classList.add('hidden');
+      renderKnowledgeCatalog(currentCatalog);
+    }
+
+    // Search in View 4: Tacit Pearls
+    function handleTacitSearch(e) {
+      const q = e.target.value.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearTacitBtn');
+      if (q) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      const list = getTacitList();
+      if (!q) {
+        renderTacitFeedList(list);
+        return;
+      }
+      const filtered = list.filter(t => 
+        (t.pearl || '').toLowerCase().includes(q) ||
+        (t.author || '').toLowerCase().includes(q) ||
+        (t.tag || '').toLowerCase().includes(q)
+      );
+      renderTacitFeedList(filtered);
+    }
+
+    function clearTacitSearch() {
+      document.getElementById('tacitSearch').value = '';
+      document.getElementById('clearTacitBtn').classList.add('hidden');
+      renderTacitFeed();
+    }
+
+    // Search in Admin Section: Users
+    function handleAdminUserSearch(e) {
+      const q = e.target.value.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearAdminUserBtn');
+      if (q) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      if (!q) {
+        renderAdminUserListFiltered(currentUsers);
+        return;
+      }
+      const filtered = currentUsers.filter(u => 
+        (u.name || '').toLowerCase().includes(q) ||
+        (u.user || '').toLowerCase().includes(q) ||
+        (u.exp || '').toLowerCase().includes(q) ||
+        (u.role || '').toLowerCase().includes(q)
+      );
+      renderAdminUserListFiltered(filtered);
+    }
+
+    function clearAdminUserSearch() {
+      document.getElementById('adminUserSearch').value = '';
+      document.getElementById('clearAdminUserBtn').classList.add('hidden');
+      renderAdminUserList();
+    }
+
+    // Search in Admin Section: KM Catalog
+    function handleAdminKmSearch(e) {
+      const q = e.target.value.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearAdminKmBtn');
+      if (q) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      if (!q) {
+        renderManageCatalog(currentCatalog);
+        return;
+      }
+      const filtered = currentCatalog.filter(k => 
+        k.title.toLowerCase().includes(q) || 
+        k.desc.toLowerCase().includes(q) ||
+        k.category.toLowerCase().includes(q) ||
+        k.author.toLowerCase().includes(q)
+      );
+      renderManageCatalog(filtered);
+    }
+
+    function clearAdminKmSearch() {
+      document.getElementById('adminKmSearch').value = '';
+      document.getElementById('clearAdminKmBtn').classList.add('hidden');
+      renderManageCatalog(currentCatalog);
+    }
+
+    // Search in Admin Section: Pearls
+    function handleAdminPearlsSearch(e) {
+      const q = e.target.value.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearAdminPearlsBtn');
+      if (q) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      const list = getTacitList();
+      if (!q) {
+        renderAdminPearlsListFiltered(list);
+        return;
+      }
+      const filtered = list.filter(t => 
+        (t.pearl || '').toLowerCase().includes(q) ||
+        (t.author || '').toLowerCase().includes(q) ||
+        (t.tag || '').toLowerCase().includes(q) ||
+        (t.createdBy || '').toLowerCase().includes(q)
+      );
+      renderAdminPearlsListFiltered(filtered);
+    }
+
+    function clearAdminPearlsSearch() {
+      document.getElementById('adminPearlsSearch').value = '';
+      document.getElementById('clearAdminPearlsBtn').classList.add('hidden');
+      renderAdminPearlsList();
+    }
+
+    // Tacit Pearls Logic (เกร็ดพี่สู่น้อง)
+    const TACIT_DB_VERSION = "v2.2";
     const INITIAL_TACIT = [
       {
         id: "t1",
-        author: "พว.พัฒนาพร (CCU ศิริราช)",
+        author: "พว.ฟ้าพายัพ อินถาเครือ",
+        createdBy: "admin",
         tag: "Post-TAVI Phase",
         likes: 34,
+        isBlocked: false,
         pearl: "ผู้ป่วยหลังทำ TAVI สิ่งสำคัญที่สุดใน 24 ชั่วโมงแรก: ประเมิน Neuro sign บ่อยๆ เฝ้าระวัง Embolic Stroke จากเศษหินปูน, เฝ้าระวัง Complete Heart Block (มักเกิดจากตัวลิ้นกดเบียด Conduction system) และห้ามงอขาข้างที่ใส่ Sheath เด็ดขาด"
       },
       {
         id: "t2",
-        author: "พว.ทิพวรรณ (ศูนย์โรคหัวใจ ชั้น 8)",
+        author: "พว.วิยะดา (พยาบาลรุ่นพี่/Incharge)",
+        createdBy: "senior",
         tag: "TEER MitraClip Care",
         likes: 29,
+        isBlocked: false,
         pearl: "หัตถการ TEER ทำผ่าน Right Femoral Vein และเจาะทะลุ Septum (Transseptal puncture) ดังนั้นหลังทำต้องระวัง: เฝ้าระวัง Pericardial Tamponade (BP ตก, Heart sound เบา, CVP สูง) และกดแผลขาหนีบให้แน่นตามเวลา"
       },
       {
         id: "t3",
-        author: "พว.ดารณี เจริญรื่น (CCU ศิริราช)",
+        author: "พว.พยาบาล CCU เวรเช้า",
+        createdBy: "nurse",
         tag: "Pacemaker Care",
         likes: 41,
+        isBlocked: false,
         pearl: "ท่องจำ 3 ภาวะหลักของ Pacemaker ผิดปกติ: 1. Failure to Pace (ไม่มี Spike) 2. Failure to Capture (มี Spike แต่ไม่มี QRS) 3. Failure to Sense (ปล่อย Spike ทับ T wave คนไข้ เสี่ยง R-on-T เกิด VF Arrest!)"
       },
       {
         id: "t4",
         author: "พี่ชล (พยาบาลชำนาญการพิเศษ 14 ปี)",
+        createdBy: "senior",
         tag: "Norepinephrine",
         likes: 28,
+        isBlocked: false,
         pearl: "หากคนไข้ Shock วิกฤต ยังใส่ C-line ไม่ทัน ต้องให้ Norepi ผ่าน Peripheral Line: ให้เลือกเส้นใหญ่ระดับข้อพับ (Antecubital) เท่านั้น ห้ามแทงหลังมือ ตรวจการรั่วซึมทุก 15 นาที และเตรียมยาแก้พิษ Regitine (Phentolamine) สำรองไว้เสมอ"
       }
     ];
 
-    function renderTacitFeed() {
+    function getTacitList() {
+      const curVer = localStorage.getItem('ccu_tacit_ver');
+      if (curVer !== TACIT_DB_VERSION) {
+        localStorage.setItem('ccu_tacit_ver', TACIT_DB_VERSION);
+        localStorage.setItem('ccu_tacit_feed', JSON.stringify(INITIAL_TACIT));
+        return INITIAL_TACIT;
+      }
+      const stored = localStorage.getItem('ccu_tacit_feed');
+      return stored ? JSON.parse(stored) : INITIAL_TACIT;
+    }
+
+    function saveTacitList(list) {
+      localStorage.setItem('ccu_tacit_feed', JSON.stringify(list));
+      renderTacitFeed();
+      renderAdminPearlsList();
+    }
+
+    function renderTacitFeed(customList) {
       const container = document.getElementById('tacitFeed');
       if (!container) return;
-      const stored = localStorage.getItem('ccu_tacit_feed');
-      const list = stored ? JSON.parse(stored) : INITIAL_TACIT;
+      const list = customList || getTacitList();
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'guest';
 
       container.innerHTML = '';
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs">ไม่พบเกร็ดความรู้ที่ค้นหา</div>';
+        return;
+      }
       list.forEach(t => {
+        const isOwner = t.createdBy === currentUser;
+        const isBlocked = !!t.isBlocked;
+
         const item = document.createElement('div');
-        item.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2";
+        item.className = `bg-white p-4 rounded-xl border ${isBlocked ? 'border-amber-300 bg-amber-50/30' : 'border-slate-200'} shadow-sm space-y-2 relative`;
+        
         item.innerHTML = `
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-full bg-brand-100 text-brand-700 font-bold text-xs flex items-center justify-center">
+              <div class="w-7 h-7 rounded-full ${isBlocked ? 'bg-amber-100 text-amber-700' : 'bg-brand-100 text-brand-700'} font-bold text-xs flex items-center justify-center">
                 <i class="fa-solid fa-user-nurse"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-800">${t.author}</p>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <p class="text-xs font-bold text-slate-800">${t.author}</p>
+                  ${isOwner ? '<span class="text-[9px] bg-sky-100 text-brand-700 px-1.5 py-0.2 rounded font-semibold">เกร็ดของคุณ</span>' : ''}
+                  ${isBlocked ? '<span class="text-[9px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded border border-rose-200"><i class="fa-solid fa-ban"></i> ถูก Admin ระงับ (Blocked)</span>' : ''}
+                </div>
                 <p class="text-[10px] text-slate-400">${t.tag}</p>
               </div>
             </div>
-            <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
-              <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ ${t.likes || 1}
-            </span>
+            
+            <div class="flex items-center gap-2">
+              ${isOwner ? `
+                <button onclick="editTacitPearl('${t.id}')" class="text-xs font-semibold px-2 py-0.5 rounded-lg bg-sky-50 text-brand-600 hover:bg-sky-100 border border-sky-200 flex items-center gap-1">
+                  <i class="fa-solid fa-pen-to-square"></i> แก้ไขเกร็ด
+                </button>
+              ` : ''}
+              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
+                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ ${t.likes || 1}
+              </span>
+            </div>
           </div>
-          <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-            <strong>Clinical Pearl:</strong> ${t.pearl}
-          </div>
+
+          ${isBlocked ? `
+            <div class="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2">
+              <i class="fa-solid fa-shield-halved text-rose-500 mt-0.5"></i>
+              <div>
+                <strong>ข้อความนี้ถูกระงับการเผยแพร่ชั่วคราวโดย Admin:</strong> 
+                <p class="text-[11px] text-rose-600 mt-0.5">อยู่ระหว่างการตรวจสอบความถูกต้องตาม CPG ${isOwner ? '(คุณเป็นเจ้าของเกร็ด สามารถกดแก้ไขเนื้อหาให้ถูกต้องเพื่อปลดระงับได้)' : ''}</p>
+              </div>
+            </div>
+          ` : `
+            <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+              <strong>Clinical Pearl:</strong> ${t.pearl}
+            </div>
+          `}
         `;
         container.appendChild(item);
       });
     }
 
+    function renderTacitFeedList(list) {
+      renderTacitFeed(list);
+    }
+
+    // Render Admin Pearls Management List
+    function renderAdminPearlsList(customList) {
+      const container = document.getElementById('adminPearlsListContainer');
+      if (!container) return;
+      const list = customList || getTacitList();
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'guest';
+
+      container.innerHTML = '';
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs">ไม่พบเกร็ดความรู้ที่ค้นหา</div>';
+        return;
+      }
+
+      list.forEach(t => {
+        const isOwner = t.createdBy === currentUser;
+        const isBlocked = !!t.isBlocked;
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-2xl border ${isBlocked ? 'bg-rose-50/50 border-rose-300' : 'bg-white border-slate-200'} shadow-xs space-y-2`;
+        
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[9px] font-bold ${isBlocked ? 'bg-rose-100 text-rose-800 border-rose-200' : 'bg-amber-100 text-amber-800 border-amber-200'} px-2 py-0.5 rounded-full border">
+                  <i class="fa-solid fa-lightbulb"></i> ${t.tag || 'Clinical Pearl'}
+                </span>
+                <span class="text-[10px] font-bold text-slate-700">โดย: ${t.author} (@${t.createdBy || 'user'})</span>
+                ${isBlocked 
+                  ? '<span class="text-[9px] bg-rose-600 text-white font-bold px-2 py-0.2 rounded-full"><i class="fa-solid fa-ban"></i> Blocked (ถูกระงับ)</span>'
+                  : '<span class="text-[9px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.2 rounded-full"><i class="fa-solid fa-check"></i> เผยแพร่อยู่</span>'}
+              </div>
+            </div>
+            <span class="text-[10px] text-rose-500 font-semibold"><i class="fa-solid fa-heart"></i> ${t.likes || 1}</span>
+          </div>
+
+          <div class="text-xs ${isBlocked ? 'text-rose-900 bg-rose-100/50' : 'text-slate-700 bg-slate-50'} p-2.5 rounded-xl border border-slate-100 leading-relaxed">
+            ${t.pearl}
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div class="text-[10px] text-slate-400">
+              สถานะ: <strong class="${isBlocked ? 'text-rose-600' : 'text-emerald-600'}">${isBlocked ? 'ถูก Block จากหน้าแอป' : 'แสดงในหน้าพี่สู่น้อง'}</strong>
+            </div>
+            
+            <div class="flex items-center gap-1.5">
+              <!-- Admin Block / Unblock Button -->
+              <button onclick="toggleBlockTacitPearl('${t.id}')" class="px-2.5 py-1 rounded-lg ${isBlocked ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'} text-xs font-semibold flex items-center gap-1 shadow-xs transition-all">
+                <i class="fa-solid ${isBlocked ? 'fa-circle-check' : 'fa-ban'}"></i>
+                <span>${isBlocked ? 'ปลด Block (เผยแพร่)' : 'Block ระงับเกร็ดนี้'}</span>
+              </button>
+
+              <!-- Only Owner can Edit -->
+              ${isOwner ? `
+                <button onclick="editTacitPearl('${t.id}')" title="แก้ไขเกร็ด (คุณเป็นเจ้าของ)" class="px-2.5 py-1 rounded-lg bg-sky-50 text-brand-600 hover:bg-sky-100 text-xs flex items-center gap-1 border border-sky-100">
+                  <i class="fa-solid fa-pen"></i> แก้ไข (เจ้าของ)
+                </button>
+              ` : `
+                <span class="text-[10px] text-slate-400 italic px-1" title="Admin ไม่สามารถแก้ไขเนื้อหาของผู้อื่นได้ ทำได้เฉพาะ Block">
+                  (เจ้าของเท่านั้นที่แก้ได้)
+                </span>
+              `}
+
+              <!-- Delete Pearl -->
+              <button onclick="deleteTacitPearl('${t.id}')" title="ลบเกร็ด" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderAdminPearlsListFiltered(list) {
+      renderAdminPearlsList(list);
+    }
+
+    function toggleBlockTacitPearl(id) {
+      const list = getTacitList();
+      const target = list.find(t => t.id === id);
+      if (!target) return;
+
+      target.isBlocked = !target.isBlocked;
+      saveTacitList(list);
+      alert(target.isBlocked 
+        ? `ระงับ (Block) เกร็ดความรู้ของ "${target.author}" เรียบร้อยแล้ว (จะถูกซ่อนจากหน้าพี่สู่น้อง)` 
+        : `ปลดระงับ (Unblock) เกร็ดความรู้ของ "${target.author}" เรียบร้อยแล้ว (กลับมาแสดงผลปกติ)`);
+    }
+
     function openAddTacitModal() {
-      const author = prompt("ชื่อผู้ถ่ายทอดประสบการณ์ (เช่น พี่ฟ้า CCU):", "พว. CCU ศิริราช");
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'admin';
+      const defaultName = currentLoggedUser ? currentLoggedUser.name : 'พว. CCU ศิริราช';
+      const author = prompt("ชื่อผู้ถ่ายทอดประสบการณ์:", defaultName);
       if (!author) return;
+      const tag = prompt("หัวข้อ / Tag (เช่น Post-TAVI Care, Norepinephrine, EKG):", "Clinical Pearl");
+      if (!tag) return;
       const pearl = prompt("พิมพ์เกร็ดความรู้ / Clinical Pearl ที่ต้องการส่งต่อให้น้องๆ:");
       if (!pearl) return;
 
-      const stored = localStorage.getItem('ccu_tacit_feed');
-      const list = stored ? JSON.parse(stored) : INITIAL_TACIT;
+      const list = getTacitList();
       list.unshift({
         id: "t-" + Date.now(),
-        author: author,
-        tag: "Senior Pearl",
+        author: author.trim(),
+        createdBy: currentUser,
+        tag: tag.trim(),
         likes: 1,
-        pearl: pearl
+        isBlocked: false,
+        pearl: pearl.trim()
       });
-      localStorage.setItem('ccu_tacit_feed', JSON.stringify(list));
-      renderTacitFeed();
+      saveTacitList(list);
       alert("บันทึกเกร็ดความรู้สำเร็จ! เพิ่มลงสู่ระบบเรียบร้อยครับ");
+    }
+
+    function editTacitPearl(id) {
+      const list = getTacitList();
+      const target = list.find(t => t.id === id);
+      if (!target) return;
+
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'guest';
+      const isOwner = target.createdBy === currentUser;
+
+      if (!isOwner) {
+        alert("ขออภัยครับ: Admin ไม่สามารถแก้ไขข้อความของผู้อื่นได้โดยตรง\n(ตามนโยบาย: เฉพาะเจ้าของเกร็ดเท่านั้นที่สามารถแก้ไขเนื้อหาได้ แม้ว่าจะถูก Block อยู่ก็ตาม)");
+        return;
+      }
+
+      const newAuthor = prompt("แก้ไขชื่อผู้ถ่ายทอดประสบการณ์:", target.author);
+      if (newAuthor === null) return;
+      const newTag = prompt("แก้ไขหัวข้อ / Tag:", target.tag);
+      if (newTag === null) return;
+      const newPearl = prompt("แก้ไขข้อความเกร็ดความรู้ (สามารถแก้ไขให้ถูกต้องตาม CPG ได้ตลอดเวลา):", target.pearl);
+      if (newPearl === null) return;
+
+      target.author = newAuthor.trim() || target.author;
+      target.tag = newTag.trim() || target.tag;
+      target.pearl = newPearl.trim() || target.pearl;
+
+      saveTacitList(list);
+      alert("แก้ไขเกร็ดความรู้เรียบร้อยแล้วครับ!" + (target.isBlocked ? "\n(หมายเหตุ: รายการนี้ยังอยู่ในสถานะถูก Block กรุณาแจ้ง Admin ตรวจสอบเพื่อปลดระงับ)" : ""));
+    }
+
+    function deleteTacitPearl(id) {
+      const list = getTacitList();
+      const target = list.find(t => t.id === id);
+      if (!target) return;
+
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'guest';
+      const isOwner = target.createdBy === currentUser;
+      const isAdmin = currentLoggedUser && currentLoggedUser.role === 'admin';
+
+      if (!isOwner && !isAdmin) {
+        alert("ขออภัยครับ คุณไม่มีสิทธิ์ลบรายการนี้");
+        return;
+      }
+
+      if (confirm(`ต้องการลบเกร็ดความรู้ "${target.tag}" นี้ออกจากระบบใช่หรือไม่?`)) {
+        const updatedList = list.filter(t => t.id !== id);
+        saveTacitList(updatedList);
+      }
     }
   </script>
 </body>
