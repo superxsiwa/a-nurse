@@ -1857,6 +1857,7 @@
       usersToRender.forEach(u => {
         const isPending = u.status === 'pending';
         const isSuspended = u.status === 'suspended';
+        const isSelf = currentLoggedUser && (currentLoggedUser.id === u.id || currentLoggedUser.user === u.user);
         const card = document.createElement('div');
         card.className = `p-3 rounded-2xl border ${isPending ? 'bg-amber-50/50 border-amber-300' : 'bg-white border-slate-200'} shadow-xs flex flex-col gap-2`;
 
@@ -1866,6 +1867,7 @@
               <div class="flex items-center gap-1.5">
                 <span class="font-bold text-xs text-slate-800">${u.name || u.user}</span>
                 <span class="text-[10px] font-mono px-1.5 py-0.2 rounded ${u.role === 'admin' ? 'bg-purple-100 text-purple-700 font-bold' : u.role === 'senior' ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-100 text-slate-600'}">@${u.user}</span>
+                ${isSelf ? '<span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.2 rounded border border-indigo-200">บัญชีของคุณ</span>' : ''}
               </div>
               <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
                 <span><i class="fa-solid fa-clock-rotate-left text-slate-400"></i> ประสบการณ์: ${u.exp || '-'}</span>
@@ -1891,15 +1893,21 @@
                   <i class="fa-solid fa-user-check"></i> อนุมัติ
                 </button>
               ` : ''}
-              <button onclick="openUserRoleModal('${u.id}')" class="text-[11px] px-2.5 py-1 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 font-semibold flex items-center gap-1 transition-colors">
-                <i class="fa-solid fa-user-gear"></i> แก้ไขสิทธิ์
-              </button>
-              ${!isPending && u.user !== 'admin' ? `
+              ${isSelf ? `
+                <span class="text-[10px] text-slate-400 italic px-2 py-1 bg-slate-50 rounded-lg border border-slate-100" title="ไม่สามารถแก้ไขสิทธิ์ของตนเองได้">
+                  <i class="fa-solid fa-lock text-[9px]"></i> บัญชีตนเอง
+                </span>
+              ` : `
+                <button onclick="openUserRoleModal('${u.id}')" class="text-[11px] px-2.5 py-1 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 font-semibold flex items-center gap-1 transition-colors">
+                  <i class="fa-solid fa-user-gear"></i> แก้ไขสิทธิ์
+                </button>
+              `}
+              ${!isPending && !isSelf ? `
                 <button onclick="toggleSuspendUser('${u.id}')" class="text-[11px] px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
                   ${isSuspended ? 'ปลดระงับ' : 'ระงับ'}
                 </button>
               ` : ''}
-              ${u.user !== 'admin' ? `
+              ${!isSelf ? `
                 <button onclick="deleteUser('${u.id}')" title="ลบผู้ใช้" class="text-slate-400 hover:text-rose-600 p-1 text-xs">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
@@ -1919,6 +1927,12 @@
     function openUserRoleModal(userId) {
       const u = currentUsers.find(item => item.id === userId);
       if (!u) return;
+
+      // ป้องกันแก้ไขสิทธิ์ของตนเอง
+      if (currentLoggedUser && (currentLoggedUser.id === u.id || currentLoggedUser.user === u.user)) {
+        alert('ระบบรักษาความปลอดภัย: ผู้ดูแลระบบไม่สามารถแก้ไขสิทธิ์หรือระงับบัญชีของตนเองได้ค่ะ');
+        return;
+      }
 
       document.getElementById('editUserId').value = u.id;
       document.getElementById('editUserUsername').innerText = '@' + u.user;
@@ -1950,6 +1964,13 @@
       const u = currentUsers.find(item => item.id === userId);
       if (!u) return;
 
+      // ป้องกันแก้ไขสิทธิ์ของตนเอง
+      if (currentLoggedUser && (currentLoggedUser.id === u.id || currentLoggedUser.user === u.user)) {
+        alert('ระบบรักษาความปลอดภัย: คุณไม่สามารถแก้ไขสิทธิ์ของตนเองได้ค่ะ');
+        closeUserRoleModal();
+        return;
+      }
+
       const selectedRole = document.querySelector('input[name="userRoleOption"]:checked')?.value || 'nurse';
       const selectedStatus = document.getElementById('editUserStatus').value || 'active';
 
@@ -1959,12 +1980,6 @@
       saveUsers(currentUsers);
       renderAdminUserList();
       closeUserRoleModal();
-
-      // If editing current logged in user, refresh permissions
-      if (currentLoggedUser && currentLoggedUser.user === u.user) {
-        currentLoggedUser = u;
-        applyRolePermissions(u);
-      }
 
       alert(`บันทึกสิทธิ์ของ "${u.name || u.user}" เป็น "${selectedRole === 'admin' ? 'ผู้ดูแลระบบ (Admin)' : selectedRole === 'senior' ? 'พยาบาลรุ่นพี่ (Senior RN)' : 'พยาบาลรุ่นน้อง (Junior RN)'}" เรียบร้อยแล้วค่ะ`);
     }
