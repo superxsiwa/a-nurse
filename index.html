@@ -754,7 +754,7 @@
       <!-- ================================================= -->
       <div id="view-tacit" class="tab-view space-y-4">
         
-        <!-- Header with BACK BUTTON -->
+        <!-- Header with BACK BUTTON & ADD PEARL BUTTON -->
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
           <div class="flex items-center gap-2.5">
             <button onclick="switchTab('home')" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-600 hover:border-brand-300 flex items-center justify-center shadow-xs active:bg-slate-50 transition-all">
@@ -765,6 +765,10 @@
               <p class="text-[11px] text-slate-500">เกร็ดความรู้ทางคลินิก (Clinical Pearls จากพี่สู่รุ่นน้อง)</p>
             </div>
           </div>
+          <button onclick="openAddTacitModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm active:bg-amber-800 transition-all">
+            <i class="fa-solid fa-plus"></i>
+            <span>เพิ่มเกร็ดความรู้</span>
+          </button>
         </div>
 
         <!-- Search Bar (เกร็ดพี่สู่น้อง) -->
@@ -1008,6 +1012,55 @@
               </button>
               <button type="submit" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs active:bg-emerald-800 shadow-sm transition-all flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล FAQ
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- MODAL: เพิ่ม/แก้ไขเกร็ดความรู้ (Tacit Pearl Form)  -->
+      <!-- ================================================= -->
+      <div id="tacitFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
+        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-lightbulb"></i>
+              </div>
+              <h3 id="tacitModalTitle" class="font-heading font-bold text-base text-slate-800">แบ่งปันเกร็ดความรู้พี่สู่น้อง</h3>
+            </div>
+            <button onclick="closeTacitModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <form id="tacitEditForm" onsubmit="handleSaveTacitForm(event)" class="p-4 overflow-y-auto text-xs space-y-3.5">
+            <input type="hidden" id="tacitFormId">
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">ชื่อผู้ถ่ายทอดประสบการณ์:</label>
+              <input type="text" id="tacitFormAuthor" required placeholder="เช่น พว.วิยะดา (Incharge CCU)" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500">
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">หัวข้อ / Tag (เช่น Post-TAVI, Norepi, Pacemaker):</label>
+              <input type="text" id="tacitFormTag" required placeholder="เช่น Post-TAVI Care หรือ Norepinephrine Titration" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500">
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-pen-nib text-amber-600 mr-0.5"></i> ข้อความเกร็ดความรู้ทางคลินิก (Clinical Pearl):
+              </label>
+              <textarea id="tacitFormPearl" rows="5" required placeholder="พิมพ์เทคนิคข้างเตียง, ข้อสังเกต, หรือจุดที่น้องใหม่มักพลาด เพื่อเป็นวิทยาทานแก่น้องๆ..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 leading-relaxed"></textarea>
+            </div>
+
+            <div class="pt-2 flex gap-2">
+              <button type="button" onclick="closeTacitModal()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs transition-colors">
+                ยกเลิก
+              </button>
+              <button type="submit" class="w-1/2 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs active:bg-amber-800 shadow-sm transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-paper-plane"></i> บันทึกเกร็ดความรู้
               </button>
             </div>
           </form>
@@ -2985,28 +3038,23 @@
         : `ปลดระงับ (Unblock) เกร็ดความรู้ของ "${target.author}" เรียบร้อยแล้ว (กลับมาแสดงผลปกติ)`);
     }
 
+    function closeTacitModal() {
+      const modal = document.getElementById('tacitFormModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
     function openAddTacitModal() {
       const currentUser = currentLoggedUser ? currentLoggedUser.user : 'admin';
       const defaultName = currentLoggedUser ? currentLoggedUser.name : 'พว. CCU ศิริราช';
-      const author = prompt("ชื่อผู้ถ่ายทอดประสบการณ์:", defaultName);
-      if (!author) return;
-      const tag = prompt("หัวข้อ / Tag (เช่น Post-TAVI Care, Norepinephrine, EKG):", "Clinical Pearl");
-      if (!tag) return;
-      const pearl = prompt("พิมพ์เกร็ดความรู้ / Clinical Pearl ที่ต้องการส่งต่อให้น้องๆ:");
-      if (!pearl) return;
 
-      const list = getTacitList();
-      list.unshift({
-        id: "t-" + Date.now(),
-        author: author.trim(),
-        createdBy: currentUser,
-        tag: tag.trim(),
-        likes: 1,
-        isBlocked: false,
-        pearl: pearl.trim()
-      });
-      saveTacitList(list);
-      alert("บันทึกเกร็ดความรู้สำเร็จ! เพิ่มลงสู่ระบบเรียบร้อยครับ");
+      document.getElementById('tacitModalTitle').innerText = 'แบ่งปันเกร็ดความรู้พี่สู่น้อง';
+      document.getElementById('tacitFormId').value = '';
+      document.getElementById('tacitFormAuthor').value = defaultName;
+      document.getElementById('tacitFormTag').value = 'Post-TAVI Care';
+      document.getElementById('tacitFormPearl').value = '';
+
+      const modal = document.getElementById('tacitFormModal');
+      if (modal) modal.classList.remove('hidden');
     }
 
     function editTacitPearl(id) {
@@ -3022,19 +3070,53 @@
         return;
       }
 
-      const newAuthor = prompt("แก้ไขชื่อผู้ถ่ายทอดประสบการณ์:", target.author);
-      if (newAuthor === null) return;
-      const newTag = prompt("แก้ไขหัวข้อ / Tag:", target.tag);
-      if (newTag === null) return;
-      const newPearl = prompt("แก้ไขข้อความเกร็ดความรู้ (สามารถแก้ไขให้ถูกต้องตาม CPG ได้ตลอดเวลา):", target.pearl);
-      if (newPearl === null) return;
+      document.getElementById('tacitModalTitle').innerText = 'แก้ไขเกร็ดความรู้ของคุณ';
+      document.getElementById('tacitFormId').value = target.id;
+      document.getElementById('tacitFormAuthor').value = target.author || '';
+      document.getElementById('tacitFormTag').value = target.tag || '';
+      document.getElementById('tacitFormPearl').value = target.pearl || '';
 
-      target.author = newAuthor.trim() || target.author;
-      target.tag = newTag.trim() || target.tag;
-      target.pearl = newPearl.trim() || target.pearl;
+      const modal = document.getElementById('tacitFormModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function handleSaveTacitForm(e) {
+      e.preventDefault();
+      const id = document.getElementById('tacitFormId').value.trim();
+      const author = document.getElementById('tacitFormAuthor').value.trim();
+      const tag = document.getElementById('tacitFormTag').value.trim();
+      const pearl = document.getElementById('tacitFormPearl').value.trim();
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'admin';
+
+      if (!author || !tag || !pearl) {
+        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+        return;
+      }
+
+      const list = getTacitList();
+
+      if (id) {
+        const target = list.find(t => t.id === id);
+        if (target) {
+          target.author = author;
+          target.tag = tag;
+          target.pearl = pearl;
+        }
+      } else {
+        list.unshift({
+          id: "t-" + Date.now(),
+          author: author,
+          createdBy: currentUser,
+          tag: tag,
+          likes: 1,
+          isBlocked: false,
+          pearl: pearl
+        });
+      }
 
       saveTacitList(list);
-      alert("แก้ไขเกร็ดความรู้เรียบร้อยแล้วครับ!" + (target.isBlocked ? "\n(หมายเหตุ: รายการนี้ยังอยู่ในสถานะถูก Block กรุณาแจ้ง Admin ตรวจสอบเพื่อปลดระงับ)" : ""));
+      closeTacitModal();
+      alert(id ? "แก้ไขเกร็ดความรู้เรียบร้อยแล้วครับ!" : "บันทึกเกร็ดความรู้สำเร็จ! เพิ่มลงสู่ระบบเรียบร้อยครับ");
     }
 
     function deleteTacitPearl(id) {
