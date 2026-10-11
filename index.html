@@ -4123,11 +4123,49 @@
     // ==========================================
     let currentExtractedCpg = null;
 
+    // Helper: Normalize string for duplication comparison
+    function normalizeFaqText(text) {
+      if (!text) return '';
+      return text.toLowerCase()
+        .replace(/["'“”‘’.,?!:;\-_\(\)\[\]\{\}\s]/g, '')
+        .trim();
+    }
+
+    function isDuplicateFaq(question, existingFaqs, threshold = 0.75) {
+      const normQ = normalizeFaqText(question);
+      if (!normQ) return false;
+
+      for (const f of existingFaqs) {
+        const normExist = normalizeFaqText(f.question);
+        if (!normExist) continue;
+        if (normQ === normExist) return true;
+        if (normQ.includes(normExist) || normExist.includes(normQ)) {
+          const minLen = Math.min(normQ.length, normExist.length);
+          const maxLen = Math.max(normQ.length, normExist.length);
+          if (minLen / maxLen >= threshold) return true;
+        }
+      }
+      return false;
+    }
+
     async function openAiExtractFaqModal(cpgId) {
       const targetCpg = currentCatalog.find(c => c.id === cpgId);
       if (!targetCpg) {
         alert("ไม่พบข้อมูล CPG ที่ต้องการสกัด FAQ");
         return;
+      }
+
+      const allFaqs = getFaqList();
+      const existingLinkedFaqs = allFaqs.filter(f => f.cpgId === cpgId);
+
+      // ตรวจสอบหากมี FAQ สังกัด CPG นี้อยู่แล้ว แจ้งเตือนก่อนเพื่อป้องกันการสร้างซ้ำ
+      if (existingLinkedFaqs.length > 0) {
+        const approvedCount = existingLinkedFaqs.filter(f => f.status === 'approved').length;
+        const pendingCount = existingLinkedFaqs.filter(f => f.status === 'pending' || f.status === 'needs_review').length;
+        const msg = `CPG "${targetCpg.title}" มี FAQ ในระบบแล้ว ${existingLinkedFaqs.length} ข้อ\n(รับรองแล้ว: ${approvedCount} ข้อ, รอตรวจ: ${pendingCount} ข้อ)\n\nต้องการใช้ AI สกัดคำถามเพิ่มเติมใช่หรือไม่? ระบบจะตรวจสอบไม่ให้เพิ่มคำถามที่ซ้ำกับของเดิมครับ`;
+        if (!confirm(msg)) {
+          return;
+        }
       }
 
       currentExtractedCpg = targetCpg;
@@ -4153,6 +4191,9 @@
         .replace(/\s+/g, ' ')
         .trim();
 
+      // ส่งรายการคำถามเดิมที่มีอยู่แล้ว เพื่อให้ AI ไม่สร้างซ้ำ (Negative Constraint)
+      const existingQuestions = existingLinkedFaqs.map(f => f.question).slice(0, 10);
+
       let extractedFaqs = [];
 
       try {
@@ -4164,7 +4205,8 @@
             cpgTitle: targetCpg.title,
             cpgCategory: targetCpg.category,
             cpgAuthor: targetCpg.author || 'CCU ศิริราช',
-            cpgContent: rawContent
+            cpgContent: rawContent,
+            existingQuestions: existingQuestions
           })
         });
 
@@ -4183,8 +4225,13 @@
         extractedFaqs = generateHeuristicFaqs(targetCpg, rawContent);
       }
 
+      // กรองและมาร์กรายการที่ซ้ำกับ FAQ เดิมในระบบ
+      extractedFaqs.forEach(item => {
+        item.isDuplicate = isDuplicateFaq(item.question, existingLinkedFaqs);
+      });
+
       // Render Extracted FAQ Cards
-      renderExtractedFaqCards(extractedFaqs, targetCpg);
+      renderExtractedFaqCards(extractedFaqs, targetCpg, existingLinkedFaqs);
       loadingEl.classList.add('hidden');
       resultsEl.classList.remove('hidden');
       actionsEl.classList.remove('hidden');
@@ -4216,31 +4263,55 @@
       return faqs;
     }
 
-    function renderExtractedFaqCards(faqs, cpg) {
+    function renderExtractedFaqCards(faqs, cpg, existingLinkedFaqs = []) {
       const resultsEl = document.getElementById('aiExtractResults');
       if (!resultsEl) return;
 
-      resultsEl.innerHTML = faqs.map((f, idx) => `
-        <div class="p-3 bg-white border border-slate-200 rounded-xl shadow-2xs space-y-2 ai-faq-card" data-idx="${idx}">
-          <div class="flex items-start gap-2">
-            <input type="checkbox" id="aiFaqCheck_${idx}" checked class="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
-            <div class="flex-1 space-y-1.5">
-              <label for="aiFaqCheck_${idx}" class="font-bold text-[11px] text-slate-800 flex items-center justify-between cursor-pointer">
-                <span class="text-indigo-600 font-mono">ข้อที่ ${idx + 1}</span>
-                <span class="text-[9px] bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded font-normal">สกัดโดย AI</span>
-              </label>
-              <div>
-                <label class="text-[10px] text-slate-400 block mb-0.5">คำถามข้างเตียง:</label>
-                <textarea id="aiFaqQ_${idx}" rows="2" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-indigo-500 font-medium">${escapeHtml(f.question || '')}</textarea>
-              </div>
-              <div>
-                <label class="text-[10px] text-slate-400 block mb-0.5">คำตอบแนวปฏิบัติ:</label>
-                <textarea id="aiFaqA_${idx}" rows="3" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-indigo-500 leading-relaxed">${escapeHtml(f.answer || '')}</textarea>
+      const dupCount = faqs.filter(f => f.isDuplicate).length;
+
+      let htmlHeader = '';
+      if (dupCount > 0) {
+        htmlHeader = `
+          <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-[11px] flex items-center justify-between">
+            <span class="flex items-center gap-1.5 font-medium">
+              <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+              พบคำถามซ้ำกับคลังเดิม ${dupCount} ข้อ (ระบบปลดติ๊กออกให้อัตโนมัติ)
+            </span>
+          </div>
+        `;
+      }
+
+      resultsEl.innerHTML = htmlHeader + faqs.map((f, idx) => {
+        const isDup = !!f.isDuplicate;
+        return `
+          <div class="p-3 bg-white border ${isDup ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200'} rounded-xl shadow-2xs space-y-2 ai-faq-card" data-idx="${idx}">
+            <div class="flex items-start gap-2">
+              <input type="checkbox" id="aiFaqCheck_${idx}" ${isDup ? '' : 'checked'} class="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
+              <div class="flex-1 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="aiFaqCheck_${idx}" class="font-bold text-[11px] text-slate-800 flex items-center gap-1.5 cursor-pointer">
+                    <span class="text-indigo-600 font-mono">ข้อที่ ${idx + 1}</span>
+                    <span class="text-[9px] bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded font-normal">สกัดโดย AI</span>
+                  </label>
+                  ${isDup ? `
+                    <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <i class="fa-solid fa-clone text-[8px]"></i> ซ้ำกับที่มีอยู่แล้ว
+                    </span>
+                  ` : ''}
+                </div>
+                <div>
+                  <label class="text-[10px] text-slate-400 block mb-0.5">คำถามข้างเตียง:</label>
+                  <textarea id="aiFaqQ_${idx}" rows="2" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-indigo-500 font-medium">${escapeHtml(f.question || '')}</textarea>
+                </div>
+                <div>
+                  <label class="text-[10px] text-slate-400 block mb-0.5">คำตอบแนวปฏิบัติ:</label>
+                  <textarea id="aiFaqA_${idx}" rows="3" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-indigo-500 leading-relaxed">${escapeHtml(f.answer || '')}</textarea>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function closeAiExtractFaqModal() {
@@ -4276,11 +4347,32 @@
       }
 
       const list = getFaqList();
+      const existingLinkedFaqs = list.filter(f => f.cpgId === currentExtractedCpg.id);
+
+      // กรองข้อที่ซ้ำกับในระบบก่อนบันทึกจริง
+      const nonDuplicateFaqs = [];
+      let duplicateSkippedCount = 0;
+
+      selectedFaqs.forEach(item => {
+        if (isDuplicateFaq(item.question, existingLinkedFaqs)) {
+          duplicateSkippedCount++;
+        } else {
+          nonDuplicateFaqs.push(item);
+          // อัปเดตรายการเปรียบเทียบในรอบเดียวกันเพื่อป้องกันข้อที่ผู้ใช้เลือกซ้ำกันเอง
+          existingLinkedFaqs.push({ question: item.question });
+        }
+      });
+
+      if (nonDuplicateFaqs.length === 0) {
+        alert(`ข้อคำถามทั้งหมดที่คุณเลือก (${selectedFaqs.length} ข้อ) ซ้ำกับ FAQ เดิมที่มีอยู่ใน CPG นี้แล้ว จึงไม่มีการบันทึกเพิ่มครับ`);
+        return;
+      }
+
       const reviewerName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลรุ่นพี่/Incharge CCU';
       const today = new Date().toISOString().split('T')[0];
       const isApproved = targetStatus === 'approved';
 
-      selectedFaqs.forEach((item, index) => {
+      nonDuplicateFaqs.forEach((item, index) => {
         list.unshift({
           id: 'faq-' + Date.now() + '-' + index,
           cpgId: currentExtractedCpg.id,
@@ -4304,7 +4396,11 @@
       closeAiExtractFaqModal();
 
       const statusText = isApproved ? 'รับรองและเปิดใช้งานทันที' : 'บันทึกเป็นแบบรอรุ่นพี่ตรวจรับรอง';
-      alert(`บันทึกคำถาม-คำตอบ AI สำเร็จจำนวน ${selectedFaqs.length} ข้อ (${statusText})`);
+      let alertMsg = `บันทึกคำถาม-คำตอบ AI สำเร็จจำนวน ${nonDuplicateFaqs.length} ข้อ (${statusText})`;
+      if (duplicateSkippedCount > 0) {
+        alertMsg += `\n(ข้ามข้อที่ตรวจพบว่าซ้ำกับของเดิม ${duplicateSkippedCount} ข้อ)`;
+      }
+      alert(alertMsg);
     }
   </script>
 </body>

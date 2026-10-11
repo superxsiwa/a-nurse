@@ -206,6 +206,7 @@ export default {
         const cpgCategory = (body.cpgCategory || body.category || 'General').trim();
         const cpgContent = (body.cpgContent || body.content || '').trim();
         const cpgAuthor = (body.cpgAuthor || body.author || 'CCU ศิริราช').trim();
+        const existingQuestions = Array.isArray(body.existingQuestions) ? body.existingQuestions : [];
 
         if (!cpgTitle || !cpgContent) {
           return new Response(JSON.stringify({ error: 'กรุณาระบุชื่อเรื่อง (cpgTitle/title) และเนื้อหา (cpgContent/content) ของ CPG' }), {
@@ -213,6 +214,11 @@ export default {
             headers: corsHeaders
           });
         }
+
+        const existingPromptBlock = existingQuestions.length > 0 ? `
+คำถามเดิมที่มีอยู่ในระบบแล้ว (ห้ามสร้างคำถามที่มีความหมายหรือเนื้อหาซ้ำกับข้อเหล่านี้โดยเด็ดขาด):
+${existingQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+` : '';
 
         const prompt = `
 คุณคือ AI Medical Knowledge Engineer ประจำหอผู้ป่วย CCU ศิริราช
@@ -222,11 +228,12 @@ export default {
 ผู้จัดทำ: ${cpgAuthor}
 เนื้อหาแนวปฏิบัติ:
 ${cpgContent}
-
+${existingPromptBlock}
 กฎระเบียบ:
 1. สกัดเฉพาะข้อเท็จจริงในเนื้อหา ห้ามแต่งเติมขนาดยาหรือข้อห้ามขึ้นเอง (Zero Hallucination)
 2. มุ่งเน้น: การเฝ้าระวังแทรกซ้อน (Complications), ขนาดยาเสี่ยงสูง (High-Alert Drugs), ข้อห้ามสำคัญ (Pitfalls/Red flags)
-3. ผลลัพธ์ต้องส่งกลับเป็น JSON Array โดยมีรูปแบบดังนี้:
+3. ตรวจสอบให้แน่ใจว่าคำถามที่สกัด ไม่ซ้ำซ้อนกับคำถามเดิมที่ระบุไว้ข้างต้น
+4. ผลลัพธ์ต้องส่งกลับเป็น JSON Array โดยมีรูปแบบดังนี้:
 [
   {
     "question": "คำถามข้างเตียงที่ชัดเจน กระชับ",
