@@ -556,9 +556,6 @@
           <button id="adminCreateKmBtn" onclick="openCreateKnowledgeModal()" class="bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-brand-700">
             <i class="fa-solid fa-plus"></i> สร้าง CPG
           </button>
-          <button id="adminCreatePearlBtn" onclick="openAddTacitModal()" class="hidden bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-amber-700">
-            <i class="fa-solid fa-plus"></i> เพิ่มเกร็ดความรู้
-          </button>
           <button id="adminCreateFaqBtn" onclick="openAddFaqModal()" class="hidden bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-emerald-700">
             <i class="fa-solid fa-plus"></i> เพิ่ม FAQ การแพทย์
           </button>
@@ -1667,7 +1664,6 @@
       const btnPearls = document.getElementById('adminTabPearls');
       const btnFaqs = document.getElementById('adminTabFaqs');
       const createKmBtn = document.getElementById('adminCreateKmBtn');
-      const createPearlBtn = document.getElementById('adminCreatePearlBtn');
       const createFaqBtn = document.getElementById('adminCreateFaqBtn');
 
       // Reset tabs styling
@@ -1683,7 +1679,6 @@
       if (secPearls) secPearls.classList.add('hidden');
       if (secFaqs) secFaqs.classList.add('hidden');
       if (createKmBtn) createKmBtn.classList.add('hidden');
-      if (createPearlBtn) createPearlBtn.classList.add('hidden');
       if (createFaqBtn) createFaqBtn.classList.add('hidden');
 
       const adminHeaderDesc = document.getElementById('adminHeaderDesc');
@@ -1711,7 +1706,6 @@
           btnPearls.classList.add('bg-white', 'text-purple-700', 'shadow-xs');
           btnPearls.classList.remove('text-slate-600');
         }
-        if (createPearlBtn) createPearlBtn.classList.remove('hidden');
         if (adminHeaderDesc) adminHeaderDesc.innerText = 'ตรวจสอบและระงับ (Block) เกร็ดความรู้ทางคลินิกจากประสบการณ์พี่สู่น้อง';
         renderAdminPearlsList();
       } else if (subtab === 'faqs') {
