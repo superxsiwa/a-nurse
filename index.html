@@ -2971,7 +2971,7 @@
                 </span>
                 <span class="text-[10px] font-bold text-slate-700">โดย: ${t.author} (@${t.createdBy || 'user'})</span>
                 ${isBlocked 
-                  ? '<span class="text-[9px] bg-rose-600 text-white font-bold px-2 py-0.2 rounded-full"><i class="fa-solid fa-ban"></i> Blocked (ถูกระงับ)</span>'
+                  ? '<span class="text-[9px] bg-rose-600 text-white font-bold px-2 py-0.2 rounded-full"><i class="fa-solid fa-eye-slash"></i> ซ่อนอยู่</span>'
                   : '<span class="text-[9px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.2 rounded-full"><i class="fa-solid fa-check"></i> เผยแพร่อยู่</span>'}
               </div>
             </div>
@@ -2984,14 +2984,14 @@
 
           <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
             <div class="text-[10px] text-slate-400">
-              สถานะ: <strong class="${isBlocked ? 'text-rose-600' : 'text-emerald-600'}">${isBlocked ? 'ถูก Block จากหน้าแอป' : 'แสดงในหน้าพี่สู่น้อง'}</strong>
+              สถานะ: <strong class="${isBlocked ? 'text-rose-600' : 'text-emerald-600'}">${isBlocked ? 'ถูกซ่อนจากหน้าแอป' : 'แสดงในหน้าพี่สู่น้อง'}</strong>
             </div>
             
             <div class="flex items-center gap-1.5">
-              <!-- Admin Block / Unblock Button -->
+              <!-- Admin Hide / Show Button -->
               <button onclick="toggleBlockTacitPearl('${t.id}')" class="px-2.5 py-1 rounded-lg ${isBlocked ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'} text-xs font-semibold flex items-center gap-1 shadow-xs transition-all">
-                <i class="fa-solid ${isBlocked ? 'fa-circle-check' : 'fa-ban'}"></i>
-                <span>${isBlocked ? 'ปลด Block (เผยแพร่)' : 'Block ระงับเกร็ดนี้'}</span>
+                <i class="fa-solid ${isBlocked ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                <span>${isBlocked ? 'เลิกซ่อน (แสดง)' : 'ซ่อน'}</span>
               </button>
 
               <!-- Only Owner can Edit -->
@@ -3000,7 +3000,7 @@
                   <i class="fa-solid fa-pen"></i> แก้ไข (เจ้าของ)
                 </button>
               ` : `
-                <span class="text-[10px] text-slate-400 italic px-1" title="Admin ไม่สามารถแก้ไขเนื้อหาของผู้อื่นได้ ทำได้เฉพาะ Block">
+                <span class="text-[10px] text-slate-400 italic px-1" title="Admin ไม่สามารถแก้ไขเนื้อหาของผู้อื่นได้ ทำได้เฉพาะซ่อน">
                   (เจ้าของเท่านั้นที่แก้ได้)
                 </span>
               `}
@@ -3028,8 +3028,8 @@
       target.isBlocked = !target.isBlocked;
       saveTacitList(list);
       alert(target.isBlocked 
-        ? `ระงับ (Block) เกร็ดความรู้ของ "${target.author}" เรียบร้อยแล้ว (จะถูกซ่อนจากหน้าพี่สู่น้อง)` 
-        : `ปลดระงับ (Unblock) เกร็ดความรู้ของ "${target.author}" เรียบร้อยแล้ว (กลับมาแสดงผลปกติ)`);
+        ? `ซ่อนเกร็ดความรู้ของ "${target.author}" เรียบร้อยแล้ว (จะถูกซ่อนจากหน้าพี่สู่น้อง)` 
+        : `เลิกซ่อนเกร็ดความรู้ของ "${target.author}" เรียบร้อยแล้ว (กลับมาแสดงผลปกติ)`);
     }
 
     function closeTacitModal() {
