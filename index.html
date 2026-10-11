@@ -559,22 +559,30 @@
           <button id="adminCreatePearlBtn" onclick="openAddTacitModal()" class="hidden bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-amber-700">
             <i class="fa-solid fa-plus"></i> เพิ่มเกร็ดความรู้
           </button>
+          <button id="adminCreateFaqBtn" onclick="openAddFaqModal()" class="hidden bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-emerald-700">
+            <i class="fa-solid fa-plus"></i> เพิ่ม FAQ การแพทย์
+          </button>
         </div>
 
-        <!-- Admin Subtabs (Users vs KM vs Pearls) -->
+        <!-- Admin Subtabs (Users vs KM vs Pearls vs FAQs) -->
         <div class="flex rounded-xl bg-slate-100 p-1 text-xs font-semibold gap-1">
           <button type="button" id="adminTabUsers" onclick="switchAdminSubtab('users')" class="flex-1 py-1.5 rounded-lg bg-white text-purple-700 shadow-xs transition-all flex items-center justify-center gap-1">
             <i class="fa-solid fa-users"></i>
-            <span>จัดการผู้ใช้</span>
+            <span class="truncate">ผู้ใช้งาน</span>
             <span id="badgePendingUsers" class="hidden bg-rose-500 text-white text-[9px] px-1.5 py-0.2 rounded-full">0</span>
           </button>
           <button type="button" id="adminTabKm" onclick="switchAdminSubtab('km')" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-all flex items-center justify-center gap-1">
             <i class="fa-solid fa-book-medical"></i>
-            <span>จัดการ CPG</span>
+            <span class="truncate">CPG</span>
           </button>
           <button type="button" id="adminTabPearls" onclick="switchAdminSubtab('pearls')" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-all flex items-center justify-center gap-1">
             <i class="fa-solid fa-lightbulb text-amber-500"></i>
-            <span>เกร็ดพี่สู่น้อง</span>
+            <span class="truncate">เกร็ดพี่น้อง</span>
+          </button>
+          <button type="button" id="adminTabFaqs" onclick="switchAdminSubtab('faqs')" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-all flex items-center justify-center gap-1">
+            <i class="fa-solid fa-clipboard-check text-emerald-600"></i>
+            <span class="truncate">ตรวจ FAQ</span>
+            <span id="badgePendingFaqs" class="bg-amber-500 text-white text-[9px] px-1.5 py-0.2 rounded-full font-bold">0</span>
           </button>
         </div>
 
@@ -690,6 +698,52 @@
 
           <!-- Manage Pearls List -->
           <div class="space-y-2.5" id="adminPearlsListContainer">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- SECTION D: CLINICAL FAQ VERIFICATION (พยาบาลรุ่นพี่/APN ตรวจสอบและรับรองความถูกต้อง) -->
+        <div id="adminSectionFaqs" class="hidden space-y-3">
+          <!-- Summary FAQ verification counts -->
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+              <div class="text-[10px] text-slate-400">FAQ ทั้งหมด</div>
+              <div id="statTotalFaqs" class="text-base font-bold text-slate-800">0</div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-amber-200 bg-amber-50/40">
+              <div class="text-[10px] text-amber-700 font-medium">รอพี่ตรวจ</div>
+              <div id="statPendingFaqs" class="text-base font-bold text-amber-600">0</div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/40">
+              <div class="text-[10px] text-emerald-700 font-medium">รับรองแล้ว</div>
+              <div id="statApprovedFaqs" class="text-base font-bold text-emerald-600">0</div>
+            </div>
+          </div>
+
+          <!-- Filter & Search Bar (ตรวจ FAQ) -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            <input 
+              type="text" 
+              id="adminFaqSearch" 
+              placeholder="ค้นหาข้อคำถาม-คำตอบ: TAVI, Norepi, VT, ACS..." 
+              onkeyup="handleAdminFaqSearch(event)"
+              class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-xs border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-slate-400"
+            >
+            <button onclick="clearAdminFaqSearch()" id="clearAdminFaqBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Status Filter Tabs -->
+          <div class="flex gap-1.5 text-xs">
+            <button onclick="filterAdminFaqStatus('all')" id="faqFilter-all" class="faq-status-btn px-2.5 py-1 rounded-lg bg-slate-800 text-white font-semibold">ทั้งหมด</button>
+            <button onclick="filterAdminFaqStatus('pending')" id="faqFilter-pending" class="faq-status-btn px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-semibold hover:bg-slate-200">รอตรวจรับรอง</button>
+            <button onclick="filterAdminFaqStatus('approved')" id="faqFilter-approved" class="faq-status-btn px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-semibold hover:bg-slate-200">ผ่านการรับรองแล้ว</button>
+          </div>
+
+          <!-- FAQ Verification List Container -->
+          <div class="space-y-3" id="adminFaqListContainer">
             <!-- Rendered by JS -->
           </div>
         </div>
@@ -1473,19 +1527,22 @@
       }
     }
 
-    // ===== ADMIN CONSOLE: USER & KM & TACIT MANAGEMENT =====
+    // ===== ADMIN CONSOLE: USER & KM & TACIT & FAQ MANAGEMENT =====
     function switchAdminSubtab(subtab) {
       const secUsers = document.getElementById('adminSectionUsers');
       const secKm = document.getElementById('adminSectionKm');
       const secPearls = document.getElementById('adminSectionPearls');
+      const secFaqs = document.getElementById('adminSectionFaqs');
       const btnUsers = document.getElementById('adminTabUsers');
       const btnKm = document.getElementById('adminTabKm');
       const btnPearls = document.getElementById('adminTabPearls');
+      const btnFaqs = document.getElementById('adminTabFaqs');
       const createKmBtn = document.getElementById('adminCreateKmBtn');
       const createPearlBtn = document.getElementById('adminCreatePearlBtn');
+      const createFaqBtn = document.getElementById('adminCreateFaqBtn');
 
       // Reset tabs styling
-      [btnUsers, btnKm, btnPearls].forEach(b => {
+      [btnUsers, btnKm, btnPearls, btnFaqs].forEach(b => {
         if (b) {
           b.classList.remove('bg-white', 'text-purple-700', 'shadow-xs');
           b.classList.add('text-slate-600');
@@ -1495,8 +1552,10 @@
       if (secUsers) secUsers.classList.add('hidden');
       if (secKm) secKm.classList.add('hidden');
       if (secPearls) secPearls.classList.add('hidden');
+      if (secFaqs) secFaqs.classList.add('hidden');
       if (createKmBtn) createKmBtn.classList.add('hidden');
       if (createPearlBtn) createPearlBtn.classList.add('hidden');
+      if (createFaqBtn) createFaqBtn.classList.add('hidden');
 
       const adminHeaderDesc = document.getElementById('adminHeaderDesc');
 
@@ -1526,6 +1585,15 @@
         if (createPearlBtn) createPearlBtn.classList.remove('hidden');
         if (adminHeaderDesc) adminHeaderDesc.innerText = 'ตรวจสอบและระงับ (Block) เกร็ดความรู้ทางคลินิกจากประสบการณ์พี่สู่น้อง';
         renderAdminPearlsList();
+      } else if (subtab === 'faqs') {
+        if (secFaqs) secFaqs.classList.remove('hidden');
+        if (btnFaqs) {
+          btnFaqs.classList.add('bg-white', 'text-purple-700', 'shadow-xs');
+          btnFaqs.classList.remove('text-slate-600');
+        }
+        if (createFaqBtn) createFaqBtn.classList.remove('hidden');
+        if (adminHeaderDesc) adminHeaderDesc.innerText = 'ตรวจรับรองความถูกต้องของคำถาม-คำตอบการแพทย์ (Clinical FAQ) โดยพยาบาลรุ่นพี่/APN';
+        renderAdminFaqList();
       }
     }
 
@@ -1665,8 +1733,10 @@
       renderKnowledgeCatalog(currentCatalog);
       renderAdminUserList();
       renderTacitFeed();
+      renderAdminFaqList();
       updateCounts();
       updateUserStats();
+      updateFaqStats();
     });
 
     function updateCounts() {
@@ -1687,14 +1757,17 @@
       if (statApprovedEl) statApprovedEl.innerText = approvedKm;
     }
 
-    // ===== BEDSIDE CLINICAL FAQS (Issue #04: คลังคำถามพบบ่อยข้างเตียง) =====
-    const BEDSIDE_FAQS = [
+    // ===== BEDSIDE CLINICAL FAQS & SENIOR VERIFICATION SYSTEM =====
+    const INITIAL_BEDSIDE_FAQS = [
       {
         id: 'faq-tavi-01',
         category: 'TAVI',
         badge: 'TAVI',
         color: 'sky',
         icon: 'fa-heart-pulse',
+        status: 'approved', // 'approved' | 'pending' | 'rejected'
+        reviewedBy: 'พว.วิยะดา (Incharge CCU)',
+        reviewedAt: '2026-10-10',
         question: 'คนไข้ Post-TAVI 24 ชม. แรก ต้องเฝ้าระวังอะไรเป็นพิเศษ?',
         quickAnswer: 'เฝ้าระวัง Complete Heart Block (CHB), New LBBB, เช็คแผล Femoral/Hematoma, Pulse เท้า และตรวจ Neuro signs เฝ้าระวัง Stroke',
         reference: 'CPG การพยาบาลผู้ป่วยหลังทำ TAVI ศิริราช (Part II หน้า 4-8)'
@@ -1705,6 +1778,9 @@
         badge: 'TAVI TPM',
         color: 'sky',
         icon: 'fa-bolt',
+        status: 'approved',
+        reviewedBy: 'พว.วิยะดา (Incharge CCU)',
+        reviewedAt: '2026-10-10',
         question: 'เมื่อไหร่ต้องเตรียม Temporary Pacemaker (TPM) หลังทำ TAVI?',
         quickAnswer: 'มี High-grade AV block / CHB, New LBBB + PR prolongation หรือเดิมมี RBBB ตั้ง Back up rate 50-60 bpm และล็อกปุ่ม Generator',
         reference: 'Nursing Management TAVR ศิริราช หน้า 12-14'
@@ -1715,6 +1791,9 @@
         badge: 'TEER / MitraClip',
         color: 'indigo',
         icon: 'fa-paperclip',
+        status: 'pending', // รอตรวจ
+        reviewedBy: null,
+        reviewedAt: null,
         question: 'การดูแลผู้ป่วยหลังทำ TEER (MitraClip) มีข้อปฏิบัติและข้อห้ามอย่างไร?',
         quickAnswer: 'นอนราบศีรษะสูงไม่เกิน 30 องศา ห้ามงอขา 6-8 ชม. สังเกตเหนื่อย/ฟังปอดระวัง Acute Pulmonary Edema จาก ASD หรือ Clip Detachment',
         reference: 'Nursing Management of TEER ศิริราช หน้า 7-10'
@@ -1725,6 +1804,9 @@
         badge: 'High-Alert Drug',
         color: 'emerald',
         icon: 'fa-syringe',
+        status: 'approved',
+        reviewedBy: 'พี่ชล (พยาบาลชำนาญการพิเศษ)',
+        reviewedAt: '2026-10-10',
         question: 'การบริหารยา Norepinephrine (Levophed) มีข้อควรระวัง High-Alert อะไร?',
         quickAnswer: 'ผสม D5W เสมอ ให้ทาง Central line เท่านั้น หากรั่วหยุดยาทันทีแล้วฉีด Phentolamine 5-10 mg Subcut รอบจุดรั่ว Titrate ตาม MAP >= 65',
         reference: 'CPG ยา High-Alert Drug และ Vasopressor CCU ศิริราช หน้า 15-18'
@@ -1735,6 +1817,9 @@
         badge: 'EKG ด่วน',
         color: 'rose',
         icon: 'fa-wave-square',
+        status: 'pending', // รอตรวจ
+        reviewedBy: null,
+        reviewedAt: null,
         question: 'พบ Wide QRS Tachycardia / VT บน Monitor ต้องทำอย่างไรเป็นลำดับแรก?',
         quickAnswer: 'Check Patient ทันที! คลำ Carotid pulse หาก Pulseless CPR+Defib 200J ทันที หากมีชีพจรแต่ Unstable ทำ Synchronized Cardioversion 100-200J',
         reference: 'CPG การจัดการภาวะ Arrhythmia CCU ศิริราช หน้า 22-25'
@@ -1745,13 +1830,32 @@
         badge: 'ACS Post-PCI',
         color: 'amber',
         icon: 'fa-heart-crack',
+        status: 'approved',
+        reviewedBy: 'พว.ฟ้าพายัพ อินถาเครือ',
+        reviewedAt: '2026-10-11',
         question: 'ผู้ป่วย STEMI มีอาการแน่นหน้าอกซ้ำ (Recurrent Chest Pain) หลัง PCI ต้องทำอย่างไร?',
         quickAnswer: 'ทำ EKG 12-lead ทันทีดู Re-elevation (สงสัย Acute Stent Thrombosis) วัด V/S รายงานแพทย์ด่วน เตรียมเปิด Cath Lab ฉุกเฉิน',
         reference: '2025 ACS Clinical Update และ CPG STEMI ศิริราช หน้า 30-33'
       }
     ];
 
+    function getFaqList() {
+      const stored = localStorage.getItem('ccu_bedside_faqs_v2');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e) {}
+      }
+      return INITIAL_BEDSIDE_FAQS;
+    }
+
+    function saveFaqList(list) {
+      localStorage.setItem('ccu_bedside_faqs_v2', JSON.stringify(list));
+      renderBedsideFaqs();
+      renderAdminFaqList();
+      updateFaqStats();
+    }
+
     let currentFaqCategory = 'ALL';
+    let currentAdminFaqFilter = 'all';
     let isFaqDrawerOpen = true;
 
     function toggleFaqDrawer() {
@@ -1782,12 +1886,15 @@
     function renderBedsideFaqs() {
       const listEl = document.getElementById('bedsideFaqList');
       if (!listEl) return;
+      const allFaqs = getFaqList();
+      // แสดงเฉพาะข้อที่ผ่านการรับรองแล้ว (Approved) ในหน้าข้างเตียง
+      const approvedFaqs = allFaqs.filter(f => f.status === 'approved');
       const filtered = currentFaqCategory === 'ALL'
-        ? BEDSIDE_FAQS
-        : BEDSIDE_FAQS.filter(f => f.category === currentFaqCategory);
+        ? approvedFaqs
+        : approvedFaqs.filter(f => f.category === currentFaqCategory);
 
       if (filtered.length === 0) {
-        listEl.innerHTML = `<div class="text-[11px] text-slate-400 py-2 text-center">ไม่มีคำถามในหมวดนี้</div>`;
+        listEl.innerHTML = `<div class="text-[11px] text-slate-400 py-2 text-center">ไม่มีคำถามที่ผ่านการรับรองในหมวดนี้</div>`;
         return;
       }
 
@@ -2873,6 +2980,260 @@
         saveTacitList(updatedList);
       }
     }
+
+    // ===== CLINICAL FAQ VERIFICATION CONSOLE (พยาบาลรุ่นพี่/APN ตรวจสอบและรับรองความถูกต้อง) =====
+    function updateFaqStats() {
+      const list = getFaqList();
+      const total = list.length;
+      const pending = list.filter(f => f.status === 'pending').length;
+      const approved = list.filter(f => f.status === 'approved').length;
+
+      const elTotal = document.getElementById('statTotalFaqs');
+      const elPending = document.getElementById('statPendingFaqs');
+      const elApproved = document.getElementById('statApprovedFaqs');
+      const badgePending = document.getElementById('badgePendingFaqs');
+
+      if (elTotal) elTotal.innerText = total;
+      if (elPending) elPending.innerText = pending;
+      if (elApproved) elApproved.innerText = approved;
+      if (badgePending) {
+        badgePending.innerText = pending;
+        if (pending > 0) {
+          badgePending.classList.remove('hidden');
+        } else {
+          badgePending.classList.add('hidden');
+        }
+      }
+    }
+
+    function renderAdminFaqList(customList) {
+      const container = document.getElementById('adminFaqListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      updateFaqStats();
+
+      let list = customList || getFaqList();
+      if (currentAdminFaqFilter !== 'all') {
+        list = list.filter(f => f.status === currentAdminFaqFilter);
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-400 bg-white rounded-2xl border border-slate-200">
+            <i class="fa-solid fa-clipboard-check text-3xl mb-2 text-slate-300"></i>
+            <p class="text-xs">ไม่พบรายการ FAQ ในหมวดนี้</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.forEach(faq => {
+        const isApproved = faq.status === 'approved';
+        const isRejected = faq.status === 'rejected';
+        const card = document.createElement('div');
+        card.className = `p-3.5 rounded-2xl border ${!isApproved ? 'bg-amber-50/40 border-amber-300' : 'bg-white border-slate-200'} shadow-xs space-y-2.5`;
+
+        let statusBadge = '';
+        if (isApproved) {
+          statusBadge = `<span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> ผ่านการรับรองแล้ว</span>`;
+        } else if (isRejected) {
+          statusBadge = `<span class="text-[9px] bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded-full border border-rose-200 flex items-center gap-1"><i class="fa-solid fa-circle-xmark text-rose-600"></i> ส่งกลับแก้ไข/ไม่ถูกต้อง</span>`;
+        } else {
+          statusBadge = `<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full border border-amber-300 flex items-center gap-1"><i class="fa-solid fa-clock text-amber-600"></i> รอพยาบาลรุ่นพี่ตรวจ</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[9px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${faq.category || 'General'}</span>
+                ${statusBadge}
+              </div>
+              <h4 class="font-heading font-bold text-xs text-slate-900 mt-1.5 leading-snug">
+                <i class="fa-solid fa-circle-question text-brand-600 mr-1"></i>${escapeHtml(faq.question)}
+              </h4>
+            </div>
+            <span class="text-[9px] text-slate-400 font-mono shrink-0">${faq.id}</span>
+          </div>
+
+          <!-- Answer & Reference -->
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-700 space-y-1.5">
+            <div>
+              <span class="font-bold text-slate-900"><i class="fa-solid fa-notes-medical text-emerald-600 mr-1"></i>แนวทางปฏิบัติ/คำตอบ:</span>
+              <p class="mt-0.5 text-slate-800 leading-relaxed">${escapeHtml(faq.quickAnswer || faq.answer || '')}</p>
+            </div>
+            <div class="pt-1.5 border-t border-slate-200/60 text-[11px] text-slate-500 flex items-center gap-1">
+              <i class="fa-solid fa-book-bookmark text-indigo-500 shrink-0"></i>
+              <span><strong>อ้างอิง CPG:</strong> ${escapeHtml(faq.reference || '-')}</span>
+            </div>
+          </div>
+
+          <!-- Review Info & Action Buttons -->
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div class="text-[10px] text-slate-400">
+              ${faq.reviewedBy ? `
+                <span>ผู้ตรวจรับรอง: <strong class="text-slate-700">${escapeHtml(faq.reviewedBy)}</strong> (${faq.reviewedAt || ''})</span>
+              ` : '<span class="text-amber-600 italic">ยังไม่ได้รับการตรวจประเมิน</span>'}
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              <!-- Approve Button -->
+              ${!isApproved ? `
+                <button onclick="approveFaqItem('${faq.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1 shadow-xs transition-all">
+                  <i class="fa-solid fa-check"></i> รับรอง (Approve)
+                </button>
+              ` : `
+                <button onclick="rejectFaqItem('${faq.id}')" class="text-[10px] text-slate-400 hover:text-amber-700 underline px-1">
+                  พักการรับรอง
+                </button>
+              `}
+
+              <!-- Edit Button -->
+              <button onclick="editFaqItem('${faq.id}')" title="แก้ไขคำถาม-คำตอบ" class="w-7 h-7 rounded-lg bg-sky-50 text-brand-600 hover:bg-sky-100 flex items-center justify-center text-xs border border-sky-100">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+
+              <!-- Delete Button -->
+              <button onclick="deleteFaqItem('${faq.id}')" title="ลบ FAQ นี้" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center text-xs border border-rose-100">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterAdminFaqStatus(status) {
+      currentAdminFaqFilter = status;
+      document.querySelectorAll('.faq-status-btn').forEach(btn => {
+        btn.classList.remove('bg-slate-800', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-600');
+      });
+      const activeBtn = document.getElementById('faqFilter-' + status);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+        activeBtn.classList.add('bg-slate-800', 'text-white');
+      }
+      renderAdminFaqList();
+    }
+
+    function handleAdminFaqSearch(e) {
+      const q = e.target.value.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearAdminFaqBtn');
+      if (q) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      const list = getFaqList();
+      if (!q) {
+        renderAdminFaqList(list);
+        return;
+      }
+      const filtered = list.filter(f => 
+        (f.question || '').toLowerCase().includes(q) ||
+        (f.quickAnswer || f.answer || '').toLowerCase().includes(q) ||
+        (f.category || '').toLowerCase().includes(q) ||
+        (f.reference || '').toLowerCase().includes(q)
+      );
+      renderAdminFaqList(filtered);
+    }
+
+    function clearAdminFaqSearch() {
+      document.getElementById('adminFaqSearch').value = '';
+      document.getElementById('clearAdminFaqBtn').classList.add('hidden');
+      renderAdminFaqList();
+    }
+
+    function approveFaqItem(id) {
+      const list = getFaqList();
+      const target = list.find(f => f.id === id);
+      if (!target) return;
+
+      const reviewerName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลรุ่นพี่/Incharge CCU';
+      target.status = 'approved';
+      target.reviewedBy = reviewerName;
+      target.reviewedAt = new Date().toISOString().split('T')[0];
+
+      saveFaqList(list);
+      alert(`รับรองความถูกต้องของข้อคำถาม "${target.question}" เรียบร้อยแล้ว! นำไปแสดงข้างเตียงและค้นหาด้วย AI ทันที`);
+    }
+
+    function rejectFaqItem(id) {
+      const list = getFaqList();
+      const target = list.find(f => f.id === id);
+      if (!target) return;
+
+      target.status = 'pending';
+      target.reviewedBy = null;
+      target.reviewedAt = null;
+
+      saveFaqList(list);
+      alert(`ยกเลิกการรับรองข้อคำถาม "${target.question}" ชั่วคราว (จะถูกซ่อนจากหน้าจอข้างเตียงของพยาบาลน้องใหม่)`);
+    }
+
+    function editFaqItem(id) {
+      const list = getFaqList();
+      const target = list.find(f => f.id === id);
+      if (!target) return;
+
+      const newQ = prompt("แก้ไขข้อคำถาม (Question):", target.question);
+      if (newQ === null) return;
+      const newA = prompt("แก้ไขแนวทางปฏิบัติ/คำตอบ (Answer):", target.quickAnswer || target.answer);
+      if (newA === null) return;
+      const newRef = prompt("แก้ไขเอกสารอ้างอิง CPG (Reference & Page):", target.reference);
+      if (newRef === null) return;
+
+      target.question = newQ.trim() || target.question;
+      target.quickAnswer = newA.trim() || target.quickAnswer;
+      target.reference = newRef.trim() || target.reference;
+
+      saveFaqList(list);
+      alert("บันทึกการแก้ไข FAQ เรียบร้อยแล้วครับ!");
+    }
+
+    function openAddFaqModal() {
+      const q = prompt("พิมพ์ข้อคำถามทางคลินิก (เช่น พบ Complete Heart Block หลัง TAVI ต้องทำอย่างไร?):");
+      if (!q) return;
+      const a = prompt("พิมพ์แนวทางปฏิบัติ/คำตอบตาม CPG ศิริราช:");
+      if (!a) return;
+      const cat = prompt("หมวดหมู่ (เช่น TAVI, TEER, Drug, EKG, ACS):", "General");
+      if (!cat) return;
+      const ref = prompt("เอกสาร CPG ศิริราช และเลขหน้าอ้างอิง:", "CPG CCU ศิริราช");
+      if (!ref) return;
+
+      const list = getFaqList();
+      const reviewerName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลรุ่นพี่/Incharge CCU';
+      list.unshift({
+        id: 'faq-' + Date.now(),
+        category: cat.trim(),
+        badge: cat.trim(),
+        color: 'indigo',
+        icon: 'fa-circle-question',
+        status: 'approved', // สร้างโดยพี่ให้ approved อัตโนมัติ
+        reviewedBy: reviewerName,
+        reviewedAt: new Date().toISOString().split('T')[0],
+        question: q.trim(),
+        quickAnswer: a.trim(),
+        reference: ref.trim()
+      });
+      saveFaqList(list);
+      alert("เพิ่มข้อคำถาม-คำตอบการแพทย์สำเร็จ และรับรองความถูกต้องเรียบร้อยแล้วครับ!");
+    }
+
+    function deleteFaqItem(id) {
+      const list = getFaqList();
+      const target = list.find(f => f.id === id);
+      if (!target) return;
+
+      if (confirm(`ต้องการลบข้อคำถาม "${target.question}" ใช่หรือไม่?`)) {
+        const updated = list.filter(f => f.id !== id);
+        saveFaqList(updated);
+      }
+    }
   </script>
 </body>
 </html>
+
