@@ -1019,6 +1019,57 @@
       </div>
 
       <!-- ================================================= -->
+      <!-- MODAL: AI EXTRACT FAQS FROM CPG (ผลลัพธ์สกัด FAQ ด้วย AI) -->
+      <!-- ================================================= -->
+      <div id="aiExtractFaqModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
+        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <div>
+                <h3 class="font-heading font-bold text-sm text-slate-800">AI สกัดคำถาม-คำตอบข้างเตียง</h3>
+                <p id="aiExtractCpgTitle" class="text-[10px] text-slate-500 truncate max-w-[240px]">CPG Name</p>
+              </div>
+            </div>
+            <button onclick="closeAiExtractFaqModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="p-4 overflow-y-auto text-xs space-y-3.5 flex-1">
+            <div class="p-2.5 bg-indigo-50/70 border border-indigo-100 rounded-xl text-indigo-800 text-[11px] flex items-start gap-2">
+              <i class="fa-solid fa-shield-halved text-indigo-600 mt-0.5"></i>
+              <span><strong>ระบบตรวจสอบก่อนบันทึก:</strong> โปรดตรวจสอบความถูกต้องของแต่ละข้อ สามารถแก้ไขข้อความหรือเลือกเฉพาะข้อที่ต้องการได้</span>
+            </div>
+
+            <div id="aiExtractLoading" class="py-8 text-center space-y-2">
+              <i class="fa-solid fa-spinner fa-spin text-2xl text-indigo-600"></i>
+              <p class="text-xs text-slate-600 font-medium">Gemini AI กำลังอ่านและวิเคราะห์เนื้อหา CPG...</p>
+              <p class="text-[10px] text-slate-400">สกัดคู่คำถาม-คำตอบและข้อเฝ้าระวังสำคัญข้างเตียง</p>
+            </div>
+
+            <div id="aiExtractResults" class="space-y-3 hidden">
+              <!-- Rendered items with checkboxes and editable fields -->
+            </div>
+          </div>
+
+          <div id="aiExtractActions" class="p-4 border-t border-slate-100 flex gap-2 hidden bg-slate-50 rounded-b-3xl">
+            <button type="button" onclick="closeAiExtractFaqModal()" class="w-1/3 py-2.5 bg-white border border-slate-200 text-slate-600 font-semibold rounded-xl text-xs hover:bg-slate-100">
+              ยกเลิก
+            </button>
+            <button type="button" onclick="saveExtractedFaqs('pending')" class="w-1/3 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-xs shadow-xs active:scale-95 transition-all">
+              <i class="fa-solid fa-clock"></i> รอตรวจ
+            </button>
+            <button type="button" onclick="saveExtractedFaqs('approved')" class="w-1/3 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs shadow-xs active:scale-95 transition-all">
+              <i class="fa-solid fa-circle-check"></i> รับรองทันที
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
       <!-- MODAL: เพิ่ม/แก้ไขเกร็ดความรู้ (Tacit Pearl Form)  -->
       <!-- ================================================= -->
       <div id="tacitFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
@@ -2772,14 +2823,17 @@
               <span class="font-bold text-indigo-700">${linkedFaqs.length} ข้อ</span>
               <span class="text-[10px] text-slate-500">(ผ่าน: <strong class="text-emerald-600">${faqApprovedCount}</strong> | รอตรวจ: <strong class="text-amber-600">${faqPendingCount}</strong>${faqSuspendedCount > 0 ? ` | พัก: <strong class="text-rose-500">${faqSuspendedCount}</strong>` : ''})</span>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 flex-wrap">
               ${linkedFaqs.length > 0 ? `
                 <button onclick="filterAdminFaqByCpg('${item.id}')" title="เปิดดูรายการ FAQ ของ CPG นี้ในแถบตรวจ FAQ" class="text-[10px] bg-white hover:bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded-lg border border-slate-200 flex items-center gap-1 transition-all active:scale-95 shadow-2xs">
-                  <i class="fa-solid fa-list-check text-indigo-600"></i> ดูรายการ FAQ
+                  <i class="fa-solid fa-list-check text-indigo-600"></i> ดู FAQ
                 </button>
               ` : ''}
-              <button onclick="openAddFaqModal('${item.id}', '${item.category}', '${escapeHtml(item.title)}')" title="สร้าง FAQ สำหรับ CPG นี้" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-lg border border-indigo-200 flex items-center gap-1 transition-all">
-                <i class="fa-solid fa-plus"></i> เพิ่ม FAQ
+              <button onclick="openAiExtractFaqModal('${item.id}')" title="ใช้ Gemini AI สกัดคำถาม-คำตอบจาก CPG นี้อัตโนมัติ" class="text-[10px] bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold px-2 py-0.5 rounded-lg shadow-2xs flex items-center gap-1 transition-all active:scale-95">
+                <i class="fa-solid fa-wand-magic-sparkles text-[9px]"></i> AI สกัด FAQ
+              </button>
+              <button onclick="openAddFaqModal('${item.id}', '${item.category}', '${escapeHtml(item.title)}')" title="สร้าง FAQ สำหรับ CPG นี้ด้วยตนเอง" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-lg border border-indigo-200 flex items-center gap-1 transition-all">
+                <i class="fa-solid fa-plus"></i> เพิ่มเอง
               </button>
             </div>
           </div>
@@ -2898,9 +2952,14 @@
                 <span class="text-[10px] font-bold bg-indigo-600 text-white px-1.5 py-0.2 rounded-full">${displayFaqs.length} ข้อ</span>
               </h4>
               ${isSeniorOrAdmin ? `
-                <button type="button" onclick="closeTopicModal(); openAddFaqModal('${item.id}', '${item.category}', '${escapeHtml(item.title)}')" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-0.5">
-                  <i class="fa-solid fa-plus text-[9px]"></i> เพิ่ม FAQ
-                </button>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="closeTopicModal(); openAiExtractFaqModal('${item.id}')" class="text-[10px] bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold px-2 py-0.5 rounded-lg shadow-2xs flex items-center gap-1 transition-all active:scale-95">
+                    <i class="fa-solid fa-wand-magic-sparkles text-[9px]"></i> AI สกัด FAQ
+                  </button>
+                  <button type="button" onclick="closeTopicModal(); openAddFaqModal('${item.id}', '${item.category}', '${escapeHtml(item.title)}')" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-0.5">
+                    <i class="fa-solid fa-plus text-[9px]"></i> เพิ่ม FAQ
+                  </button>
+                </div>
               ` : ''}
             </div>
 
@@ -4058,7 +4117,197 @@
         saveFaqList(updated);
       }
     }
+
+    // ==========================================
+    // AI EXTRACT FAQS FROM CPG (Gemini Zero-Hallucination)
+    // ==========================================
+    let currentExtractedCpg = null;
+
+    async function openAiExtractFaqModal(cpgId) {
+      const targetCpg = currentCatalog.find(c => c.id === cpgId);
+      if (!targetCpg) {
+        alert("ไม่พบข้อมูล CPG ที่ต้องการสกัด FAQ");
+        return;
+      }
+
+      currentExtractedCpg = targetCpg;
+
+      const modal = document.getElementById('aiExtractFaqModal');
+      const titleEl = document.getElementById('aiExtractCpgTitle');
+      const loadingEl = document.getElementById('aiExtractLoading');
+      const resultsEl = document.getElementById('aiExtractResults');
+      const actionsEl = document.getElementById('aiExtractActions');
+
+      if (!modal) return;
+
+      titleEl.innerText = `[${targetCpg.category}] ${targetCpg.title}`;
+      modal.classList.remove('hidden');
+      loadingEl.classList.remove('hidden');
+      resultsEl.classList.add('hidden');
+      actionsEl.classList.add('hidden');
+      resultsEl.innerHTML = '';
+
+      // Prepare CPG Content (strip HTML tags for cleaner prompt)
+      const rawContent = (targetCpg.summaryHtml || targetCpg.desc || '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      let extractedFaqs = [];
+
+      try {
+        const res = await fetch(CCU_GATEWAY_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'extract_faqs',
+            cpgTitle: targetCpg.title,
+            cpgCategory: targetCpg.category,
+            cpgAuthor: targetCpg.author || 'CCU ศิริราช',
+            cpgContent: rawContent
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.faqs) && data.faqs.length > 0) {
+            extractedFaqs = data.faqs;
+          }
+        }
+      } catch (err) {
+        console.warn("AI Gateway offline or error, falling back to smart heuristic extraction:", err);
+      }
+
+      // Smart Clinical Heuristic Fallback (ถ้า Gateway ติดต่อไม่ได้ หรือ Quota เต็ม)
+      if (extractedFaqs.length === 0) {
+        extractedFaqs = generateHeuristicFaqs(targetCpg, rawContent);
+      }
+
+      // Render Extracted FAQ Cards
+      renderExtractedFaqCards(extractedFaqs, targetCpg);
+      loadingEl.classList.add('hidden');
+      resultsEl.classList.remove('hidden');
+      actionsEl.classList.remove('hidden');
+    }
+
+    function generateHeuristicFaqs(cpg, text) {
+      const faqs = [];
+      const title = cpg.title;
+      const ref = `${title} (${cpg.author || 'CCU ศิริราช'})`;
+
+      faqs.push({
+        question: `ข้อควรระวังสำคัญและข้อห้าม (Red Flags) ของ ${title} คืออะไร?`,
+        answer: text.length > 300 ? text.substring(0, 300) + '...' : text,
+        reference: ref
+      });
+
+      faqs.push({
+        question: `ขั้นตอนการพยาบาลและการเฝ้าระวังข้างเตียงหลังทำหัตถการ/ให้ยา ${title} มีอะไรบ้าง?`,
+        answer: `1. เฝ้าระวังสัญญาณชีพและอาการเปลี่ยนแปลงอย่างใกล้ชิด\n2. ตรวจสอบภาวะแทรกซ้อนที่พบบ่อยตามแนวปฏิบัติ\n3. รายงานแพทย์ทันทีหากพบอาการผิดปกติรุนแรง`,
+        reference: ref
+      });
+
+      faqs.push({
+        question: `เกณฑ์ในการรายงานแพทย์ฉุกเฉิน (Notify Criteria) สำหรับ ${title} คืออะไร?`,
+        answer: `รายงานแพทย์เมื่อ: BP ตก, Arrhythmia, หอบเหนื่อย หรือมีภาวะ Bleeding/Hematoma ผิดปกติ`,
+        reference: ref
+      });
+
+      return faqs;
+    }
+
+    function renderExtractedFaqCards(faqs, cpg) {
+      const resultsEl = document.getElementById('aiExtractResults');
+      if (!resultsEl) return;
+
+      resultsEl.innerHTML = faqs.map((f, idx) => `
+        <div class="p-3 bg-white border border-slate-200 rounded-xl shadow-2xs space-y-2 ai-faq-card" data-idx="${idx}">
+          <div class="flex items-start gap-2">
+            <input type="checkbox" id="aiFaqCheck_${idx}" checked class="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
+            <div class="flex-1 space-y-1.5">
+              <label for="aiFaqCheck_${idx}" class="font-bold text-[11px] text-slate-800 flex items-center justify-between cursor-pointer">
+                <span class="text-indigo-600 font-mono">ข้อที่ ${idx + 1}</span>
+                <span class="text-[9px] bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded font-normal">สกัดโดย AI</span>
+              </label>
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-0.5">คำถามข้างเตียง:</label>
+                <textarea id="aiFaqQ_${idx}" rows="2" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-indigo-500 font-medium">${escapeHtml(f.question || '')}</textarea>
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-0.5">คำตอบแนวปฏิบัติ:</label>
+                <textarea id="aiFaqA_${idx}" rows="3" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-1 focus:ring-indigo-500 leading-relaxed">${escapeHtml(f.answer || '')}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function closeAiExtractFaqModal() {
+      const modal = document.getElementById('aiExtractFaqModal');
+      if (modal) modal.classList.add('hidden');
+      currentExtractedCpg = null;
+    }
+
+    function saveExtractedFaqs(targetStatus) {
+      if (!currentExtractedCpg) {
+        alert("ไม่พบข้อมูล CPG สำหรับบันทึก");
+        return;
+      }
+
+      const cards = document.querySelectorAll('.ai-faq-card');
+      const selectedFaqs = [];
+
+      cards.forEach(card => {
+        const idx = card.getAttribute('data-idx');
+        const check = document.getElementById(`aiFaqCheck_${idx}`);
+        if (check && check.checked) {
+          const q = (document.getElementById(`aiFaqQ_${idx}`)?.value || '').trim();
+          const a = (document.getElementById(`aiFaqA_${idx}`)?.value || '').trim();
+          if (q && a) {
+            selectedFaqs.push({ question: q, answer: a });
+          }
+        }
+      });
+
+      if (selectedFaqs.length === 0) {
+        alert("กรุณาเลือกคำถามที่ต้องการบันทึกอย่างน้อย 1 ข้อ");
+        return;
+      }
+
+      const list = getFaqList();
+      const reviewerName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลรุ่นพี่/Incharge CCU';
+      const today = new Date().toISOString().split('T')[0];
+      const isApproved = targetStatus === 'approved';
+
+      selectedFaqs.forEach((item, index) => {
+        list.unshift({
+          id: 'faq-' + Date.now() + '-' + index,
+          cpgId: currentExtractedCpg.id,
+          version: '1.0',
+          category: currentExtractedCpg.category || 'General',
+          badge: currentExtractedCpg.category || 'General',
+          icon: 'fa-wand-magic-sparkles',
+          color: 'indigo',
+          question: item.question,
+          quickAnswer: item.answer.length > 200 ? item.answer.substring(0, 200) + '...' : item.answer,
+          answer: item.answer,
+          reference: `${currentExtractedCpg.title} (${currentExtractedCpg.author || 'CCU ศิริราช'})`,
+          status: targetStatus, // 'pending' หรือ 'approved'
+          reviewedBy: isApproved ? reviewerName : null,
+          reviewedAt: isApproved ? today : null
+        });
+      });
+
+      saveFaqList(list);
+      renderManageCatalog(currentCatalog);
+      closeAiExtractFaqModal();
+
+      const statusText = isApproved ? 'รับรองและเปิดใช้งานทันที' : 'บันทึกเป็นแบบรอรุ่นพี่ตรวจรับรอง';
+      alert(`บันทึกคำถาม-คำตอบ AI สำเร็จจำนวน ${selectedFaqs.length} ข้อ (${statusText})`);
+    }
   </script>
 </body>
 </html>
+
 

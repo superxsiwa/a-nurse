@@ -187,6 +187,92 @@ export default {
 
     try {
       const body = await request.json().catch(() => ({}));
+      const action = body.action || 'chat';
+
+      const geminiApiKey = env.GEMINI_API_KEY;
+      if (!geminiApiKey) {
+        return new Response(JSON.stringify({
+          error: 'CONFIG_ERROR',
+          message: 'ไม่พบ GEMINI_API_KEY ใน Environment Variables ของ Worker'
+        }), {
+          status: 500,
+          headers: corsHeaders
+        });
+      }
+
+      // Feature: AI สกัดคู่คำถาม-คำตอบ (CPG-to-FAQ Generator)
+      if (action === 'extract_faqs') {
+        const cpgTitle = (body.cpgTitle || body.title || '').trim();
+        const cpgCategory = (body.cpgCategory || body.category || 'General').trim();
+        const cpgContent = (body.cpgContent || body.content || '').trim();
+        const cpgAuthor = (body.cpgAuthor || body.author || 'CCU ศิริราช').trim();
+
+        if (!cpgTitle || !cpgContent) {
+          return new Response(JSON.stringify({ error: 'กรุณาระบุชื่อเรื่อง (cpgTitle/title) และเนื้อหา (cpgContent/content) ของ CPG' }), {
+            status: 400,
+            headers: corsHeaders
+          });
+        }
+
+        const prompt = `
+คุณคือ AI Medical Knowledge Engineer ประจำหอผู้ป่วย CCU ศิริราช
+ภารกิจ: สกัดคู่คำถาม-คำตอบข้างเตียงที่พยาบาลวิชาชีพถามบ่อยที่สุด (3-5 ข้อ) จากแนวปฏิบัตินี้:
+ชื่อเรื่อง: ${cpgTitle}
+หมวดหมู่: ${cpgCategory}
+ผู้จัดทำ: ${cpgAuthor}
+เนื้อหาแนวปฏิบัติ:
+${cpgContent}
+
+กฎระเบียบ:
+1. สกัดเฉพาะข้อเท็จจริงในเนื้อหา ห้ามแต่งเติมขนาดยาหรือข้อห้ามขึ้นเอง (Zero Hallucination)
+2. มุ่งเน้น: การเฝ้าระวังแทรกซ้อน (Complications), ขนาดยาเสี่ยงสูง (High-Alert Drugs), ข้อห้ามสำคัญ (Pitfalls/Red flags)
+3. ผลลัพธ์ต้องส่งกลับเป็น JSON Array โดยมีรูปแบบดังนี้:
+[
+  {
+    "question": "คำถามข้างเตียงที่ชัดเจน กระชับ",
+    "answer": "คำตอบแนวปฏิบัติทางคลินิก มีขั้นตอนปฏิบัติ 1, 2, 3...",
+    "reference": "${cpgTitle} (${cpgAuthor})"
+  }
+]
+`;
+
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_CHAT_MODEL}:generateContent?key=${geminiApiKey}`;
+        const res = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.1,
+              responseMimeType: 'application/json'
+            }
+          })
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(`Gemini Extract API failed: ${errText}`);
+        }
+
+        const data = await res.json();
+        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+        let faqs = [];
+        try {
+          faqs = JSON.parse(rawText);
+        } catch(e) {
+          faqs = [];
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          cpgTitle: cpgTitle,
+          faqs: faqs
+        }), {
+          status: 200,
+          headers: corsHeaders
+        });
+      }
+
       const question = (body.question || '').trim();
       const localCpgContext = body.cpgContext || '';
 
@@ -206,17 +292,6 @@ export default {
           alert: 'เพื่อความปลอดภัยของผู้ป่วยตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA) ห้ามส่งชื่อ, HN หรือข้อมูลระบุตัวตนเข้าสู่ระบบ AI'
         }), {
           status: 200,
-          headers: corsHeaders
-        });
-      }
-
-      const geminiApiKey = env.GEMINI_API_KEY;
-      if (!geminiApiKey) {
-        return new Response(JSON.stringify({
-          error: 'CONFIG_ERROR',
-          message: 'ไม่พบ GEMINI_API_KEY ใน Environment Variables ของ Worker'
-        }), {
-          status: 500,
           headers: corsHeaders
         });
       }
