@@ -1752,12 +1752,14 @@
       }).join('');
     }
 
+    const CCU_GATEWAY_URL = "https://ccu-ai-gateway.mrsiwakorn.workers.dev/";
+
     function askAi(q) {
       document.getElementById('aiInput').value = q;
       sendAiMessage();
     }
 
-    function sendAiMessage(e) {
+    async function sendAiMessage(e) {
       if (e) e.preventDefault();
       const input = document.getElementById('aiInput');
       const q = input.value.trim();
@@ -1768,31 +1770,88 @@
       // บันทึกคำถามล่าสุด 3 รายการ
       saveAiRecentQuestion(q);
 
+      // 1. ตรวจสอบ PDPA เบื้องต้นฝั่ง Client
       if (/\bhn\b|\d{6,}/i.test(q)) {
-        appendAiBubble('bot', '<i class="fa-solid fa-shield-halved text-rose-500"></i> พบข้อมูลที่อาจระบุตัวผู้ป่วย (HN/เลขประจำตัว) กรุณาลบออกก่อนถาม ตามนโยบาย PDPA');
+        appendAiBubble('bot', '<i class="fa-solid fa-shield-halved text-rose-500"></i> ตรวจพบข้อมูลที่อาจระบุตัวผู้ป่วย (HN/เลขประจำตัว) กรุณาลบออกก่อนส่งคำถาม ตามมาตรการ PDPA');
         return;
       }
 
+      // 2. ดึงบริบทจาก CPG ในระบบ (Local RAG Context)
       const results = aiRetrieve(q);
-      setTimeout(() => {
-        if (!results.length) {
-          appendAiBubble('bot', 'ไม่พบข้อมูลนี้ในคลังความรู้ของหอผู้ป่วย จึงไม่สามารถตอบได้ (ระบบไม่ตอบนอกเหนือเอกสาร CPG) กรุณาปรึกษาพยาบาลอาวุโส/APN หรือแพทย์เวร');
+      let cpgContext = "";
+      if (results.length > 0) {
+        cpgContext = results.map((r, idx) => 
+          `[เอกสารที่ ${idx + 1}] ${r.item.title} (หมวด: ${r.item.category})\nรายละเอียด: ${r.item.desc || ''}\nสรุปแนวปฏิบัติ: ${(r.item.summaryHtml || '').replace(/<[^>]+>/g, ' ')}`
+        ).join('\n\n');
+      }
+
+      // 3. แสดงฟอง Loading กำลังประมวลผล
+      const chat = document.getElementById('aiChat');
+      const loadingDiv = document.createElement('div');
+      loadingDiv.id = 'aiLoadingBubble';
+      loadingDiv.className = 'max-w-[92%] bg-white border border-slate-200 text-slate-500 text-xs px-3 py-2.5 rounded-2xl rounded-bl-sm shadow-xs flex items-center gap-2';
+      loadingDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-brand-600"></i> กำลังสืบค้น CPG ศิริราช และประมวลผลคำตอบจาก Gemini AI...`;
+      chat.appendChild(loadingDiv);
+      loadingDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+      try {
+        const response = await fetch(CCU_GATEWAY_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: q,
+            cpgContext: cpgContext
+          })
+        });
+
+        const data = await response.json();
+        
+        // ลบ Loading
+        const currentLoading = document.getElementById('aiLoadingBubble');
+        if (currentLoading) currentLoading.remove();
+
+        if (data.error === 'PDPA_ALERT') {
+          appendAiBubble('bot', `<div class="text-rose-600 font-semibold text-xs flex items-center gap-1.5"><i class="fa-solid fa-shield-halved"></i> ข้อความแจ้งเตือนความปลอดภัย (PDPA Guard)</div><p class="text-xs text-rose-700 mt-1">${escapeHtml(data.message)}</p>`);
           return;
         }
-        const top = results[0].item;
-        const body = top.summaryHtml ? top.summaryHtml : `<p class="text-xs">${top.desc || ''}</p>`;
+
+        if (data.error) {
+          appendAiBubble('bot', `<div class="text-amber-700 text-xs"><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถติดต่อเกตเวย์ AI ได้ชั่วคราว: ${escapeHtml(data.error)}</div>`);
+          return;
+        }
+
+        // แปลง Markdown จาก Gemini (ตัวหนาและ bullet points) เป็น HTML สวยงาม
+        let formattedAnswer = (data.answer || '')
+          .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
+          .replace(/^\* (.*?)$/gm, '<li class="ml-3 list-disc text-slate-700">$1</li>')
+          .replace(/\n\n/g, '<div class="h-2"></div>')
+          .replace(/\n/g, '<br>');
+
         const refs = results.map((r, i) =>
-          `<button onclick="openKnowledgeModal('${r.item.id}')" class="block w-full text-left text-[11px] text-indigo-700 hover:underline">[${i + 1}] ${r.item.title} <span class="text-slate-400">(${r.item.category})</span></button>`
+          `<button onclick="openKnowledgeModal('${r.item.id}')" class="block w-full text-left text-[11px] text-brand-700 hover:underline"><i class="fa-solid fa-file-lines text-slate-400"></i> [${i + 1}] ${r.item.title} <span class="text-slate-400">(${r.item.category})</span></button>`
         ).join('');
+
         appendAiBubble('bot', `
-          ${body}
-          <div class="mt-2 pt-2 border-t border-slate-100">
-            <div class="text-[10px] font-semibold text-slate-500 mb-1"><i class="fa-solid fa-book"></i> แหล่งอ้างอิง</div>
-            ${refs}
+          <div class="space-y-1.5 text-xs text-slate-800 leading-relaxed">
+            ${formattedAnswer}
           </div>
-          <div class="mt-2 text-[10px] text-amber-700"><i class="fa-solid fa-circle-info"></i> โปรดยืนยันกับแผนการรักษาของแพทย์ก่อนปฏิบัติ</div>
+          ${refs ? `
+            <div class="mt-2.5 pt-2 border-t border-slate-100">
+              <div class="text-[10px] font-bold text-slate-500 mb-1 flex items-center gap-1"><i class="fa-solid fa-book-medical text-brand-600"></i> แหล่งอ้างอิง CPG ในระบบ</div>
+              ${refs}
+            </div>
+          ` : ''}
+          <div class="mt-2 text-[10px] text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-200/60 flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i>
+            <span>คำแนะนำข้างเตียง: โปรดยืนยันกับแผนการรักษาของแพทย์และพี่ In-charge ก่อนปฏิบัติ</span>
+          </div>
         `);
-      }, 400);
+
+      } catch (err) {
+        const currentLoading = document.getElementById('aiLoadingBubble');
+        if (currentLoading) currentLoading.remove();
+        appendAiBubble('bot', `<div class="text-rose-600 text-xs"><i class="fa-solid fa-circle-exclamation"></i> เกิดข้อผิดพลาดในการเชื่อมต่อ: ${escapeHtml(err.message)}</div>`);
+      }
     }
 
     function switchTab(viewId) {
