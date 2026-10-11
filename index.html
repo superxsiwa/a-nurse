@@ -701,20 +701,20 @@
 
         <!-- SECTION D: CLINICAL FAQ VERIFICATION (พยาบาลรุ่นพี่/APN ตรวจสอบและรับรองความถูกต้อง) -->
         <div id="adminSectionFaqs" class="hidden space-y-3">
-          <!-- Summary FAQ verification counts -->
+          <!-- Summary FAQ verification counts (Clickable Filters) -->
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
-              <div class="text-[10px] text-slate-400">FAQ ทั้งหมด</div>
-              <div id="statTotalFaqs" class="text-base font-bold text-slate-800">0</div>
-            </div>
-            <div class="bg-white p-2.5 rounded-xl border border-amber-200 bg-amber-50/40">
+            <button type="button" onclick="filterAdminFaqStatus('all')" id="faqStatCard-all" class="faq-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95">
+              <div class="text-[10px] text-slate-300 font-medium">FAQ ทั้งหมด</div>
+              <div id="statTotalFaqs" class="text-base font-bold text-white">0</div>
+            </button>
+            <button type="button" onclick="filterAdminFaqStatus('pending')" id="faqStatCard-pending" class="faq-stat-btn p-2.5 rounded-xl border border-amber-200 bg-amber-50/60 text-amber-900 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-amber-100/60 active:scale-95">
               <div class="text-[10px] text-amber-700 font-medium">รอพี่ตรวจ</div>
               <div id="statPendingFaqs" class="text-base font-bold text-amber-600">0</div>
-            </div>
-            <div class="bg-white p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/40">
+            </button>
+            <button type="button" onclick="filterAdminFaqStatus('approved')" id="faqStatCard-approved" class="faq-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/60 text-emerald-900 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-100/60 active:scale-95">
               <div class="text-[10px] text-emerald-700 font-medium">รับรองแล้ว</div>
               <div id="statApprovedFaqs" class="text-base font-bold text-emerald-600">0</div>
-            </div>
+            </button>
           </div>
 
           <!-- Filter & Search Bar (ตรวจ FAQ) -->
@@ -730,13 +730,6 @@
             <button onclick="clearAdminFaqSearch()" id="clearAdminFaqBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
               <i class="fa-solid fa-circle-xmark"></i>
             </button>
-          </div>
-
-          <!-- Status Filter Tabs -->
-          <div class="flex gap-1.5 text-xs">
-            <button onclick="filterAdminFaqStatus('all')" id="faqFilter-all" class="faq-status-btn px-2.5 py-1 rounded-lg bg-slate-800 text-white font-semibold">ทั้งหมด</button>
-            <button onclick="filterAdminFaqStatus('pending')" id="faqFilter-pending" class="faq-status-btn px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-semibold hover:bg-slate-200">รอตรวจรับรอง</button>
-            <button onclick="filterAdminFaqStatus('approved')" id="faqFilter-approved" class="faq-status-btn px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-semibold hover:bg-slate-200">ผ่านการรับรองแล้ว</button>
           </div>
 
           <!-- FAQ Verification List Container -->
@@ -3427,15 +3420,43 @@
 
     function filterAdminFaqStatus(status) {
       currentAdminFaqFilter = status;
-      document.querySelectorAll('.faq-status-btn').forEach(btn => {
-        btn.classList.remove('bg-slate-800', 'text-white');
-        btn.classList.add('bg-slate-100', 'text-slate-600');
-      });
-      const activeBtn = document.getElementById('faqFilter-' + status);
-      if (activeBtn) {
-        activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
-        activeBtn.classList.add('bg-slate-800', 'text-white');
+      
+      const cardAll = document.getElementById('faqStatCard-all');
+      const cardPending = document.getElementById('faqStatCard-pending');
+      const cardApproved = document.getElementById('faqStatCard-approved');
+
+      // Reset all cards to inactive state
+      if (cardAll) {
+        cardAll.className = 'faq-stat-btn p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 active:scale-95';
+        cardAll.querySelector('#statTotalFaqs').className = 'text-base font-bold text-slate-800';
+        cardAll.querySelector('div').className = 'text-[10px] text-slate-400 font-medium';
       }
+      if (cardPending) {
+        cardPending.className = 'faq-stat-btn p-2.5 rounded-xl border border-amber-200 bg-white text-amber-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-amber-50 active:scale-95';
+        cardPending.querySelector('#statPendingFaqs').className = 'text-base font-bold text-amber-600';
+        cardPending.querySelector('div').className = 'text-[10px] text-amber-700 font-medium';
+      }
+      if (cardApproved) {
+        cardApproved.className = 'faq-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-white text-emerald-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 active:scale-95';
+        cardApproved.querySelector('#statApprovedFaqs').className = 'text-base font-bold text-emerald-600';
+        cardApproved.querySelector('div').className = 'text-[10px] text-emerald-700 font-medium';
+      }
+
+      // Apply active style to selected card
+      if (status === 'all' && cardAll) {
+        cardAll.className = 'faq-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-slate-800 ring-offset-1';
+        cardAll.querySelector('#statTotalFaqs').className = 'text-base font-bold text-white';
+        cardAll.querySelector('div').className = 'text-[10px] text-slate-300 font-medium';
+      } else if (status === 'pending' && cardPending) {
+        cardPending.className = 'faq-stat-btn p-2.5 rounded-xl border border-amber-400 bg-amber-500 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-amber-500 ring-offset-1';
+        cardPending.querySelector('#statPendingFaqs').className = 'text-base font-bold text-white';
+        cardPending.querySelector('div').className = 'text-[10px] text-amber-100 font-medium';
+      } else if (status === 'approved' && cardApproved) {
+        cardApproved.className = 'faq-stat-btn p-2.5 rounded-xl border border-emerald-400 bg-emerald-600 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-emerald-600 ring-offset-1';
+        cardApproved.querySelector('#statApprovedFaqs').className = 'text-base font-bold text-white';
+        cardApproved.querySelector('div').className = 'text-[10px] text-emerald-100 font-medium';
+      }
+
       renderAdminFaqList();
     }
 
