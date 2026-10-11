@@ -670,12 +670,9 @@
               </div>
               <div>
                 <h4 class="text-xs font-bold text-slate-800">เกร็ดความรู้ทางคลินิก (Clinical Pearls)</h4>
-                <p class="text-[10px] text-slate-500">Admin ตรวจสอบและระงับ (Block/Unblock) • เจ้าของเกร็ดแก้ไขได้</p>
+                <p class="text-[10px] text-slate-500">ตรวจสอบและซ่อนเกร็ดความรู้ • เจ้าของเกร็ดสามารถแก้ไขเนื้อหาได้</p>
               </div>
             </div>
-            <button onclick="openAddTacitModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-xs">
-              <i class="fa-solid fa-plus"></i> เพิ่มเกร็ดใหม่
-            </button>
           </div>
 
           <!-- Search Bar (จัดการเกร็ดพี่สู่น้อง) -->
@@ -1706,7 +1703,7 @@
           btnPearls.classList.add('bg-white', 'text-purple-700', 'shadow-xs');
           btnPearls.classList.remove('text-slate-600');
         }
-        if (adminHeaderDesc) adminHeaderDesc.innerText = 'ตรวจสอบและระงับ (Block) เกร็ดความรู้ทางคลินิกจากประสบการณ์พี่สู่น้อง';
+        if (adminHeaderDesc) adminHeaderDesc.innerText = 'ตรวจสอบและซ่อนเกร็ดความรู้ทางคลินิกจากประสบการณ์พี่สู่น้อง';
         renderAdminPearlsList();
       } else if (subtab === 'faqs') {
         if (secFaqs) secFaqs.classList.remove('hidden');
