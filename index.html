@@ -953,6 +953,15 @@
             <input type="hidden" id="faqFormId">
 
             <div>
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-link text-indigo-600 mr-0.5"></i> เชื่อมโยงกับเอกสาร CPG ศิริราช:
+              </label>
+              <select id="faqFormCpgId" onchange="handleFaqCpgChange()" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 font-medium">
+                <option value="">-- ไม่ระบุ CPG (คำถามทั่วไป) --</option>
+              </select>
+            </div>
+
+            <div>
               <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่หัตถการ CCU:</label>
               <select id="faqFormCategory" required class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500">
                 <option value="TAVI">TAVI / TAVR Care</option>
@@ -961,6 +970,7 @@
                 <option value="EKG">EKG ด่วน & Arrhythmias</option>
                 <option value="ACS">ACS / STEMI / Post-PCI</option>
                 <option value="Pacemaker">Pacemaker & Devices</option>
+                <option value="Rehabilitation">Rehabilitation</option>
                 <option value="General">แนวปฏิบัติทั่วไป CCU</option>
               </select>
             </div>
@@ -2046,11 +2056,13 @@
     const INITIAL_BEDSIDE_FAQS = [
       {
         id: 'faq-tavi-01',
+        cpgId: 'tavi-1',
+        version: '1.0',
         category: 'TAVI',
         badge: 'TAVI',
         color: 'sky',
         icon: 'fa-heart-pulse',
-        status: 'approved', // 'approved' | 'pending' | 'rejected'
+        status: 'approved', // 'approved' | 'pending' | 'rejected' | 'suspended' | 'needs_review'
         reviewedBy: 'พว.วิยะดา (Incharge CCU)',
         reviewedAt: '2026-10-10',
         question: 'คนไข้ Post-TAVI 24 ชม. แรก ต้องเฝ้าระวังอะไรเป็นพิเศษ?',
@@ -2059,6 +2071,8 @@
       },
       {
         id: 'faq-tavi-02',
+        cpgId: 'tavi-2',
+        version: '1.0',
         category: 'TAVI',
         badge: 'TAVI TPM',
         color: 'sky',
@@ -2071,7 +2085,9 @@
         reference: 'Nursing Management TAVR ศิริราช หน้า 12-14'
       },
       {
-        id: 'faq-teER-01',
+        id: 'faq-teer-01',
+        cpgId: 'teer-1',
+        version: '1.0',
         category: 'TEER',
         badge: 'TEER / MitraClip',
         color: 'indigo',
@@ -2085,6 +2101,8 @@
       },
       {
         id: 'faq-drug-ne',
+        cpgId: 'drug-1',
+        version: '1.0',
         category: 'Drug',
         badge: 'High-Alert Drug',
         color: 'emerald',
@@ -2098,6 +2116,8 @@
       },
       {
         id: 'faq-ekg-vt',
+        cpgId: 'ekg-1',
+        version: '1.0',
         category: 'EKG',
         badge: 'EKG ด่วน',
         color: 'rose',
@@ -2111,6 +2131,8 @@
       },
       {
         id: 'faq-acs-stemi',
+        cpgId: 'acs-1',
+        version: '1.0',
         category: 'ACS',
         badge: 'ACS Post-PCI',
         color: 'amber',
@@ -2124,8 +2146,15 @@
       }
     ];
 
+    const FAQS_DB_VERSION = "v3.0";
     function getFaqList() {
-      const stored = localStorage.getItem('ccu_bedside_faqs_v2');
+      const curVer = localStorage.getItem('ccu_faqs_version');
+      if (curVer !== FAQS_DB_VERSION) {
+        localStorage.setItem('ccu_faqs_version', FAQS_DB_VERSION);
+        localStorage.setItem('ccu_bedside_faqs_v3', JSON.stringify(INITIAL_BEDSIDE_FAQS));
+        return INITIAL_BEDSIDE_FAQS;
+      }
+      const stored = localStorage.getItem('ccu_bedside_faqs_v3');
       if (stored) {
         try { return JSON.parse(stored); } catch(e) {}
       }
@@ -2133,7 +2162,7 @@
     }
 
     function saveFaqList(list) {
-      localStorage.setItem('ccu_bedside_faqs_v2', JSON.stringify(list));
+      localStorage.setItem('ccu_bedside_faqs_v3', JSON.stringify(list));
       renderBedsideFaqs();
       renderAdminFaqList();
       updateFaqStats();
@@ -2204,7 +2233,7 @@
     }
 
     function askBedsideFaq(faqId) {
-      const faq = BEDSIDE_FAQS.find(f => f.id === faqId);
+      const faq = getFaqList().find(f => f.id === faqId);
       if (!faq) return;
       askAi(faq.question);
     }
@@ -2332,9 +2361,9 @@
         return;
       }
 
-      // ตรวจสอบกับ Bedside Quick FAQ ในเครื่องก่อน เพื่อตอบรวดเร็วแบบ Instant
-      const localMatchedFaq = BEDSIDE_FAQS.find(f => 
-        q.toLowerCase().includes(f.question.toLowerCase()) || f.question.toLowerCase().includes(q.toLowerCase())
+      // ตรวจสอบกับ Bedside Quick FAQ ในเครื่องก่อน เพื่อตอบรวดเร็วแบบ Instant (เฉพาะข้อที่ approved เท่านั้น)
+      const localMatchedFaq = getFaqList().find(f => 
+        f.status === 'approved' && (q.toLowerCase().includes(f.question.toLowerCase()) || f.question.toLowerCase().includes(q.toLowerCase()))
       );
 
       // 2. ดึงบริบทจาก CPG ในระบบ (Local RAG Context)
@@ -2393,14 +2422,27 @@
             .replace(/\n\n/g, '<div class="h-2"></div>')
             .replace(/\n/g, '<br>');
 
+          const targetCpgId = (data.reference && data.reference.cpg_id) || (localMatchedFaq && localMatchedFaq.cpgId) || '';
+          const linkedCpg = targetCpgId ? currentCatalog.find(c => c.id === targetCpgId) : null;
+
           refHtml = `
-            <div class="mt-2.5 pt-2 border-t border-slate-100">
-              <div class="text-[10px] font-bold text-emerald-700 mb-1 flex items-center gap-1">
-                <i class="fa-solid fa-circle-check text-emerald-600"></i> พบคำตอบตรงจากคลัง FAQ ศิริราช (${Math.round((data.similarity || 0.95) * 100)}% Match)
+            <div class="mt-2.5 pt-2 border-t border-slate-100 space-y-1.5">
+              <div class="text-[10px] font-bold text-emerald-700 flex items-center justify-between">
+                <span class="flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i> พบคำตอบตรงจากคลัง FAQ ศิริราช (${Math.round((data.similarity || 0.95) * 100)}% Match)
+                </span>
+                <span class="text-[9px] bg-emerald-50 text-emerald-700 px-1.5 py-0.2 rounded border border-emerald-200 font-normal">Vector Active</span>
               </div>
-              <div class="text-[11px] text-slate-700 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
-                <i class="fa-solid fa-book-medical text-brand-600"></i> ${escapeHtml(data.reference.title || '')} 
-                <span class="text-slate-400">(${data.reference.page || '-'})</span>
+              <div class="text-[11px] text-slate-700 bg-slate-50 p-2 rounded-xl border border-slate-200 flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <i class="fa-solid fa-book-medical text-brand-600"></i> ${escapeHtml(data.reference.title || '')} 
+                  <span class="text-slate-400">(${data.reference.page || '-'})</span>
+                </div>
+                ${linkedCpg ? `
+                  <button type="button" onclick="openKnowledgeModal('${linkedCpg.id}')" class="shrink-0 text-[10px] bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold px-2 py-1 rounded-lg border border-brand-200 flex items-center gap-1 active:scale-95 transition-all">
+                    <i class="fa-solid fa-eye"></i> ดู CPG เต็ม
+                  </button>
+                ` : ''}
               </div>
             </div>
           `;
@@ -2426,6 +2468,17 @@
           }
         }
 
+        // Knowledge Gap Button: ให้พยาบาลกดส่งคำถามนี้ให้พยาบาลรุ่นพี่ตรวจ/เขียน CPG เพิ่มเติมได้
+        const encodedQ = encodeURIComponent(q);
+        const gapBtnHtml = `
+          <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400">คำตอบยังไม่ชัดเจน?</span>
+            <button type="button" onclick="submitKnowledgeGap('${encodedQ}')" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-lg border border-indigo-200/80 flex items-center gap-1 transition-all active:scale-95">
+              <i class="fa-solid fa-paper-plane text-[9px] text-indigo-500"></i> ส่งคำถามนี้ให้พี่ Incharge ตอบ
+            </button>
+          </div>
+        `;
+
         appendAiBubble('bot', `
           <div class="space-y-1.5 text-xs text-slate-800 leading-relaxed">
             ${formattedAnswer}
@@ -2435,32 +2488,84 @@
             <i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i>
             <span>คำแนะนำข้างเตียง: โปรดยืนยันกับแผนการรักษาของแพทย์และพี่ In-charge ก่อนปฏิบัติ</span>
           </div>
+          ${gapBtnHtml}
         `);
 
       } catch (err) {
         const currentLoading = document.getElementById('aiLoadingBubble');
         if (currentLoading) currentLoading.remove();
 
+        const encodedQ = encodeURIComponent(q);
+        const gapBtnHtml = `
+          <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400">คำถามนี้ยังไม่มีในคลัง?</span>
+            <button type="button" onclick="submitKnowledgeGap('${encodedQ}')" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-lg border border-indigo-200/80 flex items-center gap-1 transition-all active:scale-95">
+              <i class="fa-solid fa-paper-plane text-[9px] text-indigo-500"></i> ส่งคำถามนี้ให้พี่ Incharge ตอบ
+            </button>
+          </div>
+        `;
+
         // กรณีออฟไลน์หรือเกตเวย์ยังไม่เปิด ให้ Fallback ใช้คู่มือข้างเตียงถ้ามีตรงกัน
         if (localMatchedFaq) {
+          const linkedCpg = localMatchedFaq.cpgId ? currentCatalog.find(c => c.id === localMatchedFaq.cpgId) : null;
           appendAiBubble('bot', `
             <div class="space-y-1.5 text-xs text-slate-800 leading-relaxed">
               <span class="inline-block text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.2 rounded font-bold mb-1">คำตอบทันทีข้างเตียง (Bedside Mode)</span><br>
               ${localMatchedFaq.quickAnswer}
             </div>
-            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[11px] text-slate-700">
-              <div class="text-[10px] font-bold text-brand-700 mb-0.5"><i class="fa-solid fa-book-medical"></i> เอกสารอ้างอิง:</div>
-              ${escapeHtml(localMatchedFaq.reference)}
+            <div class="mt-2.5 pt-2 border-t border-slate-100 text-[11px] text-slate-700 flex items-center justify-between gap-2">
+              <div>
+                <div class="text-[10px] font-bold text-brand-700 mb-0.5"><i class="fa-solid fa-book-medical"></i> เอกสารอ้างอิง:</div>
+                ${escapeHtml(localMatchedFaq.reference)}
+              </div>
+              ${linkedCpg ? `
+                <button type="button" onclick="openKnowledgeModal('${linkedCpg.id}')" class="shrink-0 text-[10px] bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold px-2 py-1 rounded-lg border border-brand-200 flex items-center gap-1">
+                  <i class="fa-solid fa-eye"></i> ดู CPG
+                </button>
+              ` : ''}
             </div>
             <div class="mt-2 text-[10px] text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-200/60 flex items-center gap-1.5">
               <i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i>
               <span>คำแนะนำข้างเตียง: โปรดยืนยันกับแผนการรักษาของแพทย์และพี่ In-charge ก่อนปฏิบัติ</span>
             </div>
+            ${gapBtnHtml}
           `);
         } else {
-          appendAiBubble('bot', `<div class="text-rose-600 text-xs"><i class="fa-solid fa-circle-exclamation"></i> เกิดข้อผิดพลาดในการเชื่อมต่อ: ${escapeHtml(err.message)}</div>`);
+          appendAiBubble('bot', `
+            <div class="text-rose-600 text-xs"><i class="fa-solid fa-circle-exclamation"></i> เกิดข้อผิดพลาดในการเชื่อมต่อ: ${escapeHtml(err.message)}</div>
+            ${gapBtnHtml}
+          `);
         }
       }
+    }
+
+    // ฟังก์ชันส่งคำถามที่ AI ตอบไม่ได้หรือข้างเตียงสงสัยเข้าสู่ Senior Review Queue (Bedside Knowledge Gap)
+    function submitKnowledgeGap(encodedQuestion) {
+      const q = decodeURIComponent(encodedQuestion);
+      const faqs = getFaqList();
+      const asker = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลวิชาชีพเวรข้างเตียง';
+      
+      const newGap = {
+        id: 'faq-gap-' + Date.now(),
+        cpgId: null,
+        version: '1.0',
+        category: 'General',
+        badge: 'คำถามข้างเตียง',
+        icon: 'fa-hospital-user',
+        color: 'amber',
+        question: q,
+        quickAnswer: 'รอการตอบและตรวจรับรองจากพยาบาลรุ่นพี่/Incharge CCU',
+        answer: 'รอการตอบและตรวจรับรองจากพยาบาลรุ่นพี่/Incharge CCU',
+        reference: `ถามโดย ${asker} เมื่อ ${new Date().toLocaleDateString('th-TH')}`,
+        status: 'pending', // ส่งเข้าคิวรอตรวจ
+        reviewedBy: null,
+        reviewedAt: null
+      };
+
+      faqs.unshift(newGap);
+      saveFaqList(faqs);
+
+      alert(`ส่งคำถาม:\n"${q}"\nเข้าสู่คิวรอตรวจของพยาบาลรุ่นพี่ (Senior RN Review Queue) เรียบร้อยแล้วครับ!\nเมื่อพี่ Incharge ตอบและรับรองแล้ว จะกลายเป็น FAQ คลังความรู้ข้างเตียงและเปิดใช้งาน AI Vector ต่อไป`);
     }
 
     function switchTab(viewId) {
@@ -2553,14 +2658,22 @@
       });
     }
 
-    // Render Manage Catalog Console (Admin: เพิ่ม ลบ แก้ไข อนุมัติ)
+    // Render Manage Catalog Console (Admin: เพิ่ม ลบ แก้ไข อนุมัติ + Cascading FAQ)
     function renderManageCatalog(items) {
       const container = document.getElementById('manageListContainer');
       if (!container) return;
       container.innerHTML = '';
 
+      const allFaqs = getFaqList();
+
       items.forEach(item => {
         const isApproved = item.status !== 'pending';
+        // คำนวณสถานะ FAQ ที่สังกัด CPG นี้
+        const linkedFaqs = allFaqs.filter(f => f.cpgId === item.id);
+        const faqApprovedCount = linkedFaqs.filter(f => f.status === 'approved').length;
+        const faqPendingCount = linkedFaqs.filter(f => f.status === 'pending' || f.status === 'needs_review').length;
+        const faqSuspendedCount = linkedFaqs.filter(f => f.status === 'suspended').length;
+
         const card = document.createElement('div');
         card.className = `p-3.5 rounded-2xl border ${!isApproved ? 'bg-amber-50/50 border-amber-300' : 'bg-white border-slate-200'} shadow-xs flex flex-col gap-2.5`;
         
@@ -2576,7 +2689,20 @@
               <h4 class="font-heading font-bold text-xs text-slate-800 mt-1">${item.title}</h4>
               <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-chalkboard-user"></i> ${item.author || '-'}</p>
             </div>
-            <span class="text-[10px] text-slate-400 shrink-0">${item.size || 'KM'}</span>
+            <span class="text-[10px] text-slate-400 shrink-0 font-mono">${item.id}</span>
+          </div>
+
+          <!-- FAQ & Vector Linking Badge -->
+          <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-[11px]">
+            <div class="flex items-center gap-1.5">
+              <i class="fa-solid fa-link text-indigo-500"></i>
+              <span class="font-bold text-slate-700">FAQ สังกัด CPG:</span>
+              <span class="font-bold text-indigo-700">${linkedFaqs.length} ข้อ</span>
+              <span class="text-[10px] text-slate-500">(ผ่าน: <strong class="text-emerald-600">${faqApprovedCount}</strong> | รอตรวจ: <strong class="text-amber-600">${faqPendingCount}</strong>${faqSuspendedCount > 0 ? ` | พัก: <strong class="text-rose-500">${faqSuspendedCount}</strong>` : ''})</span>
+            </div>
+            <button onclick="openAddFaqModal('${item.id}', '${item.category}', '${escapeHtml(item.title)}')" title="สร้าง FAQ สำหรับ CPG นี้" class="text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-lg border border-indigo-200 flex items-center gap-1 transition-all">
+              <i class="fa-solid fa-plus"></i> เพิ่ม FAQ
+            </button>
           </div>
 
           <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
@@ -2613,7 +2739,21 @@
         saveKnowledgeCatalog(currentCatalog);
         renderKnowledgeCatalog(currentCatalog);
         renderManageCatalog(currentCatalog);
-        alert(`อนุมัติและเผยแพร่แนวปฏิบัติ "${target.title}" เข้าสู่คลัง CPG เรียบร้อยแล้ว`);
+
+        // Cascading: คืนสถานะ FAQ ที่เคยถูกพักไว้กลับมาเป็น approved (ถ้าเคยผ่านการรับรอง)
+        const faqs = getFaqList();
+        let revivedCount = 0;
+        faqs.forEach(f => {
+          if (f.cpgId === id && f.status === 'suspended') {
+            f.status = 'approved';
+            revivedCount++;
+          }
+        });
+        if (revivedCount > 0) {
+          saveFaqList(faqs);
+        }
+
+        alert(`อนุมัติและเผยแพร่แนวปฏิบัติ "${target.title}" เข้าสู่คลัง CPG เรียบร้อยแล้ว${revivedCount > 0 ? ` (พร้อมคืนสถานะ FAQ ที่เกี่ยวข้อง ${revivedCount} ข้อ เข้าสู่ AI Vector แล้ว)` : ''}`);
       }
     }
 
@@ -2624,6 +2764,21 @@
         saveKnowledgeCatalog(currentCatalog);
         renderKnowledgeCatalog(currentCatalog);
         renderManageCatalog(currentCatalog);
+
+        // Cascading: พักการเผยแพร่ FAQ ที่สังกัด CPG นี้ทั้งหมดทันที ป้องกัน AI ตอบผิด/Hallucination
+        const faqs = getFaqList();
+        let cascadedCount = 0;
+        faqs.forEach(f => {
+          if (f.cpgId === id && f.status === 'approved') {
+            f.status = 'suspended';
+            cascadedCount++;
+          }
+        });
+        if (cascadedCount > 0) {
+          saveFaqList(faqs);
+        }
+
+        alert(`พักการเผยแพร่ CPG "${target.title}" เรียบร้อยแล้ว\n⚠️ ระบบ Cascading ทำการระงับการทำงานของ FAQ ที่เชื่อมโยง ${cascadedCount} ข้อ และตัดออกจากระบบค้นหา AI ชั่วคราวแล้วครับ`);
       }
     }
 
@@ -2696,11 +2851,24 @@
     }
 
     function deleteKnowledgeItem(id) {
-      if (confirm("ต้องการลบหัวข้อความรู้นี้ออกจากระบบใช่หรือไม่?")) {
+      const target = currentCatalog.find(k => k.id === id);
+      const title = target ? target.title : id;
+      if (confirm(`ต้องการลบ CPG "${title}" ออกจากระบบใช่หรือไม่?\n⚠️ การลบ CPG จะทำให้ FAQ และ Vector ที่ผูกไว้ทั้งหมดถูกลบออกตาม (Cascading Delete)`)) {
         currentCatalog = currentCatalog.filter(k => k.id !== id);
         saveKnowledgeCatalog(currentCatalog);
+
+        // Cascading Delete: ลบ FAQ ทั้งหมดที่ผูกกับ CPG นี้
+        const faqs = getFaqList();
+        const initialCount = faqs.length;
+        const updatedFaqs = faqs.filter(f => f.cpgId !== id);
+        const deletedCount = initialCount - updatedFaqs.length;
+        if (deletedCount > 0) {
+          saveFaqList(updatedFaqs);
+        }
+
         renderKnowledgeCatalog(currentCatalog);
         renderManageCatalog(currentCatalog);
+        alert(`ลบ CPG สำเร็จแล้ว พร้อมลบ FAQ ที่เกี่ยวข้อง ${deletedCount} ข้อออกจากระบบอย่างสมบูรณ์ครับ`);
       }
     }
 
@@ -2722,6 +2890,7 @@
       `;
 
       if (id) {
+        // แก้ไข CPG เดิม -> Cascading: ส่ง FAQ ที่เกี่ยวข้องกลับมารอการทบทวน (needs_review)
         const idx = currentCatalog.findIndex(k => k.id === id);
         if (idx !== -1) {
           currentCatalog[idx] = {
@@ -2734,9 +2903,24 @@
             summaryHtml: summaryHtml,
             file: file || currentCatalog[idx].file
           };
+
+          // Flag linked FAQs as 'needs_review'
+          const faqs = getFaqList();
+          let flaggedCount = 0;
+          faqs.forEach(f => {
+            if (f.cpgId === id && f.status === 'approved') {
+              f.status = 'needs_review';
+              f.reviewedBy = null;
+              flaggedCount++;
+            }
+          });
+          if (flaggedCount > 0) {
+            saveFaqList(faqs);
+          }
         }
       } else {
-        const newId = "km-" + Date.now();
+        // เพิ่ม CPG ใหม่ -> ระบบจะสร้าง Draft FAQ ให้อัตโนมัติ เพื่อรอให้พยาบาลรุ่นพี่ตรวจรับรอง
+        const newId = "cpg-" + Date.now();
         currentCatalog.unshift({
           id: newId,
           category: cat,
@@ -2748,13 +2932,34 @@
           file: file || "",
           size: "KM Custom"
         });
+
+        // Auto-generate Draft FAQ for senior review
+        const faqs = getFaqList();
+        const draftFaq = {
+          id: 'faq-' + Date.now(),
+          cpgId: newId,
+          version: '1.0',
+          category: cat,
+          badge: cat,
+          icon: 'fa-circle-question',
+          color: 'indigo',
+          question: `ข้อควรระวังและแนวทางปฏิบัติสำคัญสำหรับ "${title}" มีอะไรบ้าง?`,
+          quickAnswer: summaryText.substring(0, 250) + (summaryText.length > 250 ? '...' : ''),
+          answer: summaryText,
+          reference: `${title} (${author || 'CCU ศิริราช'})`,
+          status: 'pending', // รอพยาบาลรุ่นพี่ตรวจรับรอง
+          reviewedBy: null,
+          reviewedAt: null
+        };
+        faqs.unshift(draftFaq);
+        saveFaqList(faqs);
       }
 
       saveKnowledgeCatalog(currentCatalog);
       renderKnowledgeCatalog(currentCatalog);
       renderManageCatalog(currentCatalog);
       closeCreateKnowledgeModal();
-      alert("บันทึกองค์ความรู้สำเร็จเรียบร้อยครับ!");
+      alert(id ? "บันทึกการแก้ไข CPG เรียบร้อยแล้ว (FAQ ที่เกี่ยวข้องถูกตั้งสถานะให้รุ่นพี่ทบทวนความถูกต้องใหม่)" : "เพิ่ม CPG ใหม่สำเร็จ! ระบบได้สร้างร่างคำถาม FAQ รอให้พยาบาลรุ่นพี่ตรวจรับรองในคลังเรียบร้อยแล้วครับ");
     }
 
     // Filter by Proposal 4 Groups
@@ -3299,7 +3504,7 @@
     function updateFaqStats() {
       const list = getFaqList();
       const total = list.length;
-      const pending = list.filter(f => f.status === 'pending').length;
+      const pending = list.filter(f => f.status === 'pending' || f.status === 'needs_review').length;
       const approved = list.filter(f => f.status === 'approved').length;
 
       const elTotal = document.getElementById('statTotalFaqs');
@@ -3327,7 +3532,9 @@
       updateFaqStats();
 
       let list = customList || getFaqList();
-      if (currentAdminFaqFilter !== 'all') {
+      if (currentAdminFaqFilter === 'pending') {
+        list = list.filter(f => f.status === 'pending' || f.status === 'needs_review');
+      } else if (currentAdminFaqFilter !== 'all') {
         list = list.filter(f => f.status === currentAdminFaqFilter);
       }
 
@@ -3344,23 +3551,33 @@
       list.forEach(faq => {
         const isApproved = faq.status === 'approved';
         const isRejected = faq.status === 'rejected';
+        const isSuspended = faq.status === 'suspended';
+        const isNeedsReview = faq.status === 'needs_review';
         const card = document.createElement('div');
         card.className = `p-3.5 rounded-2xl border ${!isApproved ? 'bg-amber-50/40 border-amber-300' : 'bg-white border-slate-200'} shadow-xs space-y-2.5`;
 
         let statusBadge = '';
         if (isApproved) {
-          statusBadge = `<span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> ผ่านการรับรองแล้ว</span>`;
+          statusBadge = `<span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> ผ่านการรับรองแล้ว (Vector Active)</span>`;
         } else if (isRejected) {
           statusBadge = `<span class="text-[9px] bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded-full border border-rose-200 flex items-center gap-1"><i class="fa-solid fa-circle-xmark text-rose-600"></i> ส่งกลับแก้ไข/ไม่ถูกต้อง</span>`;
+        } else if (isSuspended) {
+          statusBadge = `<span class="text-[9px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded-full border border-slate-300 flex items-center gap-1"><i class="fa-solid fa-pause text-slate-500"></i> พักการรับรองตาม CPG (Vector Off)</span>`;
+        } else if (isNeedsReview) {
+          statusBadge = `<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full border border-amber-300 flex items-center gap-1"><i class="fa-solid fa-arrows-rotate text-amber-600"></i> CPG มีการแก้ไข (รอทบทวนใหม่)</span>`;
         } else {
           statusBadge = `<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full border border-amber-300 flex items-center gap-1"><i class="fa-solid fa-clock text-amber-600"></i> รอพยาบาลรุ่นพี่ตรวจ</span>`;
         }
+
+        // ค้นหาชื่อ CPG ที่เชื่อมโยง
+        const linkedCpg = faq.cpgId ? currentCatalog.find(c => c.id === faq.cpgId) : null;
 
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
             <div>
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="text-[9px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${faq.category || 'General'}</span>
+                ${faq.version ? `<span class="text-[9px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded border border-indigo-200">v${faq.version}</span>` : ''}
                 ${statusBadge}
               </div>
               <h4 class="font-heading font-bold text-xs text-slate-900 mt-1.5 leading-snug">
@@ -3376,9 +3593,16 @@
               <span class="font-bold text-slate-900"><i class="fa-solid fa-notes-medical text-emerald-600 mr-1"></i>แนวทางปฏิบัติ/คำตอบ:</span>
               <p class="mt-0.5 text-slate-800 leading-relaxed">${escapeHtml(faq.quickAnswer || faq.answer || '')}</p>
             </div>
-            <div class="pt-1.5 border-t border-slate-200/60 text-[11px] text-slate-500 flex items-center gap-1">
-              <i class="fa-solid fa-book-bookmark text-indigo-500 shrink-0"></i>
-              <span><strong>อ้างอิง CPG:</strong> ${escapeHtml(faq.reference || '-')}</span>
+            <div class="pt-1.5 border-t border-slate-200/60 text-[11px] text-slate-500 flex items-center justify-between flex-wrap gap-1">
+              <div class="flex items-center gap-1">
+                <i class="fa-solid fa-book-bookmark text-indigo-500 shrink-0"></i>
+                <span><strong>อ้างอิง CPG:</strong> ${escapeHtml(faq.reference || '-')}</span>
+              </div>
+              ${linkedCpg ? `
+                <button type="button" onclick="openKnowledgeModal('${linkedCpg.id}')" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-0.5">
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> เปิดดู CPG ต้นทาง (${linkedCpg.id})
+                </button>
+              ` : ''}
             </div>
           </div>
 
@@ -3521,13 +3745,40 @@
       if (modal) modal.classList.add('hidden');
     }
 
+    function populateFaqCpgDropdown(selectedCpgId) {
+      const select = document.getElementById('faqFormCpgId');
+      if (!select) return;
+      select.innerHTML = '<option value="">-- ไม่ระบุ CPG (คำถามทั่วไป) --</option>';
+      currentCatalog.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.innerText = `[${c.category}] ${c.title}`;
+        if (c.id === selectedCpgId) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function handleFaqCpgChange() {
+      const cpgId = document.getElementById('faqFormCpgId').value;
+      if (!cpgId) return;
+      const targetCpg = currentCatalog.find(c => c.id === cpgId);
+      if (targetCpg) {
+        document.getElementById('faqFormCategory').value = targetCpg.category;
+        if (!document.getElementById('faqFormReference').value || document.getElementById('faqFormReference').value === 'CPG CCU ศิริราช') {
+          document.getElementById('faqFormReference').value = `${targetCpg.title} (${targetCpg.author || 'CCU ศิริราช'})`;
+        }
+      }
+    }
+
     function editFaqItem(id) {
       const list = getFaqList();
       const target = list.find(f => f.id === id);
       if (!target) return;
 
+      populateFaqCpgDropdown(target.cpgId || '');
       document.getElementById('faqModalTitle').innerText = 'แก้ไข FAQ การแพทย์';
       document.getElementById('faqFormId').value = target.id;
+      document.getElementById('faqFormCpgId').value = target.cpgId || '';
       document.getElementById('faqFormCategory').value = target.category || 'General';
       document.getElementById('faqFormQuestion').value = target.question || '';
       document.getElementById('faqFormAnswer').value = target.quickAnswer || target.answer || '';
@@ -3538,13 +3789,15 @@
       if (modal) modal.classList.remove('hidden');
     }
 
-    function openAddFaqModal() {
-      document.getElementById('faqModalTitle').innerText = 'เพิ่มข้อคำถาม-คำตอบการแพทย์';
+    function openAddFaqModal(targetCpgId, targetCat, targetTitle) {
+      populateFaqCpgDropdown(targetCpgId || '');
+      document.getElementById('faqModalTitle').innerText = targetCpgId ? `เพิ่ม FAQ สังกัด CPG (${targetCpgId})` : 'เพิ่มข้อคำถาม-คำตอบการแพทย์';
       document.getElementById('faqFormId').value = '';
-      document.getElementById('faqFormCategory').value = 'TAVI';
+      document.getElementById('faqFormCpgId').value = targetCpgId || '';
+      document.getElementById('faqFormCategory').value = targetCat || 'TAVI';
       document.getElementById('faqFormQuestion').value = '';
       document.getElementById('faqFormAnswer').value = '';
-      document.getElementById('faqFormReference').value = 'CPG CCU ศิริราช';
+      document.getElementById('faqFormReference').value = targetTitle ? `${targetTitle} (CCU ศิริราช)` : 'CPG CCU ศิริราช';
       document.getElementById('faqFormStatus').value = 'approved';
 
       const modal = document.getElementById('faqFormModal');
@@ -3554,6 +3807,7 @@
     function handleSaveFaqForm(e) {
       e.preventDefault();
       const id = document.getElementById('faqFormId').value.trim();
+      const cpgId = document.getElementById('faqFormCpgId').value.trim();
       const cat = document.getElementById('faqFormCategory').value;
       const question = document.getElementById('faqFormQuestion').value.trim();
       const answer = document.getElementById('faqFormAnswer').value.trim();
@@ -3585,6 +3839,8 @@
         if (idx !== -1) {
           list[idx] = {
             ...list[idx],
+            cpgId: cpgId || list[idx].cpgId,
+            version: list[idx].version || '1.0',
             category: cat,
             badge: badge,
             icon: icon,
@@ -3602,6 +3858,8 @@
         // เพิ่มรายการใหม่
         list.unshift({
           id: 'faq-' + Date.now(),
+          cpgId: cpgId || null,
+          version: '1.0',
           category: cat,
           badge: badge,
           icon: icon,
@@ -3617,6 +3875,7 @@
       }
 
       saveFaqList(list);
+      renderManageCatalog(currentCatalog);
       closeFaqModal();
       alert(id ? "บันทึกการแก้ไข FAQ เรียบร้อยแล้วครับ!" : "เพิ่มข้อคำถาม-คำตอบการแพทย์สำเร็จเรียบร้อยครับ!");
     }

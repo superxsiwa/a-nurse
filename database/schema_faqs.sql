@@ -11,48 +11,56 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "vector";
 
 -- 2. สร้างตาราง cpg_faqs
+-- 2. สร้างตาราง cpg_faqs พร้อมระบบ Life-Cycle Cascading & Versioning
 CREATE TABLE IF NOT EXISTS public.cpg_faqs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    cpg_id VARCHAR(100),                               -- รหัสอ้างอิง CPG หรือหมวด เช่น 'CPG-TAVI-01', 'CPG-DRUG-NE'
+    cpg_id VARCHAR(100) NOT NULL,                      -- รหัสอ้างอิง CPG หรือหมวด เช่น 'CPG-TAVI-01', 'CPG-DRUG-NE'
     question TEXT NOT NULL,                             -- คำถามทางคลินิกข้างเตียง (Clinical Question)
     answer TEXT NOT NULL,                               -- คำตอบ/แนวทางปฏิบัติพยาบาล (Actionable Clinical Guidance)
     reference_doc TEXT NOT NULL,                        -- ชื่อเอกสาร CPG ศิริราชฉบับทางการ
     page_number VARCHAR(50),                           -- เลขหน้า หรือ Slide อ้างอิง เช่น 'หน้า 4-5', 'Slide 12'
     category VARCHAR(100) NOT NULL,                    -- หมวดหมู่หัตถการ/โรค เช่น 'TAVI', 'TEER', 'Drug', 'EKG', 'ACS'
+    version VARCHAR(20) DEFAULT '1.0',                 -- เวอร์ชันของ CPG/FAQ เช่น '1.0', '2.0'
+    status VARCHAR(30) DEFAULT 'pending',              -- สถานะ: 'pending' (รอตรวจ), 'approved' (รับรองแล้ว), 'suspended' (พัก), 'needs_review' (ต้องทบทวนใหม่)
+    is_vectorized BOOLEAN DEFAULT FALSE,               -- สถานะการแปลงเวกเตอร์แล้วหรือไม่
     embedding vector(768),                             -- เวกเตอร์ 768 มิติสำหรับ Google Gemini text-embedding-004
-    metadata JSONB DEFAULT '{}'::jsonb,                -- ฟิลด์เสริม (เช่น author, reviewer, tags, alert_level)
+    reviewed_by VARCHAR(100),                          -- ชื่อพยาบาลรุ่นพี่/APN ผู้ตรวจรับรอง
+    reviewed_at TIMESTAMPTZ,                           -- วันที่เวลาที่ตรวจรับรอง
+    metadata JSONB DEFAULT '{}'::jsonb,                -- ฟิลด์เสริม (เช่น author, tags, alert_level, cpg_file_url)
     created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
 -- เพิ่ม Comment อธิบายฟิลด์ในตาราง
-COMMENT ON TABLE public.cpg_faqs IS 'ตารางคลังคู่คำถาม-คำตอบทางคลินิก (FAQ Pairs) จาก CPG ศิริราช พร้อม Vector Embedding';
-COMMENT ON COLUMN public.cpg_faqs.cpg_id IS 'รหัส CPG หรือ Identifier เอกสาร';
+COMMENT ON TABLE public.cpg_faqs IS 'ตารางคลังคู่คำถาม-คำตอบทางคลินิก (FAQ Pairs) จาก CPG ศิริราช พร้อม Vector Embedding และ Cascading State';
+COMMENT ON COLUMN public.cpg_faqs.cpg_id IS 'รหัส CPG หรือ Identifier เอกสารต้นทาง';
 COMMENT ON COLUMN public.cpg_faqs.question IS 'คำถามที่พยาบาล CCU มักถามข้างเตียง';
 COMMENT ON COLUMN public.cpg_faqs.answer IS 'คำตอบและขั้นตอนการพยาบาลอย่างละเอียดตาม CPG';
 COMMENT ON COLUMN public.cpg_faqs.reference_doc IS 'ชื่อเอกสารอ้างอิง CPG ศิริราช';
 COMMENT ON COLUMN public.cpg_faqs.page_number IS 'หน้าหรือสไลด์ที่พบข้อมูล';
 COMMENT ON COLUMN public.cpg_faqs.category IS 'หมวดหมู่ เช่น TAVI, TEER, Drug, EKG, ACS';
+COMMENT ON COLUMN public.cpg_faqs.status IS 'สถานะการรับรอง: pending, approved, suspended, needs_review';
 COMMENT ON COLUMN public.cpg_faqs.embedding IS 'Gemini text-embedding-004 Vector 768 มิติ';
 
 -- 3. สร้าง Index เพื่อเพิ่มความเร็วในการสืบค้น (Indexes)
--- B-Tree Index สำหรับ Filter หมวดหมู่และ cpg_id
 CREATE INDEX IF NOT EXISTS idx_cpg_faqs_category ON public.cpg_faqs (category);
 CREATE INDEX IF NOT EXISTS idx_cpg_faqs_cpg_id ON public.cpg_faqs (cpg_id);
+CREATE INDEX IF NOT EXISTS idx_cpg_faqs_status ON public.cpg_faqs (status);
 
 -- HNSW Vector Index บน Cosine Similarity (<=>)
--- m = 16, ef_construction = 64 เหมาะกับข้อมูลขนาดกลางที่มีความแม่นยำสูง
 CREATE INDEX IF NOT EXISTS idx_cpg_faqs_embedding_hnsw 
 ON public.cpg_faqs 
 USING hnsw (embedding vector_cosine_ops)
 WITH (m = 16, ef_construction = 64);
 
 -- 4. สร้าง Function สำหรับค้นหา Semantic FAQ Similarity (Postgres RPC)
+-- คัดกรองเฉพาะ FAQ ที่ status = 'approved' เท่านั้น ป้องกัน Hallucination
 CREATE OR REPLACE FUNCTION public.match_cpg_faqs(
     query_embedding vector(768),
     match_threshold float DEFAULT 0.60,
     match_count int DEFAULT 5,
-    filter_category varchar DEFAULT NULL
+    filter_category varchar DEFAULT NULL,
+    filter_cpg_id varchar DEFAULT NULL
 )
 RETURNS TABLE (
     id UUID,
@@ -62,6 +70,8 @@ RETURNS TABLE (
     reference_doc TEXT,
     page_number VARCHAR,
     category VARCHAR,
+    version VARCHAR,
+    status VARCHAR,
     similarity float
 )
 LANGUAGE plpgsql
@@ -77,14 +87,44 @@ BEGIN
         f.reference_doc,
         f.page_number,
         f.category,
+        f.version,
+        f.status,
         1 - (f.embedding <=> query_embedding) AS similarity
     FROM public.cpg_faqs f
     WHERE 
         f.embedding IS NOT NULL
+        AND f.status = 'approved'                       -- เฉพาะข้อที่ผ่านการตรวจรับรองจากพยาบาลรุ่นพี่เท่านั้น!
         AND (filter_category IS NULL OR f.category = filter_category)
+        AND (filter_cpg_id IS NULL OR f.cpg_id = filter_cpg_id)
         AND (1 - (f.embedding <=> query_embedding)) >= match_threshold
     ORDER BY f.embedding <=> query_embedding ASC
     LIMIT match_count;
+END;
+$$;
+
+-- 4.1 ฟังก์ชันสำหรับ Cascading State (เมื่อ CPG เปลี่ยนสถานะ หรือเปลี่ยนเวอร์ชัน)
+CREATE OR REPLACE FUNCTION public.cascade_cpg_status_change(
+    target_cpg_id VARCHAR,
+    new_cpg_status VARCHAR -- 'suspended', 'deleted', 'updated_version'
+)
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF new_cpg_status = 'suspended' THEN
+        -- พัก FAQ ทั้งหมดที่สังกัด CPG นี้
+        UPDATE public.cpg_faqs 
+        SET status = 'suspended', updated_at = NOW() 
+        WHERE cpg_id = target_cpg_id;
+    ELSIF new_cpg_status = 'updated_version' THEN
+        -- เมื่อ CPG อัปเดตเวอร์ชันใหม่ ให้ส่ง FAQ กลับมารอการทบทวนใหม่
+        UPDATE public.cpg_faqs 
+        SET status = 'needs_review', updated_at = NOW() 
+        WHERE cpg_id = target_cpg_id;
+    ELSIF new_cpg_status = 'deleted' THEN
+        -- ลบ FAQ ที่เกี่ยวข้องทิ้งทั้งหมด
+        DELETE FROM public.cpg_faqs WHERE cpg_id = target_cpg_id;
+    END IF;
 END;
 $$;
 
@@ -108,10 +148,10 @@ WITH CHECK (true);
 
 -- 6. ข้อมูลตัวอย่างทางคลินิก (Sample Clinical FAQ Seed Data) จาก CPG ศิริราช
 -- หมายเหตุ: embedding ถูกเว้นเป็น NULL ไว้ก่อน รอให้สคริปต์ generate_embeddings ทำการยิงเข้า Gemini API
-INSERT INTO public.cpg_faqs (cpg_id, question, answer, reference_doc, page_number, category, metadata)
+INSERT INTO public.cpg_faqs (cpg_id, question, answer, reference_doc, page_number, category, version, status, is_vectorized, reviewed_by, reviewed_at, metadata)
 VALUES
 (
-    'CPG-TAVI-POST',
+    'tavi-2',
     'คนไข้ Post-TAVI ในช่วง 24-48 ชั่วโมงแรก ต้องเฝ้าระวังภาวะแทรกซ้อนอะไรเป็นพิเศษ?',
     '1. Conduction abnormalities: เฝ้าระวัง Complete Heart Block (CHB) และ New-onset LBBB อย่างใกล้ชิด โดยเฉพาะผู้ป่วยที่ใช้ Self-expanding valve ให้ต่อ Continuous EKG monitor และสังเกต PR interval ที่ยาวขึ้น
 2. Vascular complications: ตรวจประเมินแผลเจาะหลอดเลือดแดง Femoral ตรวจคลำ Hematoma, สังเกต Bleeding, และประเมิน Peripheral pulse (Dorsalis pedis) ทุก 15-30 นาทีในช่วงแรก
@@ -120,6 +160,11 @@ VALUES
     'CPG การพยาบาลผู้ป่วยหลังทำ TAVI ศิริราช (Post TAVR Nursing Care & Monitoring Part II)',
     'หน้า 4-8',
     'TAVI',
+    '1.0',
+    'approved',
+    TRUE,
+    'พว.วิยะดา (Incharge CCU)',
+    NOW(),
     '{"alert_level": "high", "procedure": "TAVI", "author": "พว.พัฒนาพร"}'::jsonb
 ),
 (
