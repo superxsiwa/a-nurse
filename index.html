@@ -874,26 +874,34 @@
             <input type="hidden" id="editItemId">
             
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่องค์ความรู้:</label>
-              <select id="formCategory" required class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-brand-500">
-                <option value="EKG">EKG & Arrhythmia</option>
-                <option value="Drug">Drug & High Alert Drugs</option>
-                <option value="TAVI">TAVI / TAVR Care</option>
-                <option value="TEER">TEER (MitraClip)</option>
-                <option value="ACS">ACS (หลอดเลือดหัวใจ)</option>
-                <option value="Pacemaker">Pacemaker & Devices</option>
-                <option value="Rehabilitation">Cardiovascular Rehabilitation</option>
-                <option value="General">แนวปฏิบัติทั่วไป CCU</option>
+              <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่องค์ความรู้ (ตาม 4 เสาหลัก Proposal):</label>
+              <select id="formCategory" required class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-brand-500 font-medium">
+                <optgroup label="1. ภาวะฉุกเฉิน & EKG (Emergency & EKG)">
+                  <option value="EKG">EKG & Arrhythmia (คลื่นไฟฟ้าหัวใจ & หัวใจเต้นผิดจังหวะ)</option>
+                </optgroup>
+                <optgroup label="2. ยาความเสี่ยงสูง (High-Alert Drugs)">
+                  <option value="Drug">High-Alert Drugs (ยาความเสี่ยงสูง CCU / Vasoactive drugs)</option>
+                </optgroup>
+                <optgroup label="3. หัตถการและอุปกรณ์การแพทย์ (Devices & Procedures)">
+                  <option value="TAVI">TAVI / TAVR Care (การเปลี่ยนลิ้นหัวใจทางสายสวน)</option>
+                  <option value="TEER">TEER / MitraClip (การซ่อมลิ้นหัวใจไมตรัล)</option>
+                  <option value="Pacemaker">Pacemaker & เครื่องพยุงการทำงานของหัวใจ</option>
+                  <option value="ACS">ACS & PCI (หลอดเลือดหัวใจโคโรนารีย์เฉียบพลัน)</option>
+                </optgroup>
+                <optgroup label="4. การฟื้นฟูและแนวปฏิบัติทั่วไป (Rehab & General)">
+                  <option value="Rehabilitation">Cardiovascular Rehabilitation (การฟื้นฟูสมรรถภาพหัวใจ)</option>
+                  <option value="General">แนวปฏิบัติการพยาบาลทั่วไป CCU</option>
+                </optgroup>
               </select>
             </div>
 
             <div>
               <label class="block font-semibold text-slate-700 mb-1">ชื่อหัวข้อแนวปฏิบัติ / ความรู้:</label>
-              <input type="text" id="formTitle" required placeholder="เช่น การพยาบาลผู้ป่วยหลังทำ TAVI" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
+              <input type="text" id="formTitle" required placeholder="เช่น การพยาบาลผู้ป่วยหลังทำ TAVI" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 font-medium">
             </div>
 
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">วิทยากร / ผู้สอน / แหล่งอ้างอิง:</label>
+              <label class="block font-semibold text-slate-700 mb-1">วิทยากร / ผู้จัดทำ / แหล่งอ้างอิง:</label>
               <input type="text" id="formAuthor" required placeholder="เช่น พว.พัฒนาพร (CCU ศิริราช)" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
             </div>
 
@@ -907,16 +915,37 @@
               <textarea id="formSummary" rows="4" required placeholder="ข้อควรระวัง, การประเมิน Neuro, การตั้งค่าเครื่อง, ขนาดยา..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500"></textarea>
             </div>
 
+            <!-- PDF Upload Section (รองรับทั้งอัปโหลดไฟล์ และวาง URL สำรอง) -->
             <div>
-              <label class="block font-semibold text-slate-700 mb-1">ลิงก์ไฟล์เอกสาร / PDF (ถ้ามี):</label>
-              <input type="text" id="formFile" placeholder="เช่น documents/knowledge/... หรือ URL เอกสาร" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500">
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-file-pdf text-rose-500 mr-1"></i> ไฟล์เอกสารทางการ (PDF):
+              </label>
+              <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                  <label class="flex-1 border-2 border-dashed border-slate-300 hover:border-brand-500 rounded-xl p-3 text-center cursor-pointer bg-slate-50 hover:bg-brand-50/30 transition-all flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-cloud-arrow-up text-brand-600 text-lg mb-1"></i>
+                    <span id="formPdfLabel" class="text-[11px] font-semibold text-slate-700">คลิกเพื่อเลือกไฟล์ PDF จากเครื่อง</span>
+                    <span id="formPdfSubLabel" class="text-[9px] text-slate-400 mt-0.5">รองรับไฟล์ .pdf ขนาดไม่เกิน 15 MB</span>
+                    <input type="file" id="formPdfFile" accept="application/pdf" onchange="handlePdfFileUpload(event)" class="hidden">
+                  </label>
+                  <button type="button" id="formClearPdfBtn" onclick="clearUploadedPdf()" class="hidden px-2.5 py-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs border border-rose-200 transition-all" title="ลบไฟล์">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+                <!-- เก็บ URL หรือ DataURL เบื้องหลัง และมีช่องสำรองกรอก URL กรณีลิงก์มาจากคลังโรงพยาบาล -->
+                <div class="flex items-center gap-1.5 text-[10px]">
+                  <span class="text-slate-400">หรือระบุ URL ตรง:</span>
+                  <input type="text" id="formFile" placeholder="documents/knowledge/... หรือ https://..." class="flex-1 text-[11px] p-1.5 rounded-lg border border-slate-200 focus:ring-1 focus:ring-brand-500 bg-white">
+                </div>
+              </div>
             </div>
 
-            <div>
+            <!-- สถานะการอนุมัติ: แสดงเฉพาะโหมดแก้ไข (สำหรับโหมดสร้างใหม่จะซ่อนไว้ และตั้งค่า pending อัตโนมัติ) -->
+            <div id="formStatusContainer" class="hidden">
               <label class="block font-semibold text-slate-700 mb-1">สถานะการอนุมัติ / เผยแพร่:</label>
               <select id="formStatus" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-brand-500">
-                <option value="approved">อนุมัติแล้ว (เผยแพร่ในคลัง CPG ทันที)</option>
                 <option value="pending">รอการตรวจสอบ/อนุมัติ (Pending Review)</option>
+                <option value="approved">อนุมัติแล้ว (เผยแพร่ในคลัง CPG ทันที)</option>
               </select>
             </div>
 
@@ -3008,12 +3037,71 @@
       document.getElementById('topicModal').classList.add('hidden');
     }
 
+    // PDF File Upload Handler
+    function handlePdfFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        alert("กรุณาเลือกไฟล์เอกสาร PDF เท่านั้นครับ");
+        e.target.value = '';
+        return;
+      }
+
+      if (file.size > 15 * 1024 * 1024) {
+        alert("ขนาดไฟล์ PDF เกิน 15 MB กรุณาเลือกไฟล์ที่มีขนาดเล็กลงครับ");
+        e.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const dataUrl = evt.target.result;
+        document.getElementById('formFile').value = dataUrl;
+        updatePdfUploadUi(file.name, (file.size / (1024 * 1024)).toFixed(2) + ' MB');
+      };
+      reader.onerror = function() {
+        alert("เกิดข้อผิดพลาดในการอ่านไฟล์ PDF");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updatePdfUploadUi(fileName, fileSizeText) {
+      const label = document.getElementById('formPdfLabel');
+      const subLabel = document.getElementById('formPdfSubLabel');
+      const clearBtn = document.getElementById('formClearPdfBtn');
+
+      if (label) label.innerText = `📄 ${fileName}`;
+      if (subLabel) subLabel.innerText = `ขนาด ${fileSizeText} (พร้อมบันทึก)`;
+      if (clearBtn) clearBtn.classList.remove('hidden');
+    }
+
+    function clearUploadedPdf() {
+      const fileInput = document.getElementById('formPdfFile');
+      if (fileInput) fileInput.value = '';
+      document.getElementById('formFile').value = '';
+
+      const label = document.getElementById('formPdfLabel');
+      const subLabel = document.getElementById('formPdfSubLabel');
+      const clearBtn = document.getElementById('formClearPdfBtn');
+
+      if (label) label.innerText = "คลิกเพื่อเลือกไฟล์ PDF จากเครื่อง";
+      if (subLabel) subLabel.innerText = "รองรับไฟล์ .pdf ขนาดไม่เกิน 15 MB";
+      if (clearBtn) clearBtn.classList.add('hidden');
+    }
+
     // Create & Edit Knowledge Modals
     function openCreateKnowledgeModal() {
       document.getElementById('formModalTitle').innerText = "สร้างองค์ความรู้ใหม่";
       document.getElementById('editItemId').value = "";
       document.getElementById('knowledgeForm').reset();
-      document.getElementById('formStatus').value = "approved";
+      clearUploadedPdf();
+
+      // ซ่อนสถานะการอนุมัติสำหรับโหมดสร้างใหม่ และตั้งค่าเป็น pending อัตโนมัติ (รอรุ่นพี่/Admin ตรวจ)
+      const statusContainer = document.getElementById('formStatusContainer');
+      if (statusContainer) statusContainer.classList.add('hidden');
+      document.getElementById('formStatus').value = "pending";
+
       document.getElementById('createKnowledgeModal').classList.remove('hidden');
     }
 
@@ -3031,6 +3119,10 @@
       document.getElementById('formTitle').value = item.title;
       document.getElementById('formAuthor').value = item.author;
       document.getElementById('formDesc').value = item.desc;
+      
+      // แสดงตัวเลือกสถานะในโหมดแก้ไข
+      const statusContainer = document.getElementById('formStatusContainer');
+      if (statusContainer) statusContainer.classList.remove('hidden');
       document.getElementById('formStatus').value = item.status === 'pending' ? 'pending' : 'approved';
       
       const tempDiv = document.createElement("div");
@@ -3038,6 +3130,14 @@
       document.getElementById('formSummary').value = tempDiv.innerText || item.summaryHtml;
       
       document.getElementById('formFile').value = item.file || '';
+      if (item.file) {
+        const isDataUrl = item.file.startsWith('data:application/pdf');
+        const displayName = isDataUrl ? 'เอกสาร PDF แนบในระบบ' : item.file.split('/').pop();
+        updatePdfUploadUi(displayName, isDataUrl ? 'Base64 Doc' : 'Server Doc');
+      } else {
+        clearUploadedPdf();
+      }
+
       document.getElementById('createKnowledgeModal').classList.remove('hidden');
     }
 
