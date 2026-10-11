@@ -701,7 +701,22 @@
 
         <!-- SECTION D: CLINICAL FAQ VERIFICATION (พยาบาลรุ่นพี่/APN ตรวจสอบและรับรองความถูกต้อง) -->
         <div id="adminSectionFaqs" class="hidden space-y-3">
-          <!-- Summary FAQ verification counts (Clickable Filters) -->
+          <!-- Filter & Search Bar (ตรวจ FAQ - ย้ายมาไว้ด้านบนสุด) -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            <input 
+              type="text" 
+              id="adminFaqSearch" 
+              placeholder="ค้นหาข้อคำถาม-คำตอบ: TAVI, Norepi, VT, ACS..." 
+              onkeyup="handleAdminFaqSearch(event)"
+              class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-xs border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-slate-400"
+            >
+            <button onclick="clearAdminFaqSearch()" id="clearAdminFaqBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Summary FAQ verification counts (Clickable Filters - แสดงตัวเลขสัมพันธ์กับการค้นหา) -->
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
             <button type="button" onclick="filterAdminFaqStatus('all')" id="faqStatCard-all" class="faq-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95">
               <div class="text-[10px] text-slate-300 font-medium">FAQ ทั้งหมด</div>
@@ -714,21 +729,6 @@
             <button type="button" onclick="filterAdminFaqStatus('approved')" id="faqStatCard-approved" class="faq-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/60 text-emerald-900 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-100/60 active:scale-95">
               <div class="text-[10px] text-emerald-700 font-medium">รับรองแล้ว</div>
               <div id="statApprovedFaqs" class="text-base font-bold text-emerald-600">0</div>
-            </button>
-          </div>
-
-          <!-- Filter & Search Bar (ตรวจ FAQ) -->
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-            <input 
-              type="text" 
-              id="adminFaqSearch" 
-              placeholder="ค้นหาข้อคำถาม-คำตอบ: TAVI, Norepi, VT, ACS..." 
-              onkeyup="handleAdminFaqSearch(event)"
-              class="w-full bg-white pl-10 pr-10 py-2.5 rounded-xl text-xs border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-slate-400"
-            >
-            <button onclick="clearAdminFaqSearch()" id="clearAdminFaqBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
-              <i class="fa-solid fa-circle-xmark"></i>
             </button>
           </div>
 
@@ -1816,6 +1816,14 @@
         }
         if (createFaqBtn) createFaqBtn.classList.remove('hidden');
         if (adminHeaderDesc) adminHeaderDesc.innerText = 'ตรวจรับรองความถูกต้องของคำถาม-คำตอบการแพทย์ (Clinical FAQ) โดยพยาบาลรุ่นพี่/APN';
+        
+        // เมื่อกดปุ่มแท็บตรวจ FAQ ข้างบน ให้ล้างค่าการค้นหา และรีเซ็ตกลับเป็นค้นหาทั้งหมด
+        const searchInput = document.getElementById('adminFaqSearch');
+        const clearBtn = document.getElementById('clearAdminFaqBtn');
+        if (searchInput) searchInput.value = '';
+        if (clearBtn) clearBtn.classList.add('hidden');
+        currentAdminFaqFilter = 'all';
+        resetFaqStatCardStyles('all');
         renderAdminFaqList();
       }
     }
@@ -3625,8 +3633,8 @@
     }
 
     // ===== CLINICAL FAQ VERIFICATION CONSOLE (พยาบาลรุ่นพี่/APN ตรวจสอบและรับรองความถูกต้อง) =====
-    function updateFaqStats() {
-      const list = getFaqList();
+    function updateFaqStats(baseList) {
+      const list = baseList || getFaqList();
       const total = list.length;
       const pending = list.filter(f => f.status === 'pending' || f.status === 'needs_review').length;
       const approved = list.filter(f => f.status === 'approved').length;
@@ -3649,24 +3657,92 @@
       }
     }
 
+    function resetFaqStatCardStyles(status) {
+      const cardAll = document.getElementById('faqStatCard-all');
+      const cardPending = document.getElementById('faqStatCard-pending');
+      const cardApproved = document.getElementById('faqStatCard-approved');
+
+      // Reset all cards to inactive style
+      if (cardAll) {
+        cardAll.className = 'faq-stat-btn p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 active:scale-95';
+        const num = cardAll.querySelector('#statTotalFaqs');
+        const txt = cardAll.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-slate-800';
+        if (txt) txt.className = 'text-[10px] text-slate-400 font-medium';
+      }
+      if (cardPending) {
+        cardPending.className = 'faq-stat-btn p-2.5 rounded-xl border border-amber-200 bg-white text-amber-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-amber-50 active:scale-95';
+        const num = cardPending.querySelector('#statPendingFaqs');
+        const txt = cardPending.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-amber-600';
+        if (txt) txt.className = 'text-[10px] text-amber-700 font-medium';
+      }
+      if (cardApproved) {
+        cardApproved.className = 'faq-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-white text-emerald-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 active:scale-95';
+        const num = cardApproved.querySelector('#statApprovedFaqs');
+        const txt = cardApproved.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-emerald-600';
+        if (txt) txt.className = 'text-[10px] text-emerald-700 font-medium';
+      }
+
+      // Apply active style
+      if (status === 'all' && cardAll) {
+        cardAll.className = 'faq-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-slate-800 ring-offset-1';
+        const num = cardAll.querySelector('#statTotalFaqs');
+        const txt = cardAll.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-slate-300 font-medium';
+      } else if (status === 'pending' && cardPending) {
+        cardPending.className = 'faq-stat-btn p-2.5 rounded-xl border border-amber-400 bg-amber-500 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-amber-500 ring-offset-1';
+        const num = cardPending.querySelector('#statPendingFaqs');
+        const txt = cardPending.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-amber-100 font-medium';
+      } else if (status === 'approved' && cardApproved) {
+        cardApproved.className = 'faq-stat-btn p-2.5 rounded-xl border border-emerald-400 bg-emerald-600 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-emerald-600 ring-offset-1';
+        const num = cardApproved.querySelector('#statApprovedFaqs');
+        const txt = cardApproved.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-emerald-100 font-medium';
+      }
+    }
+
     function renderAdminFaqList(customList) {
       const container = document.getElementById('adminFaqListContainer');
       if (!container) return;
       container.innerHTML = '';
-      updateFaqStats();
 
-      let list = customList || getFaqList();
+      // ค้นหาข้อความปัจจุบันใน search box
+      const searchInput = document.getElementById('adminFaqSearch');
+      const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      // ลิสต์ตั้งต้น: ถ้าระบุ customList มาใช้ตามนั้น ไม่งั้นดึงทั้งหมด
+      let baseList = customList || getFaqList();
+      if (q) {
+        baseList = baseList.filter(f => 
+          (f.question || '').toLowerCase().includes(q) ||
+          (f.quickAnswer || f.answer || '').toLowerCase().includes(q) ||
+          (f.category || '').toLowerCase().includes(q) ||
+          (f.reference || '').toLowerCase().includes(q) ||
+          (f.cpgId || '').toLowerCase().includes(q)
+        );
+      }
+
+      // อัปเดตตัวเลขในปุ่มสถิติ 3 ปุ่มให้สัมพันธ์กับการค้นหา
+      updateFaqStats(baseList);
+
+      let list = baseList;
       if (currentAdminFaqFilter === 'pending') {
         list = list.filter(f => f.status === 'pending' || f.status === 'needs_review');
-      } else if (currentAdminFaqFilter !== 'all') {
-        list = list.filter(f => f.status === currentAdminFaqFilter);
+      } else if (currentAdminFaqFilter === 'approved') {
+        list = list.filter(f => f.status === 'approved');
       }
 
       if (list.length === 0) {
         container.innerHTML = `
           <div class="text-center py-8 text-slate-400 bg-white rounded-2xl border border-slate-200">
             <i class="fa-solid fa-clipboard-check text-3xl mb-2 text-slate-300"></i>
-            <p class="text-xs">ไม่พบรายการ FAQ ในหมวดนี้</p>
+            <p class="text-xs">ไม่พบรายการ FAQ ในเงื่อนไขนี้</p>
           </div>
         `;
         return;
@@ -3768,43 +3844,7 @@
 
     function filterAdminFaqStatus(status) {
       currentAdminFaqFilter = status;
-      
-      const cardAll = document.getElementById('faqStatCard-all');
-      const cardPending = document.getElementById('faqStatCard-pending');
-      const cardApproved = document.getElementById('faqStatCard-approved');
-
-      // Reset all cards to inactive state
-      if (cardAll) {
-        cardAll.className = 'faq-stat-btn p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 active:scale-95';
-        cardAll.querySelector('#statTotalFaqs').className = 'text-base font-bold text-slate-800';
-        cardAll.querySelector('div').className = 'text-[10px] text-slate-400 font-medium';
-      }
-      if (cardPending) {
-        cardPending.className = 'faq-stat-btn p-2.5 rounded-xl border border-amber-200 bg-white text-amber-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-amber-50 active:scale-95';
-        cardPending.querySelector('#statPendingFaqs').className = 'text-base font-bold text-amber-600';
-        cardPending.querySelector('div').className = 'text-[10px] text-amber-700 font-medium';
-      }
-      if (cardApproved) {
-        cardApproved.className = 'faq-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-white text-emerald-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 active:scale-95';
-        cardApproved.querySelector('#statApprovedFaqs').className = 'text-base font-bold text-emerald-600';
-        cardApproved.querySelector('div').className = 'text-[10px] text-emerald-700 font-medium';
-      }
-
-      // Apply active style to selected card
-      if (status === 'all' && cardAll) {
-        cardAll.className = 'faq-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-slate-800 ring-offset-1';
-        cardAll.querySelector('#statTotalFaqs').className = 'text-base font-bold text-white';
-        cardAll.querySelector('div').className = 'text-[10px] text-slate-300 font-medium';
-      } else if (status === 'pending' && cardPending) {
-        cardPending.className = 'faq-stat-btn p-2.5 rounded-xl border border-amber-400 bg-amber-500 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-amber-500 ring-offset-1';
-        cardPending.querySelector('#statPendingFaqs').className = 'text-base font-bold text-white';
-        cardPending.querySelector('div').className = 'text-[10px] text-amber-100 font-medium';
-      } else if (status === 'approved' && cardApproved) {
-        cardApproved.className = 'faq-stat-btn p-2.5 rounded-xl border border-emerald-400 bg-emerald-600 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-emerald-600 ring-offset-1';
-        cardApproved.querySelector('#statApprovedFaqs').className = 'text-base font-bold text-white';
-        cardApproved.querySelector('div').className = 'text-[10px] text-emerald-100 font-medium';
-      }
-
+      resetFaqStatCardStyles(status);
       renderAdminFaqList();
     }
 
@@ -3816,40 +3856,29 @@
       } else {
         clearBtn.classList.add('hidden');
       }
-
-      const list = getFaqList();
-      if (!q) {
-        renderAdminFaqList(list);
-        return;
-      }
-      const filtered = list.filter(f => 
-        (f.question || '').toLowerCase().includes(q) ||
-        (f.quickAnswer || f.answer || '').toLowerCase().includes(q) ||
-        (f.category || '').toLowerCase().includes(q) ||
-        (f.reference || '').toLowerCase().includes(q)
-      );
-      renderAdminFaqList(filtered);
+      renderAdminFaqList();
     }
 
     function clearAdminFaqSearch() {
-      document.getElementById('adminFaqSearch').value = '';
-      document.getElementById('clearAdminFaqBtn').classList.add('hidden');
+      const input = document.getElementById('adminFaqSearch');
+      if (input) input.value = '';
+      const clearBtn = document.getElementById('clearAdminFaqBtn');
+      if (clearBtn) clearBtn.classList.add('hidden');
       renderAdminFaqList();
     }
 
     // กระโดดจาก CPG Card ในแผงควบคุม ไปแสดงเฉพาะ FAQ ของ CPG นั้นๆ
     function filterAdminFaqByCpg(cpgId) {
       switchAdminSubtab('faqs');
-      const targetCpg = currentCatalog.find(c => c.id === cpgId);
       const searchInput = document.getElementById('adminFaqSearch');
       const clearBtn = document.getElementById('clearAdminFaqBtn');
       if (searchInput) {
         searchInput.value = cpgId;
         if (clearBtn) clearBtn.classList.remove('hidden');
       }
-      const list = getFaqList();
-      const filtered = list.filter(f => f.cpgId === cpgId);
-      renderAdminFaqList(filtered);
+      currentAdminFaqFilter = 'all';
+      resetFaqStatCardStyles('all');
+      renderAdminFaqList();
     }
 
     function approveFaqItem(id) {
