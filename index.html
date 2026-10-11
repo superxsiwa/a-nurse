@@ -939,6 +939,82 @@
       </div>
 
       <!-- ================================================= -->
+      <!-- MODAL: แก้ไข/สร้างข้อคำถาม-คำตอบ (Clinical FAQ Form)-->
+      <!-- ================================================= -->
+      <div id="faqFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
+        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-clipboard-check"></i>
+              </div>
+              <h3 id="faqModalTitle" class="font-heading font-bold text-base text-slate-800">แก้ไข FAQ การแพทย์</h3>
+            </div>
+            <button onclick="closeFaqModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <form id="faqEditForm" onsubmit="handleSaveFaqForm(event)" class="p-4 overflow-y-auto text-xs space-y-3.5">
+            <input type="hidden" id="faqFormId">
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่หัตถการ CCU:</label>
+              <select id="faqFormCategory" required class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500">
+                <option value="TAVI">TAVI / TAVR Care</option>
+                <option value="TEER">TEER (MitraClip)</option>
+                <option value="Drug">ยาเสี่ยงสูง (High-Alert Drugs)</option>
+                <option value="EKG">EKG ด่วน & Arrhythmias</option>
+                <option value="ACS">ACS / STEMI / Post-PCI</option>
+                <option value="Pacemaker">Pacemaker & Devices</option>
+                <option value="General">แนวปฏิบัติทั่วไป CCU</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-circle-question text-brand-600 mr-0.5"></i> ข้อคำถามทางคลินิก (Question):
+              </label>
+              <textarea id="faqFormQuestion" rows="2" required placeholder="เช่น คนไข้ Post-TAVI 24 ชม. แรก ต้องเฝ้าระวังอะไรเป็นพิเศษ?" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 leading-relaxed"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-notes-medical text-emerald-600 mr-0.5"></i> แนวทางปฏิบัติ / คำตอบข้างเตียง (Answer):
+              </label>
+              <textarea id="faqFormAnswer" rows="4" required placeholder="ระบุการประเมิน, ขนาดยา, การเฝ้าระวัง, และข้อห้ามสำคัญ..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 leading-relaxed"></textarea>
+              <p class="text-[10px] text-slate-400 mt-1">*ควรเขียนกระชับ ชัดเจน เหมาะสำหรับพยาบาลเปิดดูข้างเตียงฉุกเฉิน</p>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-book-bookmark text-indigo-500 mr-0.5"></i> เอกสารอ้างอิง CPG ศิริราช & เลขหน้า (Reference):
+              </label>
+              <input type="text" id="faqFormReference" required placeholder="เช่น CPG การพยาบาลผู้ป่วยหลังทำ TAVI ศิริราช หน้า 4-8" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500">
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">สถานะการตรวจรับรอง (Review Status):</label>
+              <select id="faqFormStatus" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 font-semibold">
+                <option value="approved" class="text-emerald-700">🟢 ผ่านการรับรองแล้ว (Approve นำไปแสดงข้างเตียงทันที)</option>
+                <option value="pending" class="text-amber-700">🟡 รอพยาบาลรุ่นพี่/APN ตรวจ (Pending Review)</option>
+                <option value="rejected" class="text-rose-700">🔴 ส่งกลับแก้ไข / พักการใช้ (Rejected/Inactive)</option>
+              </select>
+            </div>
+
+            <div class="pt-2 flex gap-2">
+              <button type="button" onclick="closeFaqModal()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs transition-colors">
+                ยกเลิก
+              </button>
+              <button type="submit" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs active:bg-emerald-800 shadow-sm transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล FAQ
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
       <!-- AI ASSISTANT VIEW (RAG prototype)                  -->
       <!-- ================================================= -->
       <section id="view-ai" class="tab-view space-y-3">
@@ -3174,53 +3250,109 @@
       alert(`ยกเลิกการรับรองข้อคำถาม "${target.question}" ชั่วคราว (จะถูกซ่อนจากหน้าจอข้างเตียงของพยาบาลน้องใหม่)`);
     }
 
+    function closeFaqModal() {
+      const modal = document.getElementById('faqFormModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
     function editFaqItem(id) {
       const list = getFaqList();
       const target = list.find(f => f.id === id);
       if (!target) return;
 
-      const newQ = prompt("แก้ไขข้อคำถาม (Question):", target.question);
-      if (newQ === null) return;
-      const newA = prompt("แก้ไขแนวทางปฏิบัติ/คำตอบ (Answer):", target.quickAnswer || target.answer);
-      if (newA === null) return;
-      const newRef = prompt("แก้ไขเอกสารอ้างอิง CPG (Reference & Page):", target.reference);
-      if (newRef === null) return;
+      document.getElementById('faqModalTitle').innerText = 'แก้ไข FAQ การแพทย์';
+      document.getElementById('faqFormId').value = target.id;
+      document.getElementById('faqFormCategory').value = target.category || 'General';
+      document.getElementById('faqFormQuestion').value = target.question || '';
+      document.getElementById('faqFormAnswer').value = target.quickAnswer || target.answer || '';
+      document.getElementById('faqFormReference').value = target.reference || '';
+      document.getElementById('faqFormStatus').value = target.status || 'pending';
 
-      target.question = newQ.trim() || target.question;
-      target.quickAnswer = newA.trim() || target.quickAnswer;
-      target.reference = newRef.trim() || target.reference;
-
-      saveFaqList(list);
-      alert("บันทึกการแก้ไข FAQ เรียบร้อยแล้วครับ!");
+      const modal = document.getElementById('faqFormModal');
+      if (modal) modal.classList.remove('hidden');
     }
 
     function openAddFaqModal() {
-      const q = prompt("พิมพ์ข้อคำถามทางคลินิก (เช่น พบ Complete Heart Block หลัง TAVI ต้องทำอย่างไร?):");
-      if (!q) return;
-      const a = prompt("พิมพ์แนวทางปฏิบัติ/คำตอบตาม CPG ศิริราช:");
-      if (!a) return;
-      const cat = prompt("หมวดหมู่ (เช่น TAVI, TEER, Drug, EKG, ACS):", "General");
-      if (!cat) return;
-      const ref = prompt("เอกสาร CPG ศิริราช และเลขหน้าอ้างอิง:", "CPG CCU ศิริราช");
-      if (!ref) return;
+      document.getElementById('faqModalTitle').innerText = 'เพิ่มข้อคำถาม-คำตอบการแพทย์';
+      document.getElementById('faqFormId').value = '';
+      document.getElementById('faqFormCategory').value = 'TAVI';
+      document.getElementById('faqFormQuestion').value = '';
+      document.getElementById('faqFormAnswer').value = '';
+      document.getElementById('faqFormReference').value = 'CPG CCU ศิริราช';
+      document.getElementById('faqFormStatus').value = 'approved';
+
+      const modal = document.getElementById('faqFormModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function handleSaveFaqForm(e) {
+      e.preventDefault();
+      const id = document.getElementById('faqFormId').value.trim();
+      const cat = document.getElementById('faqFormCategory').value;
+      const question = document.getElementById('faqFormQuestion').value.trim();
+      const answer = document.getElementById('faqFormAnswer').value.trim();
+      const reference = document.getElementById('faqFormReference').value.trim();
+      const status = document.getElementById('faqFormStatus').value;
+
+      if (!question || !answer || !reference) {
+        alert("กรุณากรอกข้อมูลคำถาม, คำตอบ และเอกสารอ้างอิงให้ครบถ้วน");
+        return;
+      }
 
       const list = getFaqList();
       const reviewerName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลรุ่นพี่/Incharge CCU';
-      list.unshift({
-        id: 'faq-' + Date.now(),
-        category: cat.trim(),
-        badge: cat.trim(),
-        color: 'indigo',
-        icon: 'fa-circle-question',
-        status: 'approved', // สร้างโดยพี่ให้ approved อัตโนมัติ
-        reviewedBy: reviewerName,
-        reviewedAt: new Date().toISOString().split('T')[0],
-        question: q.trim(),
-        quickAnswer: a.trim(),
-        reference: ref.trim()
-      });
+      const today = new Date().toISOString().split('T')[0];
+
+      let icon = 'fa-circle-question';
+      let badge = cat;
+      let color = 'indigo';
+      if (cat === 'TAVI') { icon = 'fa-heart-pulse'; color = 'sky'; }
+      if (cat === 'TEER') { icon = 'fa-paperclip'; color = 'indigo'; }
+      if (cat === 'Drug') { icon = 'fa-syringe'; color = 'emerald'; badge = 'ยาเสี่ยงสูง'; }
+      if (cat === 'EKG') { icon = 'fa-wave-square'; color = 'rose'; badge = 'EKG ด่วน'; }
+      if (cat === 'ACS') { icon = 'fa-heart-crack'; color = 'amber'; badge = 'ACS Post-PCI'; }
+      if (cat === 'Pacemaker') { icon = 'fa-bolt'; color = 'teal'; }
+
+      if (id) {
+        // อัปเดตรายการเดิม
+        const idx = list.findIndex(f => f.id === id);
+        if (idx !== -1) {
+          list[idx] = {
+            ...list[idx],
+            category: cat,
+            badge: badge,
+            icon: icon,
+            color: color,
+            question: question,
+            quickAnswer: answer,
+            answer: answer,
+            reference: reference,
+            status: status,
+            reviewedBy: status === 'approved' ? (list[idx].reviewedBy || reviewerName) : null,
+            reviewedAt: status === 'approved' ? (list[idx].reviewedAt || today) : null
+          };
+        }
+      } else {
+        // เพิ่มรายการใหม่
+        list.unshift({
+          id: 'faq-' + Date.now(),
+          category: cat,
+          badge: badge,
+          icon: icon,
+          color: color,
+          question: question,
+          quickAnswer: answer,
+          answer: answer,
+          reference: reference,
+          status: status,
+          reviewedBy: status === 'approved' ? reviewerName : null,
+          reviewedAt: status === 'approved' ? today : null
+        });
+      }
+
       saveFaqList(list);
-      alert("เพิ่มข้อคำถาม-คำตอบการแพทย์สำเร็จ และรับรองความถูกต้องเรียบร้อยแล้วครับ!");
+      closeFaqModal();
+      alert(id ? "บันทึกการแก้ไข FAQ เรียบร้อยแล้วครับ!" : "เพิ่มข้อคำถาม-คำตอบการแพทย์สำเร็จเรียบร้อยครับ!");
     }
 
     function deleteFaqItem(id) {
