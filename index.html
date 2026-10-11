@@ -559,6 +559,9 @@
           <button id="adminCreateFaqBtn" onclick="openAddFaqModal()" class="hidden bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-emerald-700">
             <i class="fa-solid fa-plus"></i> เพิ่ม FAQ การแพทย์
           </button>
+          <button id="adminCreatePearlBtn" onclick="openAddTacitModal()" class="hidden bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm active:bg-amber-700">
+            <i class="fa-solid fa-plus"></i> เพิ่มเกร็ดความรู้
+          </button>
         </div>
 
         <!-- Admin Subtabs (Users vs KM vs Pearls vs FAQs) -->
@@ -1662,6 +1665,7 @@
       const btnFaqs = document.getElementById('adminTabFaqs');
       const createKmBtn = document.getElementById('adminCreateKmBtn');
       const createFaqBtn = document.getElementById('adminCreateFaqBtn');
+      const createPearlBtn = document.getElementById('adminCreatePearlBtn');
 
       // Reset tabs styling
       [btnUsers, btnKm, btnPearls, btnFaqs].forEach(b => {
@@ -1677,6 +1681,7 @@
       if (secFaqs) secFaqs.classList.add('hidden');
       if (createKmBtn) createKmBtn.classList.add('hidden');
       if (createFaqBtn) createFaqBtn.classList.add('hidden');
+      if (createPearlBtn) createPearlBtn.classList.add('hidden');
 
       const adminHeaderDesc = document.getElementById('adminHeaderDesc');
 
@@ -1703,6 +1708,7 @@
           btnPearls.classList.add('bg-white', 'text-purple-700', 'shadow-xs');
           btnPearls.classList.remove('text-slate-600');
         }
+        if (createPearlBtn) createPearlBtn.classList.remove('hidden');
         if (adminHeaderDesc) adminHeaderDesc.innerText = 'ตรวจสอบและซ่อนเกร็ดความรู้ทางคลินิกจากประสบการณ์พี่สู่น้อง';
         renderAdminPearlsList();
       } else if (subtab === 'faqs') {
