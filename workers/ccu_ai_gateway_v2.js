@@ -10,7 +10,7 @@
 
 // Configuration Defaults & Environment Bindings
 const GEMINI_EMBEDDING_MODEL = 'text-embedding-004';
-const GEMINI_CHAT_MODEL = 'gemini-1.5-flash';
+const GEMINI_CHAT_MODELS = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro'];
 const DEFAULT_MATCH_THRESHOLD = 0.72; // Threshold ความคล้ายคลึงสำหรับ FAQ Direct Match
 const DEFAULT_MATCH_COUNT = 3;
 
@@ -122,8 +122,6 @@ async function searchSupabaseFaqs(queryVector, env, options = {}) {
  * เรียก Gemini Chat Generation เพื่อตอบคำถามโดยอิงจาก CPG Context
  */
 async function generateGroundedAnswer(question, contextPrompt, apiKey) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_CHAT_MODEL}:generateContent?key=${apiKey}`;
-
   const systemPrompt = `
 คุณคือ "CCU Nurse AI Assistant" ผู้ช่วยปัญญาประดิษฐ์ประจำหอผู้ป่วยวิกฤตโรคหัวใจ (CCU) โรงพยาบาลศิริราช
 ภารกิจ: ให้คำตอบเชิงปฏิบัติการพยาบาลแก่พยาบาลวิชาชีพข้างเตียงอย่างแม่นยำ กระชับ และอ้างอิง CPG ศิริราช
@@ -153,19 +151,33 @@ async function generateGroundedAnswer(question, contextPrompt, apiKey) {
     }
   };
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  let lastError = null;
+  // วน Loop ลองโมเดลในคิวหากโมเดลแรกติด High Demand หรือ 503/429
+  for (const model of GEMINI_CHAT_MODELS) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Gemini Chat API Error (${res.status}): ${err}`);
+      if (res.ok) {
+        const data = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) return text;
+      }
+
+      const errText = await res.text();
+      lastError = new Error(`Model ${model} failed (${res.status}): ${errText}`);
+      console.warn(`Gemini model ${model} failed, trying next fallback...`);
+    } catch (e) {
+      lastError = e;
+      console.warn(`Network/API error for model ${model}:`, e.message);
+    }
   }
 
-  const data = await res.json();
-  return data?.candidates?.[0]?.content?.parts?.[0]?.text || 'ขออภัย ไม่สามารถสร้างคำตอบได้ในขณะนี้';
+  throw lastError || new Error('ขออภัย ไม่สามารถสร้างคำตอบได้ในขณะนี้เนื่องจากระบบ AI ปลายทางมีผู้ใช้งานหนาแน่น');
 }
 
 /**
@@ -243,25 +255,37 @@ ${existingPromptBlock}
 ]
 `;
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_CHAT_MODEL}:generateContent?key=${geminiApiKey}`;
-        const res = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.1,
-              responseMimeType: 'application/json'
-            }
-          })
-        });
+        let data = null;
+        let lastExtractErr = null;
+        for (const model of GEMINI_CHAT_MODELS) {
+          try {
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+            const res = await fetch(geminiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                  temperature: 0.1,
+                  responseMimeType: 'application/json'
+                }
+              })
+            });
 
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(`Gemini Extract API failed: ${errText}`);
+            if (res.ok) {
+              data = await res.json();
+              break;
+            }
+            const errText = await res.text();
+            lastExtractErr = new Error(`Model ${model} extract failed: ${errText}`);
+          } catch (e) {
+            lastExtractErr = e;
+          }
         }
 
-        const data = await res.json();
+        if (!data) {
+          throw lastExtractErr || new Error('Gemini Extract API failed across all fallback models');
+        }
         const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
         let faqs = [];
         try {
