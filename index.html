@@ -1205,6 +1205,38 @@
       </div>
 
       <!-- ================================================= -->
+      <!-- MODAL: ตรวจจับคำถามซ้ำ (Junior Duplicate Notice)  -->
+      <!-- ================================================= -->
+      <div id="juniorDuplicateNoticeModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
+        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div id="duplicateModalIconBox" class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shadow-2xs">
+                <i id="duplicateModalIcon" class="fa-solid fa-lightbulb"></i>
+              </div>
+              <div>
+                <h3 id="duplicateModalTitle" class="font-heading font-bold text-sm text-slate-800">ตรวจพบคำถามที่ใกล้เคียงกัน</h3>
+                <p id="duplicateModalSubtitle" class="text-[10px] text-slate-500">ระบบช่วยตรวจจับเพื่อลดการถามซ้ำและให้คำตอบทันที</p>
+              </div>
+            </div>
+            <button onclick="closeJuniorDuplicateNoticeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Modal Body Content -->
+          <div class="p-4 overflow-y-auto space-y-3.5 flex-1 text-xs" id="juniorDuplicateBody">
+            <!-- Dynamically populated via JS -->
+          </div>
+
+          <!-- Modal Footer Actions -->
+          <div class="p-4 border-t border-slate-100 bg-slate-50/70 flex flex-col gap-2" id="juniorDuplicateFooter">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
       <!-- MODAL: เพิ่ม/แก้ไขเกร็ดความรู้ (Tacit Pearl Form)  -->
       <!-- ================================================= -->
       <div id="tacitFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
@@ -2741,15 +2773,87 @@
       }
     }
 
-    // ฟังก์ชันส่งคำถามที่ AI ตอบไม่ได้หรือข้างเตียงสงสัยเข้าสู่ Senior Review Queue (Bedside Knowledge Gap)
-    function submitKnowledgeGap(encodedQuestion) {
-      const q = decodeURIComponent(encodedQuestion);
+    // ========================================================
+    // HELPER: DUPLICATE FAQ CHECK & SIMILARITY CALCULATION
+    // ========================================================
+    function normalizeFaqText(text) {
+      if (!text) return '';
+      return text.toLowerCase()
+        .replace(/["'“”‘’.,?!:;\-_\(\)\[\]\{\}\s]/g, '')
+        .trim();
+    }
+
+    function calculateFaqSimilarity(text1, text2) {
+      const s1 = normalizeFaqText(text1);
+      const s2 = normalizeFaqText(text2);
+      if (!s1 || !s2) return 0;
+      if (s1 === s2) return 1.0;
+      if (s1.includes(s2) || s2.includes(s1)) {
+        return Math.min(s1.length, s2.length) / Math.max(s1.length, s2.length);
+      }
+      // Simple character set intersection
+      let common = 0;
+      const set2 = s2.split('');
+      for (const char of s1) {
+        const idx = set2.indexOf(char);
+        if (idx !== -1) {
+          common++;
+          set2.splice(idx, 1);
+        }
+      }
+      return (2 * common) / (s1.length + s2.length);
+    }
+
+    function findDuplicateFaqMatch(question, existingFaqs, threshold = 0.65) {
+      let bestMatch = null;
+      let highestSim = 0;
+
+      for (const f of existingFaqs) {
+        const sim = calculateFaqSimilarity(question, f.question);
+        if (sim >= threshold && sim > highestSim) {
+          highestSim = sim;
+          bestMatch = { item: f, similarity: sim };
+        }
+      }
+      return bestMatch;
+    }
+
+    // Modal Control: ตรวจจับคำถามซ้ำ
+    function closeJuniorDuplicateNoticeModal() {
+      const modal = document.getElementById('juniorDuplicateNoticeModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // ฟังก์ชันติดตามคำถามที่รอพี่ตอบ (Upvote / Follow)
+    function followJuniorQuestion(faqId) {
+      const faqs = getFaqList();
+      const target = faqs.find(f => f.id === faqId);
+      if (!target) return;
+
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'nurse';
+      const currentUserName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลวิชาชีพ';
+
+      if (!target.followers) target.followers = [];
+      if (!target.followers.includes(currentUser)) {
+        target.followers.push(currentUser);
+      }
+      target.upvotes = target.followers.length;
+
+      saveFaqList(faqs);
+      renderJuniorQuestions();
+      closeJuniorDuplicateNoticeModal();
+
+      alert(`คุณได้กดติดตามคำถาม:\n"${target.question}"\nเรียบร้อยแล้วครับ!\nระบบจะแจ้งเตือนและแสดงคำตอบทันทีเมื่อพยาบาลรุ่นพี่เข้ามาตอบครับ`);
+    }
+
+    // ฟังก์ชันดำเนินการส่งคำถามจริงเข้าคิว
+    function doSubmitKnowledgeGap(questionText) {
       const faqs = getFaqList();
       const currentUser = currentLoggedUser ? currentLoggedUser.user : 'nurse';
       const askerName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลวิชาชีพเวรข้างเตียง';
       const nowStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
       const dateStr = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-      
+
       const newGap = {
         id: 'faq-gap-' + Date.now(),
         cpgId: null,
@@ -2758,13 +2862,15 @@
         badge: 'คำถามข้างเตียง',
         icon: 'fa-hospital-user',
         color: 'amber',
-        question: q,
+        question: questionText,
         quickAnswer: 'รอการตอบและตรวจรับรองจากพยาบาลรุ่นพี่/Incharge CCU',
         answer: 'รอการตอบและตรวจรับรองจากพยาบาลรุ่นพี่/Incharge CCU',
         reference: `ถามโดย ${askerName} (${dateStr} ${nowStr} น.)`,
         askedBy: currentUser,
         askedByName: askerName,
         askedAt: `${dateStr} ${nowStr} น.`,
+        followers: [currentUser],
+        upvotes: 1,
         status: 'pending', // ส่งเข้าคิวรอตรวจ
         reviewedBy: null,
         reviewedAt: null
@@ -2773,8 +2879,126 @@
       faqs.unshift(newGap);
       saveFaqList(faqs);
       updateJuniorPendingBadge();
+      closeJuniorDuplicateNoticeModal();
 
-      alert(`ส่งคำถาม:\n"${q}"\nเข้าสู่กระดานถามพี่ In-charge เรียบร้อยแล้วครับ!\nพยาบาลน้องใหม่ทุกคนสามารถติดตามความคืบหน้าของคำถามนี้ได้ที่ปุ่ม [กระดานถามพี่] ครับ`);
+      alert(`ส่งคำถาม:\n"${questionText}"\nเข้าสู่กระดานถามพี่ In-charge เรียบร้อยแล้วครับ!\nพยาบาลน้องใหม่ทุกคนสามารถติดตามความคืบหน้าของคำถามนี้ได้ที่ปุ่ม [กระดานถามพี่] ครับ`);
+    }
+
+    // ฟังก์ชันส่งคำถามที่ AI ตอบไม่ได้หรือข้างเตียงสงสัย (พร้อมระบบตรวจจับคำถามซ้ำอัจฉริยะ)
+    function submitKnowledgeGap(encodedQuestion) {
+      const q = decodeURIComponent(encodedQuestion);
+      const faqs = getFaqList();
+
+      // ตรวจสอบคำถามที่ซ้ำหรือใกล้เคียง
+      const duplicateMatch = findDuplicateFaqMatch(q, faqs, 0.65);
+
+      if (duplicateMatch) {
+        const matchedItem = duplicateMatch.item;
+        const modal = document.getElementById('juniorDuplicateNoticeModal');
+        const iconBox = document.getElementById('duplicateModalIconBox');
+        const icon = document.getElementById('duplicateModalIcon');
+        const title = document.getElementById('duplicateModalTitle');
+        const subtitle = document.getElementById('duplicateModalSubtitle');
+        const body = document.getElementById('juniorDuplicateBody');
+        const footer = document.getElementById('juniorDuplicateFooter');
+
+        if (matchedItem.status === 'approved') {
+          // กรณี A: มีคำถามนี้และพยาบาลรุ่นพี่ตอบรับรองแล้ว (Instant Resolution)
+          iconBox.className = 'w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shadow-2xs';
+          icon.className = 'fa-solid fa-circle-check';
+          title.innerText = 'คำถามนี้พี่ In-charge เคยตอบไว้แล้ว!';
+          subtitle.innerText = 'พยาบาลรุ่นพี่ได้ตรวจรับรองคำตอบไว้ในระบบแล้ว สามารถอ่านและนำไปใช้ได้ทันทีครับ';
+
+          body.innerHTML = `
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+              <span class="text-[10px] font-bold text-slate-500">คำถามที่คุณกำลังจะส่ง:</span>
+              <p class="text-xs font-semibold text-slate-800 leading-snug">"${escapeHtml(q)}"</p>
+            </div>
+
+            <div class="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-2">
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-bold text-emerald-800 flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i> คำตอบที่พี่รับรองแล้ว:
+                </span>
+                <span class="text-slate-500">ตอบโดย: <strong>${escapeHtml(matchedItem.reviewedBy || 'Incharge')}</strong></span>
+              </div>
+              <div class="font-bold text-xs text-slate-900 leading-snug">
+                Q: ${escapeHtml(matchedItem.question)}
+              </div>
+              <p class="text-xs text-slate-800 leading-relaxed bg-white p-2.5 rounded-xl border border-emerald-100">
+                ${escapeHtml(matchedItem.quickAnswer || matchedItem.answer || '')}
+              </p>
+              <div class="text-[10px] text-slate-500 flex items-center gap-1 pt-1 border-t border-emerald-100">
+                <i class="fa-solid fa-book-bookmark text-emerald-600"></i>
+                <span class="truncate">อ้างอิง: ${escapeHtml(matchedItem.reference || 'CPG ศิริราช')}</span>
+              </div>
+            </div>
+          `;
+
+          footer.innerHTML = `
+            <button type="button" onclick="closeJuniorDuplicateNoticeModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-check"></i> ได้รับคำตอบแล้ว (ปิดหน้าต่าง)
+            </button>
+            <button type="button" onclick="doSubmitKnowledgeGap('${encodeURIComponent(q)}')" class="w-full py-1.5 text-slate-400 hover:text-slate-600 text-[11px] font-medium transition-colors">
+              คำถามนี้มีความต่าง ยืนยันส่งหาพี่อีกครั้ง
+            </button>
+          `;
+        } else {
+          // กรณี B: มีเพื่อนพยาบาลเพิ่งถามคำถามนี้ไปแล้ว และกำลังรอพี่ตอบ (Pending Duplicate)
+          iconBox.className = 'w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shadow-2xs';
+          icon.className = 'fa-solid fa-clock';
+          title.innerText = 'มีเพื่อนพยาบาลถามคำถามนี้แล้ว!';
+          subtitle.innerText = 'คำถามนี้กำลังอยู่ในคิวรอพยาบาลรุ่นพี่/Incharge ตอบครับ';
+
+          const followerCount = matchedItem.followers && matchedItem.followers.length ? matchedItem.followers.length : 1;
+
+          body.innerHTML = `
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+              <span class="text-[10px] font-bold text-slate-500">คำถามที่คุณต้องการถาม:</span>
+              <p class="text-xs font-semibold text-slate-800 leading-snug">"${escapeHtml(q)}"</p>
+            </div>
+
+            <div class="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2">
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-bold text-amber-800 flex items-center gap-1">
+                  <i class="fa-solid fa-hourglass-half text-amber-600"></i> คำถามในคิวรอตอบ:
+                </span>
+                <span class="text-amber-700 font-mono">${escapeHtml(matchedItem.askedAt || '')}</span>
+              </div>
+              <div class="font-bold text-xs text-slate-900 leading-snug">
+                "${escapeHtml(matchedItem.question)}"
+              </div>
+              <div class="text-[10px] text-slate-500 flex items-center justify-between pt-1 border-t border-amber-200/60">
+                <span>ถามโดย: <strong>${escapeHtml(matchedItem.askedByName || 'พยาบาลวิชาชีพ')}</strong></span>
+                <span class="text-amber-800 font-semibold"><i class="fa-solid fa-bell text-amber-500 mr-1"></i>มีเพื่อนติดตามแล้ว ${followerCount} คน</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-600 text-center px-2">
+              คุณสามารถกด <strong>"ติดตามคำตอบนี้ด้วย"</strong> เพื่อร่วมรับการแจ้งเตือนเมื่อพี่ In-charge ตอบ โดยไม่ต้องส่งคำถามซ้ำครับ
+            </p>
+          `;
+
+          footer.innerHTML = `
+            <button type="button" onclick="followJuniorQuestion('${matchedItem.id}')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-bell"></i> ติดตามคำตอบนี้ด้วย (+1 ร่วมติดตาม)
+            </button>
+            <div class="flex items-center justify-between px-1">
+              <button type="button" onclick="closeJuniorDuplicateNoticeModal()" class="py-1 text-slate-400 hover:text-slate-600 text-[11px] transition-colors">
+                ยกเลิก
+              </button>
+              <button type="button" onclick="doSubmitKnowledgeGap('${encodeURIComponent(q)}')" class="py-1 text-slate-400 hover:text-slate-600 text-[11px] transition-colors">
+                ส่งเป็นคำถามแยกอีกข้อ
+              </button>
+            </div>
+          `;
+        }
+
+        if (modal) modal.classList.remove('hidden');
+        return;
+      }
+
+      // ถ้าไม่ซ้ำ ให้ส่งเข้าคิวทันที
+      doSubmitKnowledgeGap(q);
     }
 
     function switchTab(viewId) {
@@ -4531,13 +4755,21 @@
                 </div>
               </div>
             ` : `
-              <div class="p-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] text-slate-500 flex items-center justify-between">
-                <span class="italic">คำถามนี้อยู่ในคิวตรวจของพยาบาลรุ่นพี่</span>
-                ${isSeniorOrAdmin ? `
-                  <button type="button" onclick="closeJuniorQuestionsBoardModal(); openAnswerJuniorFaqModal('${item.id}')" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-2xs active:scale-95 transition-all">
-                    <i class="fa-solid fa-pen-nib"></i> ตอบคำถามนี้
+              <div class="p-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] text-slate-500 flex items-center justify-between gap-2 flex-wrap">
+                <div class="flex items-center gap-1 text-[10px] text-amber-800">
+                  <i class="fa-solid fa-bell text-amber-500"></i>
+                  <span>รอตอบ (${item.followers && item.followers.length ? item.followers.length : 1} คนติดตาม)</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="followJuniorQuestion('${item.id}')" class="text-[10px] bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-md font-semibold flex items-center gap-1 active:scale-95 transition-all">
+                    <i class="fa-regular fa-bell"></i> ติดตามด้วย
                   </button>
-                ` : ''}
+                  ${isSeniorOrAdmin ? `
+                    <button type="button" onclick="closeJuniorQuestionsBoardModal(); openAnswerJuniorFaqModal('${item.id}')" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-2xs active:scale-95 transition-all">
+                      <i class="fa-solid fa-pen-nib"></i> ตอบคำถามนี้
+                    </button>
+                  ` : ''}
+                </div>
               </div>
             `}
           </div>
