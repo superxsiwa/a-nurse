@@ -129,7 +129,7 @@
     <circle cx="36" cy="35" r="18" fill="#ffffff"/>
     <text x="36" y="41" fill="#7c3aed" font-family="'Prompt', sans-serif" font-size="16" font-weight="bold" text-anchor="middle">2</text>
     
-    <text x="65" y="32" fill="#ffffff" font-family="'Prompt', sans-serif" font-size="16" font-weight="bold">ระบบ AI & สกัดซ้ำ</text>
+    <text x="65" y="32" fill="#ffffff" font-family="'Prompt', sans-serif" font-size="16" font-weight="bold">ระบบ AI &amp; สกัดซ้ำ</text>
     <text x="65" y="48" fill="#e9d5ff" font-family="'Sarabun', sans-serif" font-size="11">Similarity Check (>=65%)</text>
 
     <!-- Card Body -->
@@ -186,7 +186,7 @@
       <text x="105" y="55" font-size="34" text-anchor="middle">👩‍⚕️</text>
 
       <text x="105" y="110" fill="#f8fafc" font-family="'Prompt', sans-serif" font-size="14" font-weight="bold" text-anchor="middle">
-        ตรวจ & เฉลยคำตอบ
+        ตรวจ &amp; เฉลยคำตอบ
       </text>
 
       <rect x="0" y="130" width="210" height="95" rx="10" fill="#0b1120" stroke="#334155" stroke-width="1"/>
