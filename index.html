@@ -1099,6 +1099,112 @@
       </div>
 
       <!-- ================================================= -->
+      <!-- MODAL: กระดานคำถามจากรุ่นน้อง (Junior Q&A Board)   -->
+      <!-- ================================================= -->
+      <div id="juniorQuestionsBoardModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
+        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shadow-2xs">
+                <i class="fa-solid fa-comments"></i>
+              </div>
+              <div>
+                <h3 class="font-heading font-bold text-sm text-slate-800">กระดานคำถามข้างเตียงจากรุ่นน้อง</h3>
+                <p class="text-[10px] text-slate-500">ติดตามคำถามและคำตอบแนวปฏิบัติจากพยาบาลรุ่นพี่</p>
+              </div>
+            </div>
+            <button onclick="closeJuniorQuestionsBoardModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Filter Tabs for Junior Questions -->
+          <div class="p-3 border-b border-slate-100 bg-slate-50/70 flex gap-1 text-xs">
+            <button type="button" id="juniorTabAll" onclick="filterJuniorQuestions('all')" class="flex-1 py-1.5 rounded-lg bg-amber-500 text-white font-bold shadow-2xs transition-all text-center">
+              ทั้งหมด (<span id="countJuniorAll">0</span>)
+            </button>
+            <button type="button" id="juniorTabPending" onclick="filterJuniorQuestions('pending')" class="flex-1 py-1.5 rounded-lg bg-white text-slate-600 font-semibold border border-slate-200 hover:bg-slate-50 transition-all text-center">
+              ⏳ รอพี่ตอบ (<span id="countJuniorPending">0</span>)
+            </button>
+            <button type="button" id="juniorTabApproved" onclick="filterJuniorQuestions('approved')" class="flex-1 py-1.5 rounded-lg bg-white text-slate-600 font-semibold border border-slate-200 hover:bg-slate-50 transition-all text-center">
+              ✅ พี่ตอบแล้ว (<span id="countJuniorApproved">0</span>)
+            </button>
+          </div>
+
+          <!-- Question List Container -->
+          <div class="p-4 overflow-y-auto space-y-3 flex-1 text-xs" id="juniorQuestionsContainer">
+            <!-- Dynamically populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- MODAL: ตอบคำถามรุ่นน้อง (Senior Answer Modal)     -->
+      <!-- ================================================= -->
+      <div id="answerJuniorFaqModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
+        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm shadow-2xs">
+                <i class="fa-solid fa-pen-nib"></i>
+              </div>
+              <div>
+                <h3 class="font-heading font-bold text-sm text-slate-800">ตอบคำถามข้างเตียงของรุ่นน้อง</h3>
+                <p id="answerAskerInfo" class="text-[10px] text-slate-500">ถามโดย พว.สมหญิง</p>
+              </div>
+            </div>
+            <button onclick="closeAnswerJuniorFaqModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <form id="answerJuniorFaqForm" onsubmit="handleSaveSeniorAnswer(event)" class="p-4 overflow-y-auto text-xs space-y-3.5 flex-1">
+            <input type="hidden" id="answerFaqId">
+
+            <!-- Question Box (Read-only / Editable if needed) -->
+            <div class="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl space-y-1">
+              <span class="text-[10px] font-bold text-amber-800 flex items-center gap-1">
+                <i class="fa-solid fa-circle-question"></i> ข้อคำถามข้างเตียง:
+              </span>
+              <p id="answerFaqQuestionText" class="text-xs font-semibold text-slate-800 leading-snug"></p>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-notes-medical text-emerald-600 mr-1"></i> คำตอบและแนวทางปฏิบัติทางคลินิก (Bedside Action):
+              </label>
+              <textarea id="answerFaqResponse" rows="4" required placeholder="ระบุขั้นตอนการพยาบาล ข้อควรระวัง ขนาดยา หรือสิ่งที่ต้องเฝ้าระวังข้างเตียง..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 leading-relaxed"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-link text-indigo-600 mr-1"></i> เชื่อมโยงกับ CPG ศิริราช (ถ้ามี):
+              </label>
+              <select id="answerFaqCpgId" onchange="handleAnswerFaqCpgChange()" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500">
+                <option value="">-- ไม่ระบุ CPG (เป็นคำถามเชิงปฏิบัติทั่วไป) --</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">
+                <i class="fa-solid fa-book-bookmark text-indigo-500 mr-1"></i> เอกสารอ้างอิง (Reference):
+              </label>
+              <input type="text" id="answerFaqReference" required placeholder="เช่น CPG การดูแลผู้ป่วยวิกฤตหัวใจ CCU ศิริราช" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="pt-2 flex gap-2">
+              <button type="button" onclick="closeAnswerJuniorFaqModal()" class="w-1/3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs transition-colors">
+                ยกเลิก
+              </button>
+              <button type="submit" class="w-2/3 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs active:bg-emerald-800 shadow-sm transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-circle-check"></i> ตอบและรับรองเข้าคลังทันที
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
       <!-- MODAL: เพิ่ม/แก้ไขเกร็ดความรู้ (Tacit Pearl Form)  -->
       <!-- ================================================= -->
       <div id="tacitFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
@@ -1253,11 +1359,18 @@
               <p class="text-[11px] text-slate-500">ตอบจากคลังความรู้ CPG ศิริราช & Vector FAQs</p>
             </div>
           </div>
-          <button type="button" onclick="toggleFaqDrawer()" id="btnToggleFaqDrawer" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-2.5 py-1.5 rounded-lg border border-indigo-200/60 flex items-center gap-1.5 transition-all">
-            <i class="fa-solid fa-layer-group text-indigo-600"></i>
-            <span>คลัง FAQ ข้างเตียง</span>
-            <i id="faqDrawerChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="openJuniorQuestionsBoardModal()" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold px-2.5 py-1.5 rounded-lg border border-amber-200/80 flex items-center gap-1.5 shadow-2xs transition-all active:scale-95">
+              <i class="fa-solid fa-comments text-amber-600"></i>
+              <span>กระดานถามพี่</span>
+              <span id="badgeJuniorPendingCount" class="hidden bg-rose-500 text-white text-[9px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+            </button>
+            <button type="button" onclick="toggleFaqDrawer()" id="btnToggleFaqDrawer" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-2.5 py-1.5 rounded-lg border border-indigo-200/60 flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-layer-group text-indigo-600"></i>
+              <span>คลัง FAQ ข้างเตียง</span>
+              <i id="faqDrawerChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+            </button>
+          </div>
         </div>
 
         <div class="bg-amber-50 border border-amber-200 text-amber-800 text-[11px] p-2.5 rounded-xl flex gap-2">
@@ -2120,6 +2233,7 @@
       updateCounts();
       updateUserStats();
       updateFaqStats();
+      updateJuniorPendingBadge();
     });
 
     function updateCounts() {
@@ -2631,7 +2745,10 @@
     function submitKnowledgeGap(encodedQuestion) {
       const q = decodeURIComponent(encodedQuestion);
       const faqs = getFaqList();
-      const asker = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลวิชาชีพเวรข้างเตียง';
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'nurse';
+      const askerName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลวิชาชีพเวรข้างเตียง';
+      const nowStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      const dateStr = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
       
       const newGap = {
         id: 'faq-gap-' + Date.now(),
@@ -2644,7 +2761,10 @@
         question: q,
         quickAnswer: 'รอการตอบและตรวจรับรองจากพยาบาลรุ่นพี่/Incharge CCU',
         answer: 'รอการตอบและตรวจรับรองจากพยาบาลรุ่นพี่/Incharge CCU',
-        reference: `ถามโดย ${asker} เมื่อ ${new Date().toLocaleDateString('th-TH')}`,
+        reference: `ถามโดย ${askerName} (${dateStr} ${nowStr} น.)`,
+        askedBy: currentUser,
+        askedByName: askerName,
+        askedAt: `${dateStr} ${nowStr} น.`,
         status: 'pending', // ส่งเข้าคิวรอตรวจ
         reviewedBy: null,
         reviewedAt: null
@@ -2652,8 +2772,9 @@
 
       faqs.unshift(newGap);
       saveFaqList(faqs);
+      updateJuniorPendingBadge();
 
-      alert(`ส่งคำถาม:\n"${q}"\nเข้าสู่คิวรอตรวจของพยาบาลรุ่นพี่ (Senior RN Review Queue) เรียบร้อยแล้วครับ!\nเมื่อพี่ Incharge ตอบและรับรองแล้ว จะกลายเป็น FAQ คลังความรู้ข้างเตียงและเปิดใช้งาน AI Vector ต่อไป`);
+      alert(`ส่งคำถาม:\n"${q}"\nเข้าสู่กระดานถามพี่ In-charge เรียบร้อยแล้วครับ!\nพยาบาลน้องใหม่ทุกคนสามารถติดตามความคืบหน้าของคำถามนี้ได้ที่ปุ่ม [กระดานถามพี่] ครับ`);
     }
 
     function switchTab(viewId) {
@@ -3967,12 +4088,15 @@
         // ค้นหาชื่อ CPG ที่เชื่อมโยง
         const linkedCpg = faq.cpgId ? currentCatalog.find(c => c.id === faq.cpgId) : null;
 
+        const isJuniorGap = (faq.badge === 'คำถามข้างเตียง') || (faq.id && faq.id.startsWith('faq-gap-')) || (!faq.cpgId && faq.status === 'pending');
+
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
             <div>
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="text-[9px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${faq.category || 'General'}</span>
                 ${faq.version ? `<span class="text-[9px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded border border-indigo-200">v${faq.version}</span>` : ''}
+                ${isJuniorGap ? '<span class="text-[9px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-hospital-user text-amber-600"></i> คำถามจากรุ่นน้อง</span>' : ''}
                 ${statusBadge}
               </div>
               <h4 class="font-heading font-bold text-xs text-slate-900 mt-1.5 leading-snug">
@@ -3991,7 +4115,7 @@
             <div class="pt-1.5 border-t border-slate-200/60 text-[11px] text-slate-500 flex items-center justify-between flex-wrap gap-1">
               <div class="flex items-center gap-1">
                 <i class="fa-solid fa-book-bookmark text-indigo-500 shrink-0"></i>
-                <span><strong>อ้างอิง CPG:</strong> ${escapeHtml(faq.reference || '-')}</span>
+                <span><strong>อ้างอิง:</strong> ${escapeHtml(faq.reference || '-')}</span>
               </div>
               ${linkedCpg ? `
                 <button type="button" onclick="openKnowledgeModal('${linkedCpg.id}')" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-0.5">
@@ -4009,11 +4133,14 @@
               ` : '<span class="text-amber-600 italic">ยังไม่ได้รับการตรวจประเมิน</span>'}
             </div>
 
-            <div class="flex items-center gap-1.5">
-              <!-- Approve Button -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <!-- Special: ตอบคำถามรุ่นน้อง (ถ้ายังไม่ได้รับรอง หรือเป็นคำถามจากน้อง) -->
               ${!isApproved ? `
-                <button onclick="approveFaqItem('${faq.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1 shadow-xs transition-all">
-                  <i class="fa-solid fa-check"></i> รับรอง (Approve)
+                <button onclick="openAnswerJuniorFaqModal('${faq.id}')" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95">
+                  <i class="fa-solid fa-pen-nib"></i> ตอบคำถาม
+                </button>
+                <button onclick="approveFaqItem('${faq.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95">
+                  <i class="fa-solid fa-check"></i> รับรองทันที
                 </button>
               ` : `
                 <button onclick="rejectFaqItem('${faq.id}')" class="text-[10px] text-slate-400 hover:text-amber-700 underline px-1">
@@ -4251,7 +4378,257 @@
       if (confirm(`ต้องการลบข้อคำถาม "${target.question}" ใช่หรือไม่?`)) {
         const updated = list.filter(f => f.id !== id);
         saveFaqList(updated);
+        updateJuniorPendingBadge();
       }
+    }
+
+    // ==========================================
+    // JUNIOR QUESTIONS & PEER MENTORSHIP BOARD
+    // ==========================================
+    let currentJuniorFilter = 'all';
+
+    function getJuniorQuestionsList() {
+      const allFaqs = getFaqList();
+      // คำถามจากรุ่นน้อง: มี badge 'คำถามข้างเตียง' หรือ id ขึ้นต้นด้วย faq-gap- หรือมี askedBy
+      return allFaqs.filter(f => 
+        f.badge === 'คำถามข้างเตียง' || 
+        (f.id && f.id.startsWith('faq-gap-')) || 
+        f.askedBy
+      );
+    }
+
+    function updateJuniorPendingBadge() {
+      const juniorList = getJuniorQuestionsList();
+      const pendingCount = juniorList.filter(f => f.status === 'pending').length;
+      const badge = document.getElementById('badgeJuniorPendingCount');
+      if (badge) {
+        badge.innerText = pendingCount;
+        if (pendingCount > 0) {
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    function openJuniorQuestionsBoardModal() {
+      const modal = document.getElementById('juniorQuestionsBoardModal');
+      if (modal) modal.classList.remove('hidden');
+      currentJuniorFilter = 'all';
+      resetJuniorTabStyles('all');
+      renderJuniorQuestions();
+    }
+
+    function closeJuniorQuestionsBoardModal() {
+      const modal = document.getElementById('juniorQuestionsBoardModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function resetJuniorTabStyles(activeFilter) {
+      const tabAll = document.getElementById('juniorTabAll');
+      const tabPending = document.getElementById('juniorTabPending');
+      const tabApproved = document.getElementById('juniorTabApproved');
+
+      [tabAll, tabPending, tabApproved].forEach(btn => {
+        if (btn) {
+          btn.className = 'flex-1 py-1.5 rounded-lg bg-white text-slate-600 font-semibold border border-slate-200 hover:bg-slate-50 transition-all text-center';
+        }
+      });
+
+      if (activeFilter === 'all' && tabAll) {
+        tabAll.className = 'flex-1 py-1.5 rounded-lg bg-amber-500 text-white font-bold shadow-2xs transition-all text-center';
+      } else if (activeFilter === 'pending' && tabPending) {
+        tabPending.className = 'flex-1 py-1.5 rounded-lg bg-amber-500 text-white font-bold shadow-2xs transition-all text-center';
+      } else if (activeFilter === 'approved' && tabApproved) {
+        tabApproved.className = 'flex-1 py-1.5 rounded-lg bg-emerald-600 text-white font-bold shadow-2xs transition-all text-center';
+      }
+    }
+
+    function filterJuniorQuestions(filterStatus) {
+      currentJuniorFilter = filterStatus;
+      resetJuniorTabStyles(filterStatus);
+      renderJuniorQuestions();
+    }
+
+    function renderJuniorQuestions() {
+      const container = document.getElementById('juniorQuestionsContainer');
+      if (!container) return;
+
+      const juniorList = getJuniorQuestionsList();
+      const allCount = juniorList.length;
+      const pendingCount = juniorList.filter(f => f.status === 'pending').length;
+      const approvedCount = juniorList.filter(f => f.status === 'approved').length;
+
+      const countAllEl = document.getElementById('countJuniorAll');
+      const countPendingEl = document.getElementById('countJuniorPending');
+      const countApprovedEl = document.getElementById('countJuniorApproved');
+
+      if (countAllEl) countAllEl.innerText = allCount;
+      if (countPendingEl) countPendingEl.innerText = pendingCount;
+      if (countApprovedEl) countApprovedEl.innerText = approvedCount;
+
+      let displayList = juniorList;
+      if (currentJuniorFilter === 'pending') {
+        displayList = juniorList.filter(f => f.status === 'pending');
+      } else if (currentJuniorFilter === 'approved') {
+        displayList = juniorList.filter(f => f.status === 'approved');
+      }
+
+      if (displayList.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 text-slate-400 bg-slate-50 rounded-2xl border border-slate-200/80">
+            <i class="fa-solid fa-clipboard-question text-3xl mb-2 text-slate-300"></i>
+            <p class="font-medium text-xs">ยังไม่มีคำถามในหมวดนี้</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">น้องใหม่สามารถถามคำถามข้างเตียงผ่าน AI Assistant ได้ตลอดเวลา</p>
+          </div>
+        `;
+        return;
+      }
+
+      const isSeniorOrAdmin = currentLoggedUser && (currentLoggedUser.role === 'admin' || currentLoggedUser.role === 'senior');
+
+      container.innerHTML = displayList.map(item => {
+        const isAnswered = item.status === 'approved';
+        const askerText = item.askedByName || 'พยาบาลน้องใหม่';
+        const dateText = item.askedAt || '';
+
+        return `
+          <div class="p-3.5 bg-white border ${isAnswered ? 'border-emerald-200' : 'border-amber-200 bg-amber-50/20'} rounded-2xl shadow-2xs space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[9px] bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded">
+                  <i class="fa-solid fa-user-nurse text-brand-600"></i> ${escapeHtml(askerText)}
+                </span>
+                ${isAnswered ? `
+                  <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i> พี่ตอบและรับรองแล้ว
+                  </span>
+                ` : `
+                  <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
+                    <i class="fa-solid fa-clock text-amber-600"></i> รอพี่ Incharge ตอบ
+                  </span>
+                `}
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono">${dateText}</span>
+            </div>
+
+            <!-- Question -->
+            <div class="font-bold text-xs text-slate-900 leading-snug flex items-start gap-1.5">
+              <i class="fa-solid fa-circle-question text-amber-500 mt-0.5 shrink-0"></i>
+              <span>${escapeHtml(item.question)}</span>
+            </div>
+
+            <!-- Answer Box -->
+            ${isAnswered ? `
+              <div class="p-2.5 bg-emerald-50/60 border border-emerald-100 rounded-xl space-y-1">
+                <div class="text-[10px] font-bold text-emerald-800 flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i> คำตอบจากพี่:
+                </div>
+                <p class="text-xs text-slate-800 leading-relaxed">${escapeHtml(item.quickAnswer || item.answer || '')}</p>
+                <div class="pt-1 text-[10px] text-slate-500 flex items-center justify-between border-t border-emerald-100/60">
+                  <span>ผู้ตอบ: <strong>${escapeHtml(item.reviewedBy || 'Incharge')}</strong></span>
+                  <span class="truncate max-w-[180px]">${escapeHtml(item.reference || '')}</span>
+                </div>
+              </div>
+            ` : `
+              <div class="p-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] text-slate-500 flex items-center justify-between">
+                <span class="italic">คำถามนี้อยู่ในคิวตรวจของพยาบาลรุ่นพี่</span>
+                ${isSeniorOrAdmin ? `
+                  <button type="button" onclick="closeJuniorQuestionsBoardModal(); openAnswerJuniorFaqModal('${item.id}')" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-2xs active:scale-95 transition-all">
+                    <i class="fa-solid fa-pen-nib"></i> ตอบคำถามนี้
+                  </button>
+                ` : ''}
+              </div>
+            `}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Modal: Senior Answering Junior Question
+    function openAnswerJuniorFaqModal(faqId) {
+      const list = getFaqList();
+      const target = list.find(f => f.id === faqId);
+      if (!target) return;
+
+      document.getElementById('answerFaqId').value = target.id;
+      document.getElementById('answerFaqQuestionText').innerText = target.question;
+      document.getElementById('answerAskerInfo').innerText = target.askedByName 
+        ? `ถามโดย: ${target.askedByName} (${target.askedAt || ''})` 
+        : (target.reference || 'ถามโดย พยาบาลวิชาชีพเวรข้างเตียง');
+
+      // Populate CPG Dropdown
+      const select = document.getElementById('answerFaqCpgId');
+      if (select) {
+        select.innerHTML = '<option value="">-- ไม่ระบุ CPG (เป็นคำถามเชิงปฏิบัติทั่วไป) --</option>';
+        currentCatalog.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.innerText = `[${c.category}] ${c.title}`;
+          if (c.id === target.cpgId) opt.selected = true;
+          select.appendChild(opt);
+        });
+      }
+
+      const prevAnswer = (target.quickAnswer && !target.quickAnswer.includes('รอการตอบ')) 
+        ? target.quickAnswer 
+        : '';
+      document.getElementById('answerFaqResponse').value = prevAnswer;
+      document.getElementById('answerFaqReference').value = target.cpgId 
+        ? (target.reference || '') 
+        : 'แนวปฏิบัติการพยาบาล CCU ศิริราช';
+
+      const modal = document.getElementById('answerJuniorFaqModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAnswerJuniorFaqModal() {
+      const modal = document.getElementById('answerJuniorFaqModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleAnswerFaqCpgChange() {
+      const cpgId = document.getElementById('answerFaqCpgId').value;
+      if (!cpgId) return;
+      const targetCpg = currentCatalog.find(c => c.id === cpgId);
+      if (targetCpg) {
+        document.getElementById('answerFaqReference').value = `${targetCpg.title} (${targetCpg.author || 'CCU ศิริราช'})`;
+      }
+    }
+
+    function handleSaveSeniorAnswer(e) {
+      e.preventDefault();
+      const faqId = document.getElementById('answerFaqId').value;
+      const answer = document.getElementById('answerFaqResponse').value.trim();
+      const cpgId = document.getElementById('answerFaqCpgId').value;
+      const reference = document.getElementById('answerFaqReference').value.trim();
+
+      if (!answer || !reference) {
+        alert("กรุณากรอกคำตอบและเอกสารอ้างอิงให้ครบถ้วน");
+        return;
+      }
+
+      const list = getFaqList();
+      const target = list.find(f => f.id === faqId);
+      if (!target) return;
+
+      const reviewerName = currentLoggedUser ? currentLoggedUser.name : 'พยาบาลรุ่นพี่/Incharge CCU';
+      const today = new Date().toISOString().split('T')[0];
+
+      target.quickAnswer = answer;
+      target.answer = answer;
+      target.cpgId = cpgId || null;
+      target.reference = reference;
+      target.status = 'approved';
+      target.reviewedBy = reviewerName;
+      target.reviewedAt = today;
+
+      saveFaqList(list);
+      updateJuniorPendingBadge();
+      renderAdminFaqList();
+      closeAnswerJuniorFaqModal();
+
+      alert(`บันทึกคำตอบและรับรองข้อคำถามเรียบร้อยแล้ว!\nรุ่นน้องทุกคนสามารถเปิดดูคำตอบนี้ได้ที่ [กระดานถามพี่] และคำถามนี้พร้อมใช้งานในระบบ Vector AI ทันทีครับ`);
     }
 
     // ==========================================
