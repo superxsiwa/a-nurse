@@ -2765,9 +2765,6 @@
                     </div>
                     <div class="text-[9px] text-slate-400 pl-3.5 flex items-center justify-between">
                       <span><i class="fa-solid fa-circle-check text-emerald-500"></i> รับรองโดย: ${escapeHtml(f.reviewedBy || 'Incharge')}</span>
-                      <button onclick="askAi('${escapeHtml(f.question)}')" class="text-indigo-600 hover:underline font-semibold flex items-center gap-0.5">
-                        <i class="fa-solid fa-robot text-[8px]"></i> ถาม AI
-                      </button>
                     </div>
                   </div>
                 `).join('')}
@@ -3009,9 +3006,6 @@
                     </div>
                     <div class="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
                       <span><i class="fa-solid fa-user-shield text-slate-400"></i> ${escapeHtml(f.reviewedBy || 'รอตรวจ')}</span>
-                      <button type="button" onclick="closeTopicModal(); askAi('${escapeHtml(f.question)}')" class="text-indigo-600 hover:underline font-semibold flex items-center gap-1">
-                        <i class="fa-solid fa-robot text-[9px]"></i> ถาม AI ข้อนี้
-                      </button>
                     </div>
                   </div>
                 `).join('')}
