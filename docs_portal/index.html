@@ -210,13 +210,13 @@
           <i class="fa-solid fa-table-list mr-1 text-rose-400"></i> สารบัญคู่มือ
         </button>
         <button onclick="switchDoc('manual_junior')" id="topbtn-manual-junior" class="px-3 py-1.5 rounded-xl font-semibold transition-all">
-          <i class="fa-solid fa-user-nurse mr-1 text-sky-400"></i> 5.1 พยาบาลรุ่นน้อง (6 เหตุการณ์)
+          <i class="fa-solid fa-user-nurse mr-1 text-sky-400"></i> 5.1 พยาบาลรุ่นน้อง (6 หัวข้อ)
         </button>
         <button onclick="switchDoc('manual_senior')" id="topbtn-manual-senior" class="px-3 py-1.5 rounded-xl font-semibold transition-all">
-          <i class="fa-solid fa-user-shield mr-1 text-amber-400"></i> 5.2 พยาบาลรุ่นพี่ (3 เหตุการณ์)
+          <i class="fa-solid fa-user-shield mr-1 text-amber-400"></i> 5.2 พยาบาลรุ่นพี่ (3 หัวข้อ)
         </button>
         <button onclick="switchDoc('manual_admin')" id="topbtn-manual-admin" class="px-3 py-1.5 rounded-xl font-semibold transition-all">
-          <i class="fa-solid fa-user-gear mr-1 text-purple-400"></i> 5.3 ผู้ดูแลระบบ / APN (2 เหตุการณ์)
+          <i class="fa-solid fa-user-gear mr-1 text-purple-400"></i> 5.3 ผู้ดูแลระบบ / APN (2 หัวข้อ)
         </button>
         <button onclick="switchDoc('manual_all')" id="topbtn-manual-all" class="px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all text-[11px] ml-auto">
           <i class="fa-solid fa-book mr-1"></i> ดูทั้งหมด
@@ -580,7 +580,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
       manual: {
         badge: "USER MANUAL • DIRECTORY",
         title: "5. สารบัญคู่มือการใช้งานระบบ (User Manual Directory)",
-        subtitle: "ศูนย์รวมคู่มือการปฏิบัติงานแบบ Step-by-Step แยกตามบทบาทผู้ใช้งานและเหตุการณ์หน้างานจริง",
+        subtitle: "ศูนย์รวมคู่มือการปฏิบัติงานแบบ Step-by-Step แยกตามบทบาทผู้ใช้งาน ครอบคลุมทุกขั้นตอนหน้างานจริง",
         markdown: `
 ยินดีต้อนรับสู่ **ศูนย์รวมคู่มือการใช้งานระบบ A-Nurse (CCU Siriraj Guide)** 
 
@@ -591,100 +591,89 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 ### 📑 เลือกหมวดคู่มือตามบทบาทผู้ใช้งาน (คลิกที่การ์ดเพื่อเปิดอ่าน)
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 not-prose">
-  
-  <!-- Role 1 Card: Junior Nurse -->
-  <div class="p-5 rounded-2xl bg-gradient-to-b from-sky-950/40 to-slate-900 border border-sky-500/30 shadow-xl flex flex-col justify-between hover:border-sky-400 transition-all">
-    <div>
-      <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg mb-3">
-        <i class="fa-solid fa-user-nurse"></i>
-      </div>
-      <span class="text-[10px] font-bold uppercase tracking-wider text-sky-400">หมวดที่ 1 (6 เหตุการณ์)</span>
-      <h3 class="text-base font-bold text-white mt-1">พยาบาลรุ่นน้องข้างเตียง</h3>
-      <p class="text-xs text-slate-400 mt-1">สำหรับพยาบาลจบใหม่ และพยาบาลอายุงาน 1–2 ปี ในเวรบ่าย-ดึก</p>
-      
-      <div class="mt-3.5 space-y-1.5 text-xs text-slate-300">
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-sky-400 font-bold">• 1.1</span> เข้าสู่ระบบ &amp; ปุ่มลัด (Login)
-        </div>
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-sky-400 font-bold">• 1.2</span> ค้นหาด่วน &amp; 4 หมวด CPG
-        </div>
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-sky-400 font-bold">• 1.3</span> โหมดฉุกเฉินวิกฤต (Emergency SOS)
-        </div>
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-sky-400 font-bold">• 1.4</span> ถามตอบ AI ข้างเตียง &amp; CPG
-        </div>
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-sky-400 font-bold">• 1.5</span> ส่งถามพี่ &amp; ตรวจจับคำถามซ้ำ
-        </div>
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-sky-400 font-bold">• 1.6</span> เกร็ดความรู้ &amp; กดหัวใจ (Pearls)
-        </div>
-      </div>
-    </div>
+<div class="p-5 rounded-2xl bg-gradient-to-b from-sky-950/40 to-slate-900 border border-sky-500/30 shadow-xl flex flex-col justify-between hover:border-sky-400 transition-all">
+<div>
+<div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg mb-3">
+<i class="fa-solid fa-user-nurse"></i>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-sky-400">หมวดที่ 1 (6 หัวข้อ)</span>
+<h3 class="text-base font-bold text-white mt-1">พยาบาลรุ่นน้องข้างเตียง</h3>
+<p class="text-xs text-slate-400 mt-1">สำหรับพยาบาลจบใหม่ และพยาบาลอายุงาน 1–2 ปี ในเวรบ่าย-ดึก</p>
+<div class="mt-3.5 space-y-1.5 text-xs text-slate-300">
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-sky-400 font-bold">• 1.1</span> เข้าสู่ระบบ &amp; ปุ่มลัด (Login)
+</div>
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-sky-400 font-bold">• 1.2</span> ค้นหาด่วน &amp; 4 หมวด CPG
+</div>
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-sky-400 font-bold">• 1.3</span> โหมดฉุกเฉินวิกฤต (Emergency SOS)
+</div>
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-sky-400 font-bold">• 1.4</span> ถามตอบ AI ข้างเตียง &amp; CPG
+</div>
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-sky-400 font-bold">• 1.5</span> ส่งถามพี่ &amp; ตรวจจับคำถามซ้ำ
+</div>
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-sky-400 font-bold">• 1.6</span> เกร็ดความรู้ &amp; กดหัวใจ (Pearls)
+</div>
+</div>
+</div>
+<button onclick="switchDoc('manual_junior')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30 flex items-center justify-center gap-1.5 transition-all">
+<span>👉 เปิดอ่านคู่มือพยาบาลรุ่นน้อง</span>
+<i class="fa-solid fa-arrow-right text-[11px]"></i>
+</button>
+</div>
 
-    <button onclick="switchDoc('manual_junior')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30 flex items-center justify-center gap-1.5 transition-all">
-      <span>👉 เปิดอ่านคู่มือพยาบาลรุ่นน้อง</span>
-      <i class="fa-solid fa-arrow-right text-[11px]"></i>
-    </button>
-  </div>
+<div class="p-5 rounded-2xl bg-gradient-to-b from-amber-950/40 to-slate-900 border border-amber-500/30 shadow-xl flex flex-col justify-between hover:border-amber-400 transition-all">
+<div>
+<div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-3">
+<i class="fa-solid fa-user-shield"></i>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">หมวดที่ 2 (3 หัวข้อ)</span>
+<h3 class="text-base font-bold text-white mt-1">พยาบาลรุ่นพี่ / In-charge</h3>
+<p class="text-xs text-slate-400 mt-1">สำหรับพยาบาลพี่เลี้ยง, In-charge เวร, และพยาบาลผู้เชี่ยวชาญ</p>
+<div class="mt-3.5 space-y-1.5 text-xs text-slate-300">
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-amber-400 font-bold">• 2.1</span> ตรวจดูคิวคำถามข้างเตียงจากน้อง
+</div>
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-amber-400 font-bold">• 2.2</span> ตอบ &amp; รับรอง CPG เข้าคลังถาวร
+</div>
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-amber-400 font-bold">• 2.3</span> แบ่งปันเกร็ดความรู้สู่บอร์ดพี่สู่น้อง
+</div>
+</div>
+</div>
+<button onclick="switchDoc('manual_senior')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-lg shadow-amber-600/30 flex items-center justify-center gap-1.5 transition-all">
+<span>👉 เปิดอ่านคู่มือพยาบาลรุ่นพี่</span>
+<i class="fa-solid fa-arrow-right text-[11px]"></i>
+</button>
+</div>
 
-  <!-- Role 2 Card: Senior Nurse -->
-  <div class="p-5 rounded-2xl bg-gradient-to-b from-amber-950/40 to-slate-900 border border-amber-500/30 shadow-xl flex flex-col justify-between hover:border-amber-400 transition-all">
-    <div>
-      <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-3">
-        <i class="fa-solid fa-user-shield"></i>
-      </div>
-      <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">หมวดที่ 2 (3 เหตุการณ์)</span>
-      <h3 class="text-base font-bold text-white mt-1">พยาบาลรุ่นพี่ / In-charge</h3>
-      <p class="text-xs text-slate-400 mt-1">สำหรับพยาบาลพี่เลี้ยง, In-charge เวร, และพยาบาลผู้เชี่ยวชาญ</p>
-      
-      <div class="mt-3.5 space-y-1.5 text-xs text-slate-300">
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-amber-400 font-bold">• 2.1</span> ตรวจดูคิวคำถามข้างเตียงจากน้อง
-        </div>
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-amber-400 font-bold">• 2.2</span> ตอบ &amp; รับรอง CPG เข้าคลังถาวร
-        </div>
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-amber-400 font-bold">• 2.3</span> แบ่งปันเกร็ดความรู้สู่บอร์ดพี่สู่น้อง
-        </div>
-      </div>
-    </div>
-
-    <button onclick="switchDoc('manual_senior')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-lg shadow-amber-600/30 flex items-center justify-center gap-1.5 transition-all">
-      <span>👉 เปิดอ่านคู่มือพยาบาลรุ่นพี่</span>
-      <i class="fa-solid fa-arrow-right text-[11px]"></i>
-    </button>
-  </div>
-
-  <!-- Role 3 Card: Admin & APN -->
-  <div class="p-5 rounded-2xl bg-gradient-to-b from-purple-950/40 to-slate-900 border border-purple-500/30 shadow-xl flex flex-col justify-between hover:border-purple-400 transition-all">
-    <div>
-      <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg mb-3">
-        <i class="fa-solid fa-user-gear"></i>
-      </div>
-      <span class="text-[10px] font-bold uppercase tracking-wider text-purple-400">หมวดที่ 3 (2 เหตุการณ์)</span>
-      <h3 class="text-base font-bold text-white mt-1">ผู้ดูแลระบบ / APN</h3>
-      <p class="text-xs text-slate-400 mt-1">สำหรับ APN, หัวหน้าหอผู้ป่วย CCU, และผู้ดูแลระบบ</p>
-      
-      <div class="mt-3.5 space-y-1.5 text-xs text-slate-300">
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-purple-400 font-bold">• 3.1</span> จัดการคลัง CPG 29 ฉบับ &amp; FAQ
-        </div>
-        <div class="flex items-center gap-1.5 text-[11px]">
-          <span class="text-purple-400 font-bold">• 3.2</span> จัดการสิทธิ์ &amp; อนุมัติพยาบาลใหม่
-        </div>
-      </div>
-    </div>
-
-    <button onclick="switchDoc('manual_admin')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-600/30 flex items-center justify-center gap-1.5 transition-all">
-      <span>👉 เปิดอ่านคู่มือผู้ดูแลระบบ</span>
-      <i class="fa-solid fa-arrow-right text-[11px]"></i>
-    </button>
-  </div>
-
+<div class="p-5 rounded-2xl bg-gradient-to-b from-purple-950/40 to-slate-900 border border-purple-500/30 shadow-xl flex flex-col justify-between hover:border-purple-400 transition-all">
+<div>
+<div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg mb-3">
+<i class="fa-solid fa-user-gear"></i>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-purple-400">หมวดที่ 3 (2 หัวข้อ)</span>
+<h3 class="text-base font-bold text-white mt-1">ผู้ดูแลระบบ / APN</h3>
+<p class="text-xs text-slate-400 mt-1">สำหรับ APN, หัวหน้าหอผู้ป่วย CCU, และผู้ดูแลระบบ</p>
+<div class="mt-3.5 space-y-1.5 text-xs text-slate-300">
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-purple-400 font-bold">• 3.1</span> จัดการคลัง CPG 29 ฉบับ &amp; FAQ
+</div>
+<div class="flex items-center gap-1.5 text-[11px]">
+<span class="text-purple-400 font-bold">• 3.2</span> จัดการสิทธิ์ &amp; อนุมัติพยาบาลใหม่
+</div>
+</div>
+</div>
+<button onclick="switchDoc('manual_admin')" class="mt-5 w-full py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-600/30 flex items-center justify-center gap-1.5 transition-all">
+<span>👉 เปิดอ่านคู่มือผู้ดูแลระบบ</span>
+<i class="fa-solid fa-arrow-right text-[11px]"></i>
+</button>
+</div>
 </div>
 
 ---
@@ -699,7 +688,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
       manual_junior: {
         badge: "USER MANUAL • JUNIOR NURSE",
         title: "5.1 คู่มือสำหรับพยาบาลรุ่นน้อง (Junior Nurse Guide)",
-        subtitle: "6 ขั้นตอนและสถานการณ์หน้างานจริงข้างเตียงผู้ป่วยวิกฤต CCU พร้อมภาพหน้าจอประกอบ",
+        subtitle: "6 ขั้นตอนการปฏิบัติงานข้างเตียงผู้ป่วยวิกฤต CCU พร้อมภาพหน้าจอประกอบ",
         markdown: `
 <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 not-prose">
   <div class="flex items-center gap-2">
@@ -716,14 +705,14 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
   </button>
 </div>
 
-> 📍 **สารบัญด่วน (คลิกเพื่อเลื่อนดูสถานการณ์):**  
+> 📍 **สารบัญด่วน (คลิกเพื่อเลื่อนดูหัวข้อ):**  
 > [1.1 เข้าสู่ระบบ](#event-1-1) | [1.2 ค้นหา CPG](#event-1-2) | [1.3 โหมดฉุกเฉิน SOS](#event-1-3) | [1.4 ถามตอบ AI](#event-1-4) | [1.5 ส่งถามพี่ & ตรวจจับซ้ำ](#event-1-5) | [1.6 เกร็ดความรู้ & กดหัวใจ](#event-1-6)
 
 ---
 
 <div id="event-1-1"></div>
 
-### สถานการณ์ที่ 1.1: การเข้าสู่ระบบคู่มือข้างเตียง (Login & Quick Access)
+### 1.1 การเข้าสู่ระบบคู่มือข้างเตียง (Login & Quick Access)
 **บริบทหน้างาน:** เมื่อเริ่มขึ้นเวรบ่ายหรือเวรดึก พยาบาลรุ่นน้องเปิดสมาร์ตโฟนเพื่อเตรียมพร้อมสำหรับการดูแลผู้ป่วยวิกฤต
 
 ![หน้าจอเข้าสู่ระบบคู่มือข้างเตียง CCU Nurse Pocket](screenshots/01_login_screen.png)
@@ -737,7 +726,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 <div id="event-1-2"></div>
 
-### สถานการณ์ที่ 1.2: การสืบค้นแนวปฏิบัติด่วนและ 4 เสาหลัก CPG (Home & Search)
+### 1.2 การสืบค้นแนวปฏิบัติด่วนและ 4 เสาหลัก CPG (Home & Search)
 **บริบทหน้างาน:** ต้องการค้นหาคู่มือการดูแลผู้ป่วยเฉพาะโรคอย่างรวดเร็ว เช่น การดูแลสายสวนหัวใจ, การให้ยาละลายลิ่มเลือด หรือ EKG
 
 ![หน้าจอหลักแสดงคลังองค์ความรู้และ 4 หมวดหลัก](screenshots/02_home_dashboard.png)
@@ -757,7 +746,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 <div id="event-1-3"></div>
 
-### สถานการณ์ที่ 1.3: ภาวะฉุกเฉินวิกฤตหัวใจข้างเตียง (Emergency SOS Mode)
+### 1.3 ภาวะฉุกเฉินวิกฤตหัวใจข้างเตียง (Emergency SOS Mode)
 **บริบทหน้างาน:** คนไข้เกิดภาวะวิกฤตฉับพลัน (เช่น Cardiac Arrest, BP Drop รุนแรง, Malignant Arrhythmia) ต้องการสูตรขนาดยาช่วยชีวิตและเช็กลิสต์ด่วนข้างเตียง
 
 ![หน้าจอ Emergency SOS วิกฤตหัวใจ](screenshots/04_emergency_sos.png)
@@ -770,7 +759,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 <div id="event-1-4"></div>
 
-### สถานการณ์ที่ 1.4: การถาม AI Assistant ข้างเตียงและอ้างอิง CPG (Bedside AI Search)
+### 1.4 การถาม AI Assistant ข้างเตียงและอ้างอิง CPG (Bedside AI Search)
 **บริบทหน้างาน:** พยาบาลใหม่ต้องการคำตอบเฉพาะหน้าขณะยืนอยู่ข้างเตียง เช่น *"คนไข้ Post-TAVI 24 ชม. แรก ต้องเฝ้าระวังอะไรเป็นพิเศษ?"*
 
 ![การถามตอบ AI Assistant พร้อมเอกสารอ้างอิง CPG ศิริราช](screenshots/05_ai_assistant_response.png)
@@ -784,7 +773,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 <div id="event-1-5"></div>
 
-### สถานการณ์ที่ 1.5: กรณี AI ยังไม่มีแนวปฏิบัติ ➔ ส่งถามพี่ In-charge & ตรวจจับคำถามซ้ำ
+### 1.5 กรณี AI ยังไม่มีแนวปฏิบัติ ➔ ส่งถามพี่ In-charge & ตรวจจับคำถามซ้ำ
 **บริบทหน้างาน:** ข้อคำถามมีความซับซ้อน หรือ AI แจ้งว่า *"ยังไม่มีแนวปฏิบัติรับรองในคลังข้อมูล"* ➔ น้องแตะปุ่ม **[ส่งคำถามให้พี่ In-charge]**
 
 ![ป๊อปอัปแจ้งเตือนการตรวจจับคำถามซ้ำ Smart Deduplication](screenshots/06_duplicate_check_modal.png)
@@ -801,7 +790,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 <div id="event-1-6"></div>
 
-### สถานการณ์ที่ 1.6: การอ่านเกร็ดความรู้พี่สู่น้องและการให้หัวใจ (Tacit Pearls)
+### 1.6 การอ่านเกร็ดความรู้พี่สู่น้องและการให้หัวใจ (Tacit Pearls)
 **บริบทหน้างาน:** พยาบาลใหม่ต้องการศึกษาประสบการณ์และเทคนิคการพยาบาลหน้างาน (Clinical Pearls) ในช่วงว่างระหว่างเวร
 
 ![กระดานเกร็ดความรู้พี่สู่น้องและการกดให้กำลังใจ 1 คน 1 สิทธิ์](screenshots/07_tacit_pearls_wall.png)
@@ -844,14 +833,14 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
   </button>
 </div>
 
-> 📍 **สารบัญด่วน (คลิกเพื่อเลื่อนดูสถานการณ์):**  
+> 📍 **สารบัญด่วน (คลิกเพื่อเลื่อนดูหัวข้อ):**  
 > [2.1 ตรวจดูคิวคำถามข้างเตียง](#event-2-1) | [2.2 ตอบคำถาม & รับรอง CPG](#event-2-2) | [2.3 แบ่งปันเกร็ดความรู้ใหม่](#event-2-3)
 
 ---
 
 <div id="event-2-1"></div>
 
-### สถานการณ์ที่ 2.1: การตรวจดูคิวคำถามข้างเตียงจากน้องในเวร (Questions Queue)
+### 2.1 การตรวจดูคิวคำถามข้างเตียงจากน้องในเวร (Questions Queue)
 **บริบทหน้างาน:** พยาบาลรุ่นพี่ขึ้นเวร สังเกตเห็น Badge ตัวเลขสีส้มแจ้งเตือนบนปุ่ม **[กระดานถามพี่]** แสดงว่ามีคำถามจากน้องข้างเตียงรอการตรวจรับรอง
 
 ![กระดานคำถามข้างเตียงจากรุ่นน้องแยกตามสถานะและจำนวนผู้รอติดตาม](screenshots/08_senior_mentorship_board.png)
@@ -868,7 +857,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 <div id="event-2-2"></div>
 
-### สถานการณ์ที่ 2.2: การตอบคำถามและรับรองความถูกต้องอิง CPG เข้าสู่คลังถาวร
+### 2.2 การตอบคำถามและรับรองความถูกต้องอิง CPG เข้าสู่คลังถาวร
 **บริบทหน้างาน:** พยาบาลรุ่นพี่ตรวจทานคำถาม และต้องการเขียนคำแนะนำที่ถูกต้องพร้อมระบุเอกสารอ้างอิง CPG ของศิริราช
 
 ![หน้าต่างตอบคำถามและรับรองเข้าคลังความรู้ถาวร](screenshots/09_senior_answer_modal.png)
@@ -884,7 +873,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 <div id="event-2-3"></div>
 
-### สถานการณ์ที่ 2.3: การแบ่งปันเกร็ดความรู้ใหม่สู่กระดานพี่สู่น้อง
+### 2.3 การแบ่งปันเกร็ดความรู้ใหม่สู่กระดานพี่สู่น้อง
 **บริบทหน้างาน:** พยาบาลรุ่นพี่พบเคสตัวอย่างที่น่าสนใจในเวร และต้องการบันทึกเกร็ดความรู้เชิงปฏิบัติ (Tacit Knowledge) ไว้สอนน้องรุ่นต่อ ๆ ไป
 
 * **ขั้นตอนที่ 1:** ไปที่แท็บ **"พี่สู่น้อง"** แล้วแตะปุ่ม **[+ เพิ่มเกร็ดความรู้]**
@@ -926,14 +915,14 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
   </button>
 </div>
 
-> 📍 **สารบัญด่วน (คลิกเพื่อเลื่อนดูสถานการณ์):**  
+> 📍 **สารบัญด่วน (คลิกเพื่อเลื่อนดูหัวข้อ):**  
 > [3.1 จัดการคลังเอกสาร CPG 29 ฉบับ](#event-3-1) | [3.2 จัดการสิทธิ์ & อนุมัติพยาบาลใหม่](#event-3-2)
 
 ---
 
 <div id="event-3-1"></div>
 
-### สถานการณ์ที่ 3.1: การจัดการคลังเอกสาร CPG ศิริราช (Knowledge Management)
+### 3.1 การจัดการคลังเอกสาร CPG ศิริราช (Knowledge Management)
 **บริบทหน้างาน:** มีการประกาศใช้ CPG ฉบับปรับปรุงใหม่ของโรงพยาบาลศิริราช ต้องการอัปเดตไฟล์หรือเพิ่มเอกสารใน 4 เสาหลัก
 
 ![หน้าจอจัดการคลังความรู้ CPG และ FAQ การแพทย์](screenshots/10_admin_km_dashboard.png)
@@ -948,7 +937,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 <div id="event-3-2"></div>
 
-### สถานการณ์ที่ 3.2: การจัดการสิทธิ์และการอนุมัติพยาบาลใหม่ (User Role Approval & RBAC)
+### 3.2 การจัดการสิทธิ์และการอนุมัติพยาบาลใหม่ (User Role Approval & RBAC)
 **บริบทหน้างาน:** มีพยาบาลจบใหม่ลงทะเบียนเข้ามาในระบบ ผู้ดูแลระบบต้องตรวจสอบความถูกต้องและอนุมัติสิทธิ์การเข้าใช้งาน
 
 ![หน้าต่างจัดการสิทธิ์ผู้ใช้งานและอนุมัติพยาบาลใหม่](screenshots/11_admin_user_roles.png)
@@ -977,7 +966,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
       manual_all: {
         badge: "USER MANUAL • COMPLETE",
         title: "5. คู่มือการใช้งานระบบฉบับสมบูรณ์ (Complete User Manual)",
-        subtitle: "รวมขั้นตอนปฏิบัติการทั้งหมด 11 เหตุการณ์สำหรับทุกบทบาทผู้ใช้งาน พร้อมภาพหน้าจอประกอบ",
+        subtitle: "รวมขั้นตอนการปฏิบัติงานทั้งหมด 11 หัวข้อสำหรับทุกบทบาทผู้ใช้งาน พร้อมภาพหน้าจอประกอบ",
         markdown: `
 <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 not-prose">
   <div class="flex items-center gap-2">
@@ -999,7 +988,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 ## 👩‍⚕️ หมวดที่ 1: สำหรับพยาบาลรุ่นน้อง (Junior Nurse Guide)
 *(พยาบาลจบใหม่ และพยาบาลปฏิบัติงาน 1–2 ปี)*
 
-### สถานการณ์ที่ 1.1: การเข้าสู่ระบบคู่มือข้างเตียง (Login & Quick Access)
+### 1.1 การเข้าสู่ระบบคู่มือข้างเตียง (Login & Quick Access)
 ![หน้าจอเข้าสู่ระบบคู่มือข้างเตียง CCU Nurse Pocket](screenshots/01_login_screen.png)
 * **ขั้นตอนที่ 1:** เปิดเว็บเบราว์เซอร์บนสมาร์ตโฟน แล้วเข้าสู่ระบบผ่านลิงก์ของหอผู้ป่วย CCU
 * **ขั้นตอนที่ 2:** กรอก Username และ Password ของตนเอง (หรือแตะปุ่มลัด **[พยาบาลรุ่นน้อง (user: nurse)]**)
@@ -1007,7 +996,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ---
 
-### สถานการณ์ที่ 1.2: การสืบค้นแนวปฏิบัติด่วนและ 4 เสาหลัก CPG (Home & Search)
+### 1.2 การสืบค้นแนวปฏิบัติด่วนและ 4 เสาหลัก CPG (Home & Search)
 ![หน้าจอหลักแสดงคลังองค์ความรู้และ 4 หมวดหลัก](screenshots/02_home_dashboard.png)
 * **ขั้นตอนที่ 1:** ที่หน้าหลักจะพบกล่องค้นหาด่วน และการ์ด 4 เสาหลัก CPG ศิริราช
 * **ขั้นตอนที่ 2:** พิมพ์ค้นหา เช่น *"TAVI"*, *"Norepi"*, *"EKG"*
@@ -1016,14 +1005,14 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ---
 
-### สถานการณ์ที่ 1.3: ภาวะฉุกเฉินวิกฤตหัวใจข้างเตียง (Emergency SOS Mode)
+### 1.3 ภาวะฉุกเฉินวิกฤตหัวใจข้างเตียง (Emergency SOS Mode)
 ![หน้าจอ Emergency SOS วิกฤตหัวใจ](screenshots/04_emergency_sos.png)
 * **ขั้นตอนที่ 1:** แตะปุ่มสีแดง **[⚡ วิกฤต]** ที่มุมขวาบนของแถบเมนู
 * **ขั้นตอนที่ 2:** ระบบจะสลับเข้าสู่โหมดฉุกเฉินทันที รวบรวมแนวทางกู้ชีพ ACLS, Defibrillator Checklist และตารางขนาดยาด่วน
 
 ---
 
-### สถานการณ์ที่ 1.4: การถาม AI Assistant ข้างเตียงและอ้างอิง CPG (Bedside AI Search)
+### 1.4 การถาม AI Assistant ข้างเตียงและอ้างอิง CPG (Bedside AI Search)
 ![การถามตอบ AI Assistant พร้อมเอกสารอ้างอิง CPG ศิริราช](screenshots/05_ai_assistant_response.png)
 * **ขั้นตอนที่ 1:** แตะแท็บ **"ถามตอบ AI"** ด้านล่าง
 * **ขั้นตอนที่ 2:** พิมพ์คำถามทางคลินิกเป็นภาษาไทยหรืออังกฤษในช่องข้อความ
@@ -1031,7 +1020,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ---
 
-### สถานการณ์ที่ 1.5: กรณี AI ยังไม่มีแนวปฏิบัติ ➔ ส่งถามพี่ In-charge & ตรวจจับคำถามซ้ำ
+### 1.5 กรณี AI ยังไม่มีแนวปฏิบัติ ➔ ส่งถามพี่ In-charge & ตรวจจับคำถามซ้ำ
 ![ป๊อปอัปแจ้งเตือนการตรวจจับคำถามซ้ำ Smart Deduplication](screenshots/06_duplicate_check_modal.png)
 * **ขั้นตอนที่ 1:** กดส่งคำถาม ระบบ **Deduplication Engine** ตรวจสอบความคล้ายคลึงของข้อความ
 * **ขั้นตอนที่ 2 (พี่เคยตอบแล้ว):** แจ้งเตือนสีเขียว แสดงคำตอบที่รับรองแล้วทันที ไม่ต้องรอพี่
@@ -1039,7 +1028,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ---
 
-### สถานการณ์ที่ 1.6: การอ่านเกร็ดความรู้พี่สู่น้องและการให้หัวใจ (Tacit Pearls)
+### 1.6 การอ่านเกร็ดความรู้พี่สู่น้องและการให้หัวใจ (Tacit Pearls)
 ![กระดานเกร็ดความรู้พี่สู่น้องและการกดให้กำลังใจ 1 คน 1 สิทธิ์](screenshots/07_tacit_pearls_wall.png)
 * **ขั้นตอนที่ 1:** แตะแท็บ **"พี่สู่น้อง"** ด้านล่าง
 * **ขั้นตอนที่ 2:** อ่านเกร็ดความรู้และเทคนิคการพยาบาลจากประสบการณ์จริงของรุ่นพี่
@@ -1049,7 +1038,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ## 👩‍⚕️ หมวดที่ 2: สำหรับพยาบาลรุ่นพี่ / In-charge CCU (Senior Mentor Guide)
 
-### สถานการณ์ที่ 2.1: การตรวจดูคิวคำถามข้างเตียงจากน้องในเวร (Questions Queue)
+### 2.1 การตรวจดูคิวคำถามข้างเตียงจากน้องในเวร (Questions Queue)
 ![กระดานคำถามข้างเตียงจากรุ่นน้องแยกตามสถานะและจำนวนผู้รอติดตาม](screenshots/08_senior_mentorship_board.png)
 * **ขั้นตอนที่ 1:** แตะปุ่ม **[กระดานถามพี่]** หรือแท็บ **"ตรวจ FAQ"**
 * **ขั้นตอนที่ 2:** ดูกระดานคำถาม แยกแท็บ "ทั้งหมด", "รอพี่ตอบ", และ "พี่รับรองแล้ว"
@@ -1057,7 +1046,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ---
 
-### สถานการณ์ที่ 2.2: การตอบคำถามและรับรองความถูกต้องอิง CPG เข้าสู่คลังถาวร
+### 2.2 การตอบคำถามและรับรองความถูกต้องอิง CPG เข้าสู่คลังถาวร
 ![หน้าต่างตอบคำถามและรับรองเข้าคลังความรู้ถาวร](screenshots/09_senior_answer_modal.png)
 * **ขั้นตอนที่ 1:** แตะปุ่ม **[✍️ ตอบคำถามนี้]** ที่การ์ดคำถาม
 * **ขั้นตอนที่ 2:** พิมพ์คำแนะนำทางการพยาบาลในช่องคำตอบ
@@ -1066,7 +1055,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ---
 
-### สถานการณ์ที่ 2.3: การแบ่งปันเกร็ดความรู้ใหม่สู่กระดานพี่สู่น้อง
+### 2.3 การแบ่งปันเกร็ดความรู้ใหม่สู่กระดานพี่สู่น้อง
 * **ขั้นตอนที่ 1:** ไปที่แท็บ **"พี่สู่น้อง"** แล้วแตะปุ่ม **[+ เพิ่มเกร็ดความรู้]**
 * **ขั้นตอนที่ 2:** เลือกหมวดหมู่ พิมพ์หัวข้อและเนื้อหาเทคนิคหน้างาน แล้วกดบันทึก
 
@@ -1074,7 +1063,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ## 👨‍💼 หมวดที่ 3: สำหรับผู้ดูแลระบบ / APN / หัวหน้า CCU (Admin Guide)
 
-### สถานการณ์ที่ 3.1: การจัดการคลังเอกสาร CPG ศิริราช (Knowledge Management)
+### 3.1 การจัดการคลังเอกสาร CPG ศิริราช (Knowledge Management)
 ![หน้าจอจัดการคลังความรู้ CPG และ FAQ การแพทย์](screenshots/10_admin_km_dashboard.png)
 * **ขั้นตอนที่ 1:** เข้าสู่ระบบด้วยบัญชีผู้ดูแล (\`admin\`)
 * **ขั้นตอนที่ 2:** แตะแท็บ **"จัดการคลัง"** (Manage)
@@ -1082,7 +1071,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ---
 
-### สถานการณ์ที่ 3.2: การจัดการสิทธิ์และการอนุมัติพยาบาลใหม่ (User Role Approval & RBAC)
+### 3.2 การจัดการสิทธิ์และการอนุมัติพยาบาลใหม่ (User Role Approval & RBAC)
 ![หน้าต่างจัดการสิทธิ์ผู้ใช้งานและอนุมัติพยาบาลใหม่](screenshots/11_admin_user_roles.png)
 * **ขั้นตอนที่ 1:** แตะปุ่ม **[👥 จัดการสิทธิ์ผู้ใช้งาน]**
 * **ขั้นตอนที่ 2:** ตรวจสอบผู้ใช้ใหม่ที่แสดงสถานะ *"รออนุมัติ"*
