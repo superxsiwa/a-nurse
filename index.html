@@ -3470,7 +3470,7 @@
     }
 
     // Tacit Pearls Logic (เกร็ดพี่สู่น้อง)
-    const TACIT_DB_VERSION = "v2.2";
+    const TACIT_DB_VERSION = "v2.3";
     const INITIAL_TACIT = [
       {
         id: "t1",
@@ -3478,6 +3478,7 @@
         createdBy: "admin",
         tag: "Post-TAVI Phase",
         likes: 34,
+        likedBy: ["admin", "senior", "nurse"],
         isBlocked: false,
         pearl: "ผู้ป่วยหลังทำ TAVI สิ่งสำคัญที่สุดใน 24 ชั่วโมงแรก: ประเมิน Neuro sign บ่อยๆ เฝ้าระวัง Embolic Stroke จากเศษหินปูน, เฝ้าระวัง Complete Heart Block (มักเกิดจากตัวลิ้นกดเบียด Conduction system) และห้ามงอขาข้างที่ใส่ Sheath เด็ดขาด"
       },
@@ -3487,6 +3488,7 @@
         createdBy: "senior",
         tag: "TEER MitraClip Care",
         likes: 29,
+        likedBy: ["nurse", "guest"],
         isBlocked: false,
         pearl: "หัตถการ TEER ทำผ่าน Right Femoral Vein และเจาะทะลุ Septum (Transseptal puncture) ดังนั้นหลังทำต้องระวัง: เฝ้าระวัง Pericardial Tamponade (BP ตก, Heart sound เบา, CVP สูง) และกดแผลขาหนีบให้แน่นตามเวลา"
       },
@@ -3496,6 +3498,7 @@
         createdBy: "nurse",
         tag: "Pacemaker Care",
         likes: 41,
+        likedBy: ["admin", "senior"],
         isBlocked: false,
         pearl: "ท่องจำ 3 ภาวะหลักของ Pacemaker ผิดปกติ: 1. Failure to Pace (ไม่มี Spike) 2. Failure to Capture (มี Spike แต่ไม่มี QRS) 3. Failure to Sense (ปล่อย Spike ทับ T wave คนไข้ เสี่ยง R-on-T เกิด VF Arrest!)"
       },
@@ -3505,6 +3508,7 @@
         createdBy: "senior",
         tag: "Norepinephrine",
         likes: 28,
+        likedBy: ["senior"],
         isBlocked: false,
         pearl: "หากคนไข้ Shock วิกฤต ยังใส่ C-line ไม่ทัน ต้องให้ Norepi ผ่าน Peripheral Line: ให้เลือกเส้นใหญ่ระดับข้อพับ (Antecubital) เท่านั้น ห้ามแทงหลังมือ ตรวจการรั่วซึมทุก 15 นาที และเตรียมยาแก้พิษ Regitine (Phentolamine) สำรองไว้เสมอ"
       }
@@ -3527,6 +3531,30 @@
       renderAdminPearlsList();
     }
 
+    function toggleTacitLike(id) {
+      const list = getTacitList();
+      const target = list.find(t => t.id === id);
+      if (!target) return;
+
+      const currentUser = currentLoggedUser ? currentLoggedUser.user : 'guest';
+      if (!Array.isArray(target.likedBy)) {
+        target.likedBy = [];
+      }
+
+      const userIndex = target.likedBy.indexOf(currentUser);
+      if (userIndex === -1) {
+        // ยังไม่เคยกด -> กดให้หัวใจ (+1)
+        target.likedBy.push(currentUser);
+        target.likes = (target.likes || 0) + 1;
+      } else {
+        // เคยกดแล้ว -> กดเอาหัวใจคืน (-1)
+        target.likedBy.splice(userIndex, 1);
+        target.likes = Math.max(0, (target.likes || 1) - 1);
+      }
+
+      saveTacitList(list);
+    }
+
     function renderTacitFeed(customList) {
       const container = document.getElementById('tacitFeed');
       if (!container) return;
@@ -3541,6 +3569,8 @@
       list.forEach(t => {
         const isOwner = t.createdBy === currentUser;
         const isBlocked = !!t.isBlocked;
+        const likedBy = Array.isArray(t.likedBy) ? t.likedBy : [];
+        const hasLiked = likedBy.includes(currentUser);
 
         const item = document.createElement('div');
         item.className = `bg-white p-4 rounded-xl border ${isBlocked ? 'border-amber-300 bg-amber-50/30' : 'border-slate-200'} shadow-sm space-y-2 relative`;
@@ -3567,9 +3597,20 @@
                   <i class="fa-solid fa-pen-to-square"></i> แก้ไขเกร็ด
                 </button>
               ` : ''}
-              <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-semibold">
-                <i class="fa-solid fa-heart text-rose-500"></i> ถูกใจ ${t.likes || 1}
-              </span>
+              <!-- Interactive Heart Like / Unlike Button (1 คน 1 หัวใจ หรือกดคืนได้) -->
+              <button 
+                type="button"
+                onclick="toggleTacitLike('${t.id}')" 
+                title="${hasLiked ? 'กดเพื่อเอาหัวใจคืน' : 'กดให้หัวใจเกร็ดนี้'}"
+                class="text-[11px] font-semibold px-2.5 py-1 rounded-full border transition-all active:scale-90 flex items-center gap-1.5 shadow-2xs ${
+                  hasLiked 
+                    ? 'bg-rose-50 text-rose-600 border-rose-300 ring-2 ring-rose-200/50' 
+                    : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200 hover:text-rose-500'
+                }"
+              >
+                <i class="${hasLiked ? 'fa-solid text-rose-500' : 'fa-regular text-slate-400 hover:text-rose-500'} fa-heart text-xs transition-transform ${hasLiked ? 'scale-110' : ''}"></i>
+                <span>${t.likes || 0}</span>
+              </button>
             </div>
           </div>
 
@@ -3755,6 +3796,7 @@
           createdBy: currentUser,
           tag: tag,
           likes: 1,
+          likedBy: [currentUser],
           isBlocked: false,
           pearl: pearl
         });
