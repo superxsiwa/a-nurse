@@ -1488,9 +1488,15 @@
           </div>
         </div>
 
-        <form onsubmit="sendAiMessage(event)" class="sticky bottom-16 md:bottom-2 bg-slate-100/90 backdrop-blur-xs py-2 flex gap-2">
-          <input id="aiInput" type="text" autocomplete="off" placeholder="ถามเรื่อง EKG, ยา High-alert, TAVI, TEER..." class="flex-1 text-sm px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
-          <button type="submit" class="bg-indigo-600 text-white px-4 rounded-xl active:bg-indigo-700"><i class="fa-solid fa-paper-plane"></i></button>
+        <form id="aiChatForm" onsubmit="sendAiMessage(event)" class="sticky bottom-16 md:bottom-2 bg-slate-100/90 backdrop-blur-xs py-2 flex items-center gap-2">
+          <input id="aiInput" type="text" autocomplete="off" placeholder="ถามเรื่อง EKG, ยา High-alert, TAVI, TEER..." class="flex-1 text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
+          <button id="aiSubmitBtn" type="submit" title="ส่งคำถาม" class="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-4 py-2.5 rounded-xl transition-all shadow-xs flex items-center justify-center">
+            <i class="fa-solid fa-paper-plane text-sm"></i>
+          </button>
+          <button id="aiStopBtn" type="button" onclick="stopAiGeneration()" title="หยุดการค้นหา / Stop" class="hidden bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white px-3.5 py-2.5 rounded-xl transition-all shadow-xs flex items-center gap-1.5 animate-pulse">
+            <i class="fa-solid fa-circle-stop text-sm"></i>
+            <span class="text-xs font-bold">หยุด</span>
+          </button>
         </form>
       </section>
 
@@ -2619,6 +2625,40 @@
     }
 
     const CCU_GATEWAY_URL = "https://ccu-ai-gateway.mrsiwakorn.workers.dev/";
+    let aiAbortController = null;
+
+    function setAiGeneratingState(isGenerating) {
+      const submitBtn = document.getElementById('aiSubmitBtn');
+      const stopBtn = document.getElementById('aiStopBtn');
+      const input = document.getElementById('aiInput');
+      if (isGenerating) {
+        if (submitBtn) submitBtn.classList.add('hidden');
+        if (stopBtn) stopBtn.classList.remove('hidden');
+        if (input) input.disabled = true;
+      } else {
+        if (submitBtn) submitBtn.classList.remove('hidden');
+        if (stopBtn) stopBtn.classList.add('hidden');
+        if (input) {
+          input.disabled = false;
+          input.focus();
+        }
+      }
+    }
+
+    function stopAiGeneration() {
+      if (aiAbortController) {
+        aiAbortController.abort();
+        aiAbortController = null;
+      }
+      const currentLoading = document.getElementById('aiLoadingBubble');
+      if (currentLoading) currentLoading.remove();
+      setAiGeneratingState(false);
+      appendAiBubble('bot', `
+        <div class="text-xs text-slate-500 italic flex items-center gap-1.5 py-1">
+          <i class="fa-solid fa-hand text-amber-500"></i> คุณได้กดยกเลิกการค้นหาคำถามนี้แล้ว สามารถพิมพ์คำถามใหม่ได้ทันทีครับ
+        </div>
+      `);
+    }
 
     function askAi(q) {
       document.getElementById('aiInput').value = q;
@@ -2661,19 +2701,32 @@
         ).join('\n\n');
       }
 
-      // 3. แสดงฟอง Loading กำลังประมวลผล
+      // 3. แสดงฟอง Loading กำลังประมวลผล พร้อมปุ่ม Stop ในฟองแชท
       const chat = document.getElementById('aiChat');
       const loadingDiv = document.createElement('div');
       loadingDiv.id = 'aiLoadingBubble';
-      loadingDiv.className = 'max-w-[92%] bg-white border border-slate-200 text-slate-500 text-xs px-3 py-2.5 rounded-2xl rounded-bl-sm shadow-xs flex items-center gap-2';
-      loadingDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-brand-600"></i> กำลังสืบค้น CPG ศิริราช & คลัง FAQ Vector ด้วย Gemini AI...`;
+      loadingDiv.className = 'max-w-[92%] bg-white border border-slate-200 text-slate-600 text-xs px-3.5 py-2.5 rounded-2xl rounded-bl-sm shadow-xs flex items-center justify-between gap-3';
+      loadingDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-spinner fa-spin text-indigo-600"></i>
+          <span>กำลังสืบค้น CPG ศิริราช & ประมวลผลคำตอบ...</span>
+        </div>
+        <button type="button" onclick="stopAiGeneration()" class="text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded-lg border border-rose-200 flex items-center gap-1 active:scale-95 transition-all">
+          <i class="fa-solid fa-circle-stop text-rose-500"></i> หยุด
+        </button>
+      `;
       chat.appendChild(loadingDiv);
       loadingDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+      // ตั้งค่า AbortController และเปิดปุ่ม Stop ที่ฟอร์ม
+      aiAbortController = new AbortController();
+      setAiGeneratingState(true);
 
       try {
         const response = await fetch(CCU_GATEWAY_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: aiAbortController.signal,
           body: JSON.stringify({
             question: q,
             cpgContext: cpgContext
@@ -2792,7 +2845,14 @@
           </div>
         `;
 
+        if (err.name === 'AbortError') {
+          console.log('AI search aborted by user');
+          return;
+        }
         renderBedsideFallbackAnswer(q, localMatchedFaq, results, err.message);
+      } finally {
+        aiAbortController = null;
+        setAiGeneratingState(false);
       }
     }
 
