@@ -210,3 +210,4 @@ run().catch(err => {
   console.error('Error running capture:', err);
   process.exit(1);
 });
+
