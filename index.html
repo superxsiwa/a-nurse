@@ -883,45 +883,72 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-        <!-- Action Card 1: VT/VF -->
-        <div class="bg-white p-4 rounded-xl border-2 border-rose-300 shadow-sm space-y-2">
-          <h3 class="font-heading font-bold text-sm text-rose-800 flex items-center gap-1.5">
-            <i class="fa-solid fa-bolt text-rose-600"></i> 1. Pulseless VT / VF Arrest
-          </h3>
-          <div class="text-xs text-slate-700 space-y-1.5 pl-2 border-l-2 border-rose-400">
-            <p><strong>1. ร้องเรียกคนช่วย + นำ Defibrillator มาทันที</strong></p>
-            <p><strong>2. CPR ทันที:</strong> กดหน้าอกลึก 2-2.4 นิ้ว เร็ว 100-120 bpm</p>
-            <p><strong>3. Shock ทันที (Defibrillation):</strong> 200 Joules (Biphasic) แล้ว CPR ต่อ 2 นาทีทันที</p>
-            <p><strong>4. บริหารยา (อ้างอิง ACLS 2025):</strong> Adrenaline 1mg IV ทุก 3-5 นาที, Amiodarone 300mg IV push หลัง Defib ครั้งที่ 3 (ซ้ำ 150mg ครั้งที่ 5)</p>
-          </div>
-        </div>
-
-        <!-- Action Card 2: Bradycardia -->
-        <div class="bg-white p-4 rounded-xl border-2 border-amber-300 shadow-sm space-y-2">
-          <h3 class="font-heading font-bold text-sm text-amber-800 flex items-center gap-1.5">
-            <i class="fa-solid fa-heart-crack text-amber-600"></i> 2. Symptomatic Bradycardia (HR &lt; 50)
-          </h3>
-          <div class="text-xs text-slate-700 space-y-1.5 pl-2 border-l-2 border-amber-400">
-            <p><strong>1. ประเมินอาการ Shock:</strong> BP drop, เหงื่อแตก, สับสน, เจ็บหน้าอก</p>
-            <p><strong>2. ให้ยา Atropine:</strong> 1 mg IV push ซ้ำได้ทุก 3-5 นาที (สูงสุด 3 mg)</p>
-            <p><strong>3. หากไม่ดีขึ้น:</strong> ติดแผ่น Transcutaneous Pacing (TCP) หรือเริ่ม Dopamine / Epinephrine drip ทันที</p>
-          </div>
-        </div>
-
-        <!-- Action Card 3: Emergency Contacts -->
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="font-heading font-bold text-sm text-brand-800 flex items-center gap-1.5">
-              <i class="fa-solid fa-phone-volume text-brand-600"></i> เบอร์โทรศัพท์ฉุกเฉินภายใน & บุคคลสำคัญ
+        <!-- SECTION 1: ACLS BEDSIDE ALGORITHMS (VT/VF Arrest & Symptomatic Bradycardia ไว้ด้วยกัน) -->
+        <div class="space-y-2.5">
+          <div class="flex items-center gap-2 px-1">
+            <span class="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
+            <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-rose-900 flex items-center gap-1.5">
+              <i class="fa-solid fa-heart-pulse text-rose-600"></i> แนวปฏิบัติกู้ชีพด่วนข้างเตียง (ACLS Algorithms 2025)
             </h3>
-            <span class="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">กดปุ่มเพื่อโทรออกทันที</span>
           </div>
-          <!-- Dynamic Emergency Contacts Container -->
-          <div id="emergencyContactsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <!-- Action Card 1: VT/VF -->
+            <div class="bg-white p-4 rounded-2xl border-2 border-rose-300 shadow-xs space-y-2.5">
+              <div class="flex items-center justify-between pb-1.5 border-b border-rose-100">
+                <h4 class="font-heading font-bold text-sm text-rose-800 flex items-center gap-1.5">
+                  <i class="fa-solid fa-bolt text-rose-600"></i> 1. Pulseless VT / VF Arrest
+                </h4>
+                <span class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-full border border-rose-200">Defib ทันที</span>
+              </div>
+              <div class="text-xs text-slate-700 space-y-2 pl-2.5 border-l-2 border-rose-400">
+                <p><strong>1. ร้องเรียกคนช่วย + นำ Defibrillator มาทันที</strong></p>
+                <p><strong>2. CPR ทันที:</strong> กดหน้าอกลึก 2-2.4 นิ้ว เร็ว 100-120 bpm</p>
+                <p><strong>3. Shock ทันที (Defibrillation):</strong> 200 Joules (Biphasic) แล้ว CPR ต่อ 2 นาทีทันที</p>
+                <p><strong>4. บริหารยา (อ้างอิง ACLS 2025):</strong> Adrenaline 1mg IV ทุก 3-5 นาที, Amiodarone 300mg IV push หลัง Defib ครั้งที่ 3 (ซ้ำ 150mg ครั้งที่ 5)</p>
+              </div>
+            </div>
+
+            <!-- Action Card 2: Bradycardia -->
+            <div class="bg-white p-4 rounded-2xl border-2 border-amber-300 shadow-xs space-y-2.5">
+              <div class="flex items-center justify-between pb-1.5 border-b border-amber-100">
+                <h4 class="font-heading font-bold text-sm text-amber-800 flex items-center gap-1.5">
+                  <i class="fa-solid fa-heart-crack text-amber-600"></i> 2. Symptomatic Bradycardia (HR &lt; 50)
+                </h4>
+                <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full border border-amber-200">ประเมิน Shock</span>
+              </div>
+              <div class="text-xs text-slate-700 space-y-2 pl-2.5 border-l-2 border-amber-400">
+                <p><strong>1. ประเมินอาการ Shock:</strong> BP drop, เหงื่อแตก, สับสน, เจ็บหน้าอก</p>
+                <p><strong>2. ให้ยา Atropine:</strong> 1 mg IV push ซ้ำได้ทุก 3-5 นาที (สูงสุด 3 mg)</p>
+                <p><strong>3. หากไม่ดีขึ้น:</strong> ติดแผ่น Transcutaneous Pacing (TCP) หรือเริ่ม Dopamine / Epinephrine drip ทันที</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: EMERGENCY CONTACTS & IMPORTANT PERSONNEL (แยกออกมาอยู่ด้านล่าง) -->
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-2.5 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center text-sm shadow-2xs">
+                <i class="fa-solid fa-phone-volume"></i>
+              </div>
+              <div>
+                <h3 class="font-heading font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                  เบอร์โทรศัพท์ฉุกเฉินภายใน & บุคคลสำคัญ
+                </h3>
+                <p class="text-[10px] text-slate-500">ติดต่อแพทย์เวร ห้องสวนหัวใจ ธนาคารเลือด และหน่วยงานสนับสนุน CCU</p>
+              </div>
+            </div>
+            <span class="self-start sm:self-auto text-[10px] text-brand-700 bg-brand-50 px-2.5 py-1 rounded-full font-semibold border border-brand-100 flex items-center gap-1">
+              <i class="fa-solid fa-hand-pointer"></i> กดปุ่มโทรออกได้ทันที
+            </span>
+          </div>
+
+          <!-- Dynamic Emergency Contacts Container (Full-width grid) -->
+          <div id="emergencyContactsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <!-- Rendered by renderEmergencyContacts() -->
           </div>
-        </div>
         </div>
       </div>
 
