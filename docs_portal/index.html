@@ -16,47 +16,88 @@
     @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;500;600;700&display=swap');
     body { font-family: 'Sarabun', sans-serif; background-color: #0b1120; color: #f8fafc; }
     h1, h2, h3, h4, .font-heading { font-family: 'Prompt', sans-serif; }
-    .prose-dark { color: #cbd5e1; max-width: 100%; }
-    .prose-dark h1 { color: #f8fafc; font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 2px solid #334155; padding-bottom: 0.5rem; font-family: 'Prompt', sans-serif; }
-    .prose-dark h2 { color: #38bdf8; font-size: 1.35rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; border-left: 4px solid #0284c7; padding-left: 0.75rem; font-family: 'Prompt', sans-serif; }
-    .prose-dark h3 { color: #e2e8f0; font-size: 1.15rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; font-family: 'Prompt', sans-serif; }
-    .prose-dark p { margin-bottom: 0.85rem; line-height: 1.75; font-size: 0.95rem; }
-    .prose-dark ul, .prose-dark ol { margin-left: 1.5rem; margin-bottom: 1rem; }
-    .prose-dark li { margin-bottom: 0.35rem; font-size: 0.95rem; }
-    .prose-dark table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.875rem; }
-    .prose-dark th { background-color: #1e293b; color: #38bdf8; padding: 0.75rem; text-align: left; border: 1px solid #334155; }
-    .prose-dark td { padding: 0.75rem; border: 1px solid #334155; background-color: #0f172a; }
-    .prose-dark pre { background-color: #030712; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; border: 1px solid #1e293b; margin: 1rem 0; }
-    .prose-dark code { color: #38bdf8; background-color: #1e293b; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.85em; font-family: monospace; }
-    .prose-dark blockquote { border-left: 4px solid #f59e0b; background-color: rgba(245, 158, 11, 0.08); padding: 0.75rem 1rem; border-radius: 0 0.5rem 0.5rem 0; margin: 1rem 0; color: #fde68a; font-size: 0.9rem; }
-    .prose-dark img { max-width: 380px; width: 100%; height: auto; border-radius: 1.25rem; border: 1px solid #334155; box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.6); margin: 1.25rem auto; display: block; }
+    .prose-dark { color: #cbd5e1; max-width: 100%; word-break: break-word; }
+    .prose-dark h1 { color: #f8fafc; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.85rem; border-bottom: 2px solid #334155; padding-bottom: 0.5rem; font-family: 'Prompt', sans-serif; }
+    .prose-dark h2 { color: #38bdf8; font-size: 1.2rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.65rem; border-left: 4px solid #0284c7; padding-left: 0.65rem; font-family: 'Prompt', sans-serif; }
+    .prose-dark h3 { color: #e2e8f0; font-size: 1.05rem; font-weight: 600; margin-top: 1.15rem; margin-bottom: 0.5rem; font-family: 'Prompt', sans-serif; }
+    .prose-dark p { margin-bottom: 0.85rem; line-height: 1.7; font-size: 0.925rem; }
+    .prose-dark ul, .prose-dark ol { margin-left: 1.25rem; margin-bottom: 1rem; }
+    .prose-dark li { margin-bottom: 0.35rem; font-size: 0.925rem; }
+    .prose-dark table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.825rem; display: block; overflow-x: auto; }
+    .prose-dark th { background-color: #1e293b; color: #38bdf8; padding: 0.65rem 0.75rem; text-align: left; border: 1px solid #334155; white-space: nowrap; }
+    .prose-dark td { padding: 0.65rem 0.75rem; border: 1px solid #334155; background-color: #0f172a; }
+    .prose-dark pre { background-color: #030712; padding: 0.85rem; border-radius: 0.75rem; overflow-x: auto; border: 1px solid #1e293b; margin: 1rem 0; font-size: 0.85rem; }
+    .prose-dark code { color: #38bdf8; background-color: #1e293b; padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-size: 0.85em; font-family: monospace; word-break: break-all; }
+    .prose-dark blockquote { border-left: 4px solid #f59e0b; background-color: rgba(245, 158, 11, 0.08); padding: 0.65rem 0.85rem; border-radius: 0 0.5rem 0.5rem 0; margin: 1rem 0; color: #fde68a; font-size: 0.875rem; }
+    
+    /* Device-responsive Mockup Image Frame */
+    .prose-dark img { 
+      max-width: 100%; 
+      width: 100%; 
+      height: auto; 
+      border-radius: 1.25rem; 
+      border: 1px solid #334155; 
+      box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.6); 
+      margin: 1.25rem auto; 
+      display: block; 
+    }
+    @media (min-width: 640px) {
+      .prose-dark img { max-width: 340px; }
+    }
+    @media (min-width: 768px) {
+      .prose-dark h1 { font-size: 1.6rem; }
+      .prose-dark h2 { font-size: 1.3rem; }
+      .prose-dark h3 { font-size: 1.15rem; }
+      .prose-dark p, .prose-dark li { font-size: 0.95rem; }
+      .prose-dark img { max-width: 360px; }
+    }
+    @media (min-width: 1024px) {
+      .prose-dark h1 { font-size: 1.75rem; }
+      .prose-dark h2 { font-size: 1.35rem; }
+      .prose-dark img { max-width: 380px; }
+    }
+
     .tab-active { background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: white !important; font-weight: 700; box-shadow: 0 4px 14px 0 rgba(2, 132, 199, 0.39); }
     .mermaid svg { max-width: 100% !important; height: auto !important; margin: 1rem auto; display: block; }
+
+    /* Hide scrollbars for top pills on mobile while retaining smooth scroll */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
   <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-lg">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white text-lg shadow-md shadow-sky-500/20">
+  <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-3 sm:px-6 lg:px-8 py-3 flex items-center justify-between shadow-lg">
+    <div class="flex items-center gap-2.5 sm:gap-3">
+      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white text-base sm:text-lg shadow-md shadow-sky-500/20 shrink-0">
         <i class="fa-solid fa-book-medical"></i>
       </div>
       <div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-bold text-sky-400 uppercase tracking-wider">A-Nurse Docs Portal</span>
-          <span class="text-[10px] bg-sky-500/10 text-sky-300 border border-sky-500/20 px-2 py-0.5 rounded-full font-mono">v1.2.0</span>
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <span class="text-[10px] sm:text-xs font-bold text-sky-400 uppercase tracking-wider">A-Nurse Docs Portal</span>
+          <span class="text-[9px] sm:text-[10px] bg-sky-500/10 text-sky-300 border border-sky-500/20 px-1.5 py-0.5 rounded-full font-mono">v1.2.0</span>
         </div>
-        <h1 class="text-base font-bold text-white leading-tight">ศูนย์รวมเอกสารทางเทคนิคและคู่มือระบบ (CCU Siriraj)</h1>
+        <h1 class="text-xs sm:text-base font-bold text-white leading-tight truncate max-w-[200px] xs:max-w-xs sm:max-w-md md:max-w-none">
+          ศูนย์รวมเอกสารทางเทคนิคและคู่มือระบบ (CCU Siriraj)
+        </h1>
       </div>
     </div>
 
-    <div class="flex items-center gap-2.5">
-      <a href="../index.html" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all">
-        <i class="fa-solid fa-arrow-left"></i> กลับสู่หน้าแอปพลิเคชัน
+    <div class="flex items-center gap-1.5 sm:gap-2.5">
+      <!-- Mobile Sidebar Toggle Button -->
+      <button onclick="toggleMobileSidebar()" class="lg:hidden px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all" title="เปิด/ปิด เมนูเอกสาร">
+        <i class="fa-solid fa-bars text-sm"></i>
+        <span class="hidden sm:inline">เมนู</span>
+      </button>
+
+      <a href="../index.html" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all" title="กลับสู่หน้าแอปพลิเคชัน">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span class="hidden md:inline">กลับสู่หน้าแอป</span>
       </a>
-      <a href="../bpmn-diagram.html" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 hover:text-white text-xs font-semibold border border-indigo-500/40 flex items-center gap-1.5 transition-all">
-        <i class="fa-solid fa-diagram-project"></i> ผัง BPMN (PNG/SVG)
+      <a href="../bpmn-diagram.html" target="_blank" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 hover:text-white text-xs font-semibold border border-indigo-500/40 flex items-center gap-1.5 transition-all" title="ผัง BPMN">
+        <i class="fa-solid fa-diagram-project"></i>
+        <span class="hidden md:inline">ผัง BPMN</span>
       </a>
       <button onclick="window.print()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 flex items-center justify-center text-xs border border-slate-700 transition-all" title="พิมพ์หน้านี้">
         <i class="fa-solid fa-print"></i>
@@ -64,18 +105,20 @@
     </div>
   </header>
 
-  <!-- Main Layout -->
-  <div class="flex-1 flex flex-col lg:flex-row max-w-7xl w-full mx-auto p-4 lg:p-6 gap-6">
+  <!-- Main Layout (Responsive: Stack on Mobile/Tablet portrait, 2 Columns on Desktop) -->
+  <div class="flex-1 flex flex-col lg:flex-row max-w-7xl w-full mx-auto p-3 sm:p-4 lg:p-6 gap-4 lg:gap-6">
 
-    <!-- Left Sidebar: Document Categories & Navigation -->
-    <aside class="w-full lg:w-72 shrink-0 space-y-4">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 flex items-center justify-between">
-          <span>หมวดหมู่เอกสาร</span>
+    <!-- Left Sidebar: Document Categories & Navigation (Hidden on mobile by default, toggled via Hamburger) -->
+    <aside id="sidebarNavWrapper" class="hidden lg:block w-full lg:w-72 shrink-0 space-y-4">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xl backdrop-blur-sm">
+        <div class="flex items-center justify-between mb-2.5 sm:mb-3 px-1 sm:px-2">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            หมวดหมู่เอกสาร
+          </p>
           <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">5 เอกสาร</span>
-        </p>
+        </div>
         <nav class="space-y-1.5" id="navTabs">
-          <button onclick="switchDoc('proposal')" id="tab-proposal" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all tab-active">
+          <button onclick="switchDoc('proposal')" id="tab-proposal" class="w-full text-left px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all tab-active">
             <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs shrink-0">
               <i class="fa-solid fa-file-lines"></i>
             </div>
@@ -85,7 +128,7 @@
             </div>
           </button>
 
-          <button onclick="switchDoc('requirements')" id="tab-requirements" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
+          <button onclick="switchDoc('requirements')" id="tab-requirements" class="w-full text-left px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
             <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs shrink-0">
               <i class="fa-solid fa-list-check"></i>
             </div>
@@ -95,7 +138,7 @@
             </div>
           </button>
 
-          <button onclick="switchDoc('analysis')" id="tab-analysis" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
+          <button onclick="switchDoc('analysis')" id="tab-analysis" class="w-full text-left px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
             <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs shrink-0">
               <i class="fa-solid fa-chart-line"></i>
             </div>
@@ -105,7 +148,7 @@
             </div>
           </button>
 
-          <button onclick="switchDoc('design')" id="tab-design" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
+          <button onclick="switchDoc('design')" id="tab-design" class="w-full text-left px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
             <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs shrink-0">
               <i class="fa-solid fa-compass-drafting"></i>
             </div>
@@ -115,7 +158,7 @@
             </div>
           </button>
 
-          <button onclick="switchDoc('manual')" id="tab-manual" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
+          <button onclick="switchDoc('manual')" id="tab-manual" class="w-full text-left px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
             <div class="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs shrink-0">
               <i class="fa-solid fa-book-open-reader"></i>
             </div>
@@ -127,24 +170,24 @@
           </button>
 
           <!-- Sub-menu for User Manual & Guide -->
-          <div id="manualSubNav" class="hidden pl-3 pr-1 py-1 space-y-1 border-l-2 border-rose-500/30 ml-4">
-            <button onclick="switchDoc('manual')" id="subtab-manual-overview" class="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 flex items-center gap-2 transition-all">
+          <div id="manualSubNav" class="hidden pl-2.5 sm:pl-3 pr-1 py-1 space-y-1 border-l-2 border-rose-500/30 ml-4">
+            <button onclick="switchDoc('manual')" id="subtab-manual-overview" class="w-full text-left px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 flex items-center gap-2 transition-all">
               <i class="fa-solid fa-table-list text-rose-400 text-[10px]"></i>
               <span>สารบัญ & เมนูย่อย</span>
             </button>
-            <button onclick="switchDoc('manual_junior')" id="subtab-manual-junior" class="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 flex items-center gap-2 transition-all">
+            <button onclick="switchDoc('manual_junior')" id="subtab-manual-junior" class="w-full text-left px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 flex items-center gap-2 transition-all">
               <i class="fa-solid fa-user-nurse text-sky-400 text-[10px]"></i>
-              <span>5.1 พยาบาลรุ่นน้อง (6 ข้อ)</span>
+              <span>5.1 พยาบาลรุ่นน้อง (6 หัวข้อ)</span>
             </button>
-            <button onclick="switchDoc('manual_senior')" id="subtab-manual-senior" class="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 flex items-center gap-2 transition-all">
+            <button onclick="switchDoc('manual_senior')" id="subtab-manual-senior" class="w-full text-left px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 flex items-center gap-2 transition-all">
               <i class="fa-solid fa-user-shield text-amber-400 text-[10px]"></i>
-              <span>5.2 พยาบาลรุ่นพี่ (3 ข้อ)</span>
+              <span>5.2 พยาบาลรุ่นพี่ (3 หัวข้อ)</span>
             </button>
-            <button onclick="switchDoc('manual_admin')" id="subtab-manual-admin" class="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 flex items-center gap-2 transition-all">
+            <button onclick="switchDoc('manual_admin')" id="subtab-manual-admin" class="w-full text-left px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 flex items-center gap-2 transition-all">
               <i class="fa-solid fa-user-gear text-purple-400 text-[10px]"></i>
-              <span>5.3 ผู้ดูแลระบบ / APN (2 ข้อ)</span>
+              <span>5.3 ผู้ดูแลระบบ / APN (2 หัวข้อ)</span>
             </button>
-            <button onclick="switchDoc('manual_all')" id="subtab-manual-all" class="w-full text-left px-3 py-1 rounded-lg text-[10px] text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 flex items-center gap-2 transition-all">
+            <button onclick="switchDoc('manual_all')" id="subtab-manual-all" class="w-full text-left px-2.5 sm:px-3 py-1 rounded-lg text-[10px] text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 flex items-center gap-2 transition-all">
               <i class="fa-solid fa-book text-[9px]"></i>
               <span>ดูทั้งหมดในหน้าเดียว (All)</span>
             </button>
@@ -152,8 +195,8 @@
         </nav>
       </div>
 
-      <!-- Quick Summary Widget -->
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl text-xs space-y-2.5">
+      <!-- Quick Summary Widget (Hidden on very small screens if collapsed, or toggleable) -->
+      <div class="hidden sm:block bg-slate-900/80 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xl text-xs space-y-2.5">
         <h4 class="font-bold text-slate-300 flex items-center gap-1.5 text-xs">
           <i class="fa-solid fa-circle-info text-sky-400"></i> ข้อมูลโครงการโดยสังเขป
         </h4>
@@ -179,46 +222,47 @@
     </aside>
 
     <!-- Right Content Area: Markdown Viewer & Documentation View -->
-    <main class="flex-1 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 lg:p-10 shadow-2xl overflow-hidden min-h-[750px] flex flex-col">
+    <main class="flex-1 bg-slate-900/90 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-10 shadow-2xl overflow-hidden min-h-[600px] sm:min-h-[750px] flex flex-col">
       <!-- Document Banner -->
-      <div class="pb-6 mb-6 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="pb-4 sm:pb-6 mb-4 sm:mb-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <span id="docBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+          <span id="docBadge" class="text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 sm:py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
             PROJECT PROPOSAL
           </span>
-          <h2 id="docTitle" class="text-xl md:text-2xl font-bold text-white mt-2">
+          <h2 id="docTitle" class="text-lg sm:text-xl md:text-2xl font-bold text-white mt-1.5 sm:mt-2">
             1. ข้อเสนอโครงการพัฒนานวัตกรรม (Project Proposal)
           </h2>
-          <p id="docSubtitle" class="text-xs text-slate-400 mt-1">
+          <p id="docSubtitle" class="text-[11px] sm:text-xs text-slate-400 mt-1">
             โครงการระบบผู้ช่วยปัญญาประดิษฐ์สืบค้นความรู้ทางการพยาบาล หอผู้ป่วยอภิบาลโรคหัวใจ (CCU)
           </p>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <button onclick="copyDocContent()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all">
-            <i class="fa-regular fa-copy"></i> คัดลอกเนื้อหา
+            <i class="fa-regular fa-copy"></i>
+            <span>คัดลอก</span>
           </button>
         </div>
       </div>
 
-      <!-- Sub-menu Navigation Bar for User Manual & Guide -->
-      <div id="manualTopNav" class="hidden mb-6 p-2 bg-slate-950/80 border border-slate-800 rounded-2xl flex flex-wrap items-center gap-1.5 text-xs">
-        <span class="text-[10px] uppercase font-bold text-slate-500 px-2 tracking-wider">
+      <!-- Sub-menu Navigation Bar for User Manual & Guide (Responsive Horizontally Scrollable Pills) -->
+      <div id="manualTopNav" class="hidden mb-4 sm:mb-6 p-1.5 sm:p-2 bg-slate-950/80 border border-slate-800 rounded-2xl flex items-center gap-1.5 text-xs overflow-x-auto no-scrollbar">
+        <span class="text-[10px] uppercase font-bold text-slate-500 px-2 tracking-wider whitespace-nowrap shrink-0">
           <i class="fa-solid fa-compass text-rose-400 mr-1"></i> เมนูย่อยคู่มือ:
         </span>
-        <button onclick="switchDoc('manual')" id="topbtn-manual-overview" class="px-3 py-1.5 rounded-xl font-semibold transition-all">
+        <button onclick="switchDoc('manual')" id="topbtn-manual-overview" class="px-2.5 sm:px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap shrink-0 transition-all">
           <i class="fa-solid fa-table-list mr-1 text-rose-400"></i> สารบัญคู่มือ
         </button>
-        <button onclick="switchDoc('manual_junior')" id="topbtn-manual-junior" class="px-3 py-1.5 rounded-xl font-semibold transition-all">
+        <button onclick="switchDoc('manual_junior')" id="topbtn-manual-junior" class="px-2.5 sm:px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap shrink-0 transition-all">
           <i class="fa-solid fa-user-nurse mr-1 text-sky-400"></i> 5.1 พยาบาลรุ่นน้อง (6 หัวข้อ)
         </button>
-        <button onclick="switchDoc('manual_senior')" id="topbtn-manual-senior" class="px-3 py-1.5 rounded-xl font-semibold transition-all">
+        <button onclick="switchDoc('manual_senior')" id="topbtn-manual-senior" class="px-2.5 sm:px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap shrink-0 transition-all">
           <i class="fa-solid fa-user-shield mr-1 text-amber-400"></i> 5.2 พยาบาลรุ่นพี่ (3 หัวข้อ)
         </button>
-        <button onclick="switchDoc('manual_admin')" id="topbtn-manual-admin" class="px-3 py-1.5 rounded-xl font-semibold transition-all">
+        <button onclick="switchDoc('manual_admin')" id="topbtn-manual-admin" class="px-2.5 sm:px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap shrink-0 transition-all">
           <i class="fa-solid fa-user-gear mr-1 text-purple-400"></i> 5.3 ผู้ดูแลระบบ / APN (2 หัวข้อ)
         </button>
-        <button onclick="switchDoc('manual_all')" id="topbtn-manual-all" class="px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all text-[11px] ml-auto">
+        <button onclick="switchDoc('manual_all')" id="topbtn-manual-all" class="px-2 sm:px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 whitespace-nowrap shrink-0 transition-all text-[11px] ml-auto">
           <i class="fa-solid fa-book mr-1"></i> ดูทั้งหมด
         </button>
       </div>
@@ -590,8 +634,8 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
 ### 📑 เลือกหมวดคู่มือตามบทบาทผู้ใช้งาน (คลิกที่การ์ดเพื่อเปิดอ่าน)
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 not-prose">
-<div class="p-5 rounded-2xl bg-gradient-to-b from-sky-950/40 to-slate-900 border border-sky-500/30 shadow-xl flex flex-col justify-between hover:border-sky-400 transition-all">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 lg:gap-5 my-4 sm:my-6 not-prose">
+<div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-sky-950/40 to-slate-900 border border-sky-500/30 shadow-xl flex flex-col justify-between hover:border-sky-400 transition-all">
 <div>
 <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg mb-3">
 <i class="fa-solid fa-user-nurse"></i>
@@ -626,7 +670,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 </button>
 </div>
 
-<div class="p-5 rounded-2xl bg-gradient-to-b from-amber-950/40 to-slate-900 border border-amber-500/30 shadow-xl flex flex-col justify-between hover:border-amber-400 transition-all">
+<div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-amber-950/40 to-slate-900 border border-amber-500/30 shadow-xl flex flex-col justify-between hover:border-amber-400 transition-all">
 <div>
 <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-3">
 <i class="fa-solid fa-user-shield"></i>
@@ -652,7 +696,7 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 </button>
 </div>
 
-<div class="p-5 rounded-2xl bg-gradient-to-b from-purple-950/40 to-slate-900 border border-purple-500/30 shadow-xl flex flex-col justify-between hover:border-purple-400 transition-all">
+<div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-purple-950/40 to-slate-900 border border-purple-500/30 shadow-xl flex flex-col justify-between hover:border-purple-400 transition-all">
 <div>
 <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg mb-3">
 <i class="fa-solid fa-user-gear"></i>
@@ -1146,6 +1190,21 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
 
       renderDoc(key);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // On mobile / tablet, auto-close sidebar once user selects a document
+      if (window.innerWidth < 1024) {
+        const sidebar = document.getElementById('sidebarNavWrapper');
+        if (sidebar && !sidebar.classList.contains('hidden')) {
+          sidebar.classList.add('hidden');
+        }
+      }
+    }
+
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('sidebarNavWrapper');
+      if (sidebar) {
+        sidebar.classList.toggle('hidden');
+      }
     }
 
     function toggleVisualFlowModal() {
