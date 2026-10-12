@@ -354,10 +354,12 @@
 
         <!-- Right: Actions (Profile, Docs, SOS, Logout) -->
         <div class="flex items-center gap-1.5 sm:gap-2">
-          <!-- User Profile & Password Button -->
-          <button onclick="openUserProfileModal()" title="แก้ไขข้อมูลส่วนตัว / เปลี่ยนรหัสผ่าน" class="h-9 px-2.5 sm:px-3 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center gap-1.5 text-xs font-semibold border border-white/15 transition-all">
-            <i class="fa-solid fa-circle-user text-sky-300 text-sm"></i>
-            <span class="hidden sm:inline">โปรไฟล์</span>
+          <!-- User Profile & Avatar Button -->
+          <button onclick="openUserProfileModal()" title="แก้ไขข้อมูลส่วนตัว / เปลี่ยนรูปโปรไฟล์ / เปลี่ยนรหัสผ่าน" class="h-9 px-2 sm:px-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center gap-1.5 text-xs font-semibold border border-white/15 transition-all group">
+            <div id="headerUserAvatar" class="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-white/30 bg-sky-500 text-white text-[11px] font-bold">
+              <i class="fa-solid fa-circle-user text-sm"></i>
+            </div>
+            <span class="hidden sm:inline group-hover:text-sky-200 transition-colors">โปรไฟล์</span>
           </button>
           <!-- Documentation Portal Button -->
           <a href="docs_portal/index.html" target="_blank" title="เปิดศูนย์รวมเอกสารโครงการ (Proposal, Req, Analysis, Design, Manual)" class="h-9 px-2.5 sm:px-3 rounded-xl bg-sky-800 hover:bg-sky-600 text-sky-100 flex items-center gap-1.5 text-xs font-semibold border border-sky-400/30 shadow-xs transition-all">
@@ -1510,6 +1512,34 @@
           <form id="userRoleForm" onsubmit="handleSaveUserRole(event)" class="p-4 overflow-y-auto text-xs space-y-3.5">
             <input type="hidden" id="editUserId">
 
+            <!-- Admin Avatar Management Section -->
+            <div class="p-3 bg-purple-50/50 border border-purple-200/80 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
+              <div class="relative group cursor-pointer shrink-0" onclick="document.getElementById('editUserAvatarInput').click()">
+                <div id="editUserAvatarPreview" class="w-14 h-14 rounded-full overflow-hidden border-2 border-purple-500 shadow-sm flex items-center justify-center bg-purple-100 text-purple-700 font-bold text-base">
+                  <i class="fa-solid fa-user text-xl"></i>
+                </div>
+                <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                  <i class="fa-solid fa-camera"></i>
+                </div>
+                <span class="absolute bottom-0 right-0 w-4.5 h-4.5 bg-purple-600 rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white">
+                  <i class="fa-solid fa-pen"></i>
+                </span>
+              </div>
+              <div class="flex-1 text-center sm:text-left space-y-1">
+                <span class="text-[11px] font-bold text-purple-900 block">รูปโปรไฟล์ผู้ใช้งาน (Avatar)</span>
+                <p class="text-[10px] text-slate-500">Admin สามารถเปลี่ยนหรือลบรูปประจำตัวของผู้ใช้งานรายนี้ได้</p>
+                <div class="flex items-center justify-center sm:justify-start gap-2 pt-1">
+                  <input type="file" id="editUserAvatarInput" accept="image/*" class="hidden" onchange="handleAvatarFileSelected(event, 'admin')">
+                  <button type="button" onclick="document.getElementById('editUserAvatarInput').click()" class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-purple-200 text-purple-700 rounded-lg text-[10px] font-semibold flex items-center gap-1 shadow-2xs transition-colors">
+                    <i class="fa-solid fa-upload text-purple-600"></i> เลือกรูปใหม่
+                  </button>
+                  <button type="button" id="editUserRemoveAvatarBtn" onclick="removeAvatarImage('admin')" class="hidden px-2 py-1 text-rose-600 hover:bg-rose-50 rounded-lg text-[10px] font-medium transition-colors">
+                    <i class="fa-solid fa-trash-can"></i> ลบรูป
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block font-bold text-slate-700 mb-1">ชื่อผู้ใช้งาน (Username):</label>
@@ -1634,14 +1664,40 @@
           </div>
 
           <form id="userProfileForm" onsubmit="handleSaveUserProfile(event)" class="p-4 overflow-y-auto text-xs space-y-3.5">
-            <!-- Account Badge summary -->
-            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
-              <div>
-                <span class="text-[10px] text-slate-400 block">บัญชีผู้ใช้งาน:</span>
-                <span id="profileUsernameDisplay" class="font-mono font-bold text-slate-800 text-sm">@username</span>
+            <!-- Account Badge & Avatar Uploader Section -->
+            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center gap-3.5">
+              <!-- Avatar Preview Container with Camera Overlay -->
+              <div class="relative group cursor-pointer shrink-0" onclick="document.getElementById('profileAvatarInput').click()">
+                <div id="profileAvatarPreview" class="w-16 h-16 rounded-full overflow-hidden border-2 border-brand-500 shadow-sm flex items-center justify-center bg-brand-100 text-brand-700 font-bold text-lg">
+                  <i class="fa-solid fa-user text-2xl"></i>
+                </div>
+                <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                  <i class="fa-solid fa-camera"></i>
+                </div>
+                <span class="absolute bottom-0 right-0 w-5 h-5 bg-brand-600 rounded-full border-2 border-white flex items-center justify-center text-[10px] text-white">
+                  <i class="fa-solid fa-pen"></i>
+                </span>
               </div>
-              <div id="profileRoleBadge">
-                <span class="text-[10px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded-full">พยาบาลทั่วไป</span>
+
+              <!-- Avatar Actions & Details -->
+              <div class="flex-1 text-center sm:text-left space-y-1">
+                <div class="flex items-center justify-center sm:justify-start gap-2">
+                  <span id="profileUsernameDisplay" class="font-mono font-bold text-slate-800 text-sm">@username</span>
+                  <div id="profileRoleBadge">
+                    <span class="text-[10px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded-full">พยาบาลทั่วไป</span>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-500">อัปโหลดรูปประจำตัว (Avatar) ไฟล์ PNG, JPG, GIF หรือ WebP</p>
+                
+                <div class="flex items-center justify-center sm:justify-start gap-2 pt-1">
+                  <input type="file" id="profileAvatarInput" accept="image/*" class="hidden" onchange="handleAvatarFileSelected(event, 'profile')">
+                  <button type="button" onclick="document.getElementById('profileAvatarInput').click()" class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold flex items-center gap-1 shadow-2xs transition-colors">
+                    <i class="fa-solid fa-upload text-brand-600"></i> เลือกรูปภาพ
+                  </button>
+                  <button type="button" id="profileRemoveAvatarBtn" onclick="removeAvatarImage('profile')" class="hidden px-2 py-1 text-rose-600 hover:bg-rose-50 rounded-lg text-[11px] font-medium transition-colors">
+                    <i class="fa-solid fa-trash-can"></i> ลบรูป
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -2083,13 +2139,13 @@
 
     // ===== USER MANAGEMENT & AUTH (Admin / Senior / Nurse / Pending Users) =====
     const DEFAULT_USERS = [
-      { id: 'u-1', user: 'admin', pass: '1234', name: 'พว.ฟ้าพายัพ อินถาเครือ (Admin)', exp: 'CCU RN / Admin', role: 'admin', status: 'active', registeredAt: '2026-10-01' },
-      { id: 'u-senior', user: 'senior', pass: 'ccu7', name: 'พว.วิยะดา (พยาบาลรุ่นพี่/Incharge)', exp: '>5ปี', role: 'senior', status: 'active', registeredAt: '2026-10-02' },
-      { id: 'u-3', user: 'nurse', pass: 'ccu7', name: 'พว.พยาบาล CCU เวรเช้า', exp: '1-3ปี', role: 'nurse', status: 'active', registeredAt: '2026-10-08' },
-      { id: 'u-4', user: 'somying', pass: 'ccu7', name: 'พว.สมหญิง วงศ์ใจ (รออนุมัติ)', exp: '1-3ปี', role: 'nurse', status: 'pending', registeredAt: '2026-10-10' }
+      { id: 'u-1', user: 'admin', pass: '1234', name: 'พว.ฟ้าพายัพ อินถาเครือ (Admin)', exp: 'CCU RN / Admin', role: 'admin', status: 'active', registeredAt: '2026-10-01', avatar: null },
+      { id: 'u-senior', user: 'senior', pass: 'ccu7', name: 'พว.วิยะดา (พยาบาลรุ่นพี่/Incharge)', exp: '>5ปี', role: 'senior', status: 'active', registeredAt: '2026-10-02', avatar: null },
+      { id: 'u-3', user: 'nurse', pass: 'ccu7', name: 'พว.พยาบาล CCU เวรเช้า', exp: '1-3ปี', role: 'nurse', status: 'active', registeredAt: '2026-10-08', avatar: null },
+      { id: 'u-4', user: 'somying', pass: 'ccu7', name: 'พว.สมหญิง วงศ์ใจ (รออนุมัติ)', exp: '1-3ปี', role: 'nurse', status: 'pending', registeredAt: '2026-10-10', avatar: null }
     ];
 
-    const USERS_DB_VERSION = "v2.1";
+    const USERS_DB_VERSION = "v2.2";
     function getUsers() {
       const curVer = localStorage.getItem('ccu_users_ver');
       if (curVer !== USERS_DB_VERSION) {
@@ -2111,6 +2167,136 @@
 
     let currentUsers = getUsers();
     let currentLoggedUser = null;
+
+    // Temporary avatar state during modal editing
+    let tempProfileAvatar = null;
+    let tempEditUserAvatar = null;
+
+    // Helper: Return HTML for User Avatar with automatic fallback to initial or role icon
+    function getUserAvatarHtml(userObj, sizeClass = 'w-8 h-8', borderClass = 'border border-slate-200') {
+      if (!userObj) {
+        return `<div class="${sizeClass} rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs shrink-0 ${borderClass}"><i class="fa-solid fa-user"></i></div>`;
+      }
+      const avatarSrc = userObj.avatar;
+      if (avatarSrc && (avatarSrc.startsWith('data:image/') || avatarSrc.startsWith('http'))) {
+        return `<img src="${avatarSrc}" alt="${escapeHtml(userObj.name || userObj.user)}" class="${sizeClass} rounded-full object-cover shrink-0 ${borderClass}">`;
+      }
+      // Fallback: Styled Initial or Role Icon
+      const initial = (userObj.name || userObj.user || '?').trim().charAt(0).toUpperCase();
+      const roleColor = userObj.role === 'admin'
+        ? 'bg-purple-100 text-purple-700'
+        : userObj.role === 'senior'
+        ? 'bg-amber-100 text-amber-800'
+        : 'bg-sky-100 text-brand-700';
+      return `<div class="${sizeClass} rounded-full ${roleColor} font-bold text-xs flex items-center justify-center shrink-0 ${borderClass}" title="${escapeHtml(userObj.name || userObj.user)}">${initial}</div>`;
+    }
+
+    // Helper: Update Header Profile Avatar
+    function updateHeaderAvatar(userObj) {
+      const container = document.getElementById('headerUserAvatar');
+      if (!container) return;
+      const u = userObj || currentLoggedUser;
+      if (!u) {
+        container.innerHTML = '<i class="fa-solid fa-circle-user text-sm"></i>';
+        return;
+      }
+      if (u.avatar && (u.avatar.startsWith('data:image/') || u.avatar.startsWith('http'))) {
+        container.innerHTML = `<img src="${u.avatar}" alt="${escapeHtml(u.name || u.user)}" class="w-full h-full object-cover">`;
+      } else {
+        const initial = (u.name || u.user || '?').trim().charAt(0).toUpperCase();
+        container.innerHTML = `<span>${initial}</span>`;
+      }
+    }
+
+    // Helper: Handle Avatar File Selection with Canvas compression to max 160x160 jpeg (~15-30KB)
+    function handleAvatarFileSelected(event, mode) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('กรุณาเลือกไฟล์รูปภาพเท่านั้นค่ะ (PNG, JPG, WebP, GIF)');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const MAX_SIZE = 160;
+          let w = img.width;
+          let h = img.height;
+          if (w > h) {
+            if (w > MAX_SIZE) {
+              h = Math.round((h * MAX_SIZE) / w);
+              w = MAX_SIZE;
+            }
+          } else {
+            if (h > MAX_SIZE) {
+              w = Math.round((w * MAX_SIZE) / h);
+              h = MAX_SIZE;
+            }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+          if (mode === 'profile') {
+            tempProfileAvatar = compressedDataUrl;
+            renderAvatarPreview('profile', compressedDataUrl);
+          } else if (mode === 'admin') {
+            tempEditUserAvatar = compressedDataUrl;
+            renderAvatarPreview('admin', compressedDataUrl);
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      // reset input value so re-selecting same file triggers change
+      event.target.value = '';
+    }
+
+    // Helper: Render Preview Container
+    function renderAvatarPreview(mode, avatarSrc) {
+      if (mode === 'profile') {
+        const previewEl = document.getElementById('profileAvatarPreview');
+        const removeBtn = document.getElementById('profileRemoveAvatarBtn');
+        if (previewEl) {
+          if (avatarSrc) {
+            previewEl.innerHTML = `<img src="${avatarSrc}" class="w-full h-full object-cover">`;
+            if (removeBtn) removeBtn.classList.remove('hidden');
+          } else {
+            previewEl.innerHTML = '<i class="fa-solid fa-user text-2xl"></i>';
+            if (removeBtn) removeBtn.classList.add('hidden');
+          }
+        }
+      } else if (mode === 'admin') {
+        const previewEl = document.getElementById('editUserAvatarPreview');
+        const removeBtn = document.getElementById('editUserRemoveAvatarBtn');
+        if (previewEl) {
+          if (avatarSrc) {
+            previewEl.innerHTML = `<img src="${avatarSrc}" class="w-full h-full object-cover">`;
+            if (removeBtn) removeBtn.classList.remove('hidden');
+          } else {
+            previewEl.innerHTML = '<i class="fa-solid fa-user text-xl"></i>';
+            if (removeBtn) removeBtn.classList.add('hidden');
+          }
+        }
+      }
+    }
+
+    // Helper: Remove Avatar Image
+    function removeAvatarImage(mode) {
+      if (mode === 'profile') {
+        tempProfileAvatar = null;
+        renderAvatarPreview('profile', null);
+      } else if (mode === 'admin') {
+        tempEditUserAvatar = null;
+        renderAvatarPreview('admin', null);
+      }
+    }
 
     function switchAuthTab(tab) {
       const loginForm = document.getElementById('loginForm');
@@ -2247,6 +2433,7 @@
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('appContainer').classList.remove('hidden');
       document.getElementById('displayUser').innerText = userObj.name || userObj.user;
+      updateHeaderAvatar(userObj);
 
       // ปรับแต่ง UI ตามสิทธิ์ Role
       applyRolePermissions(userObj);
@@ -2562,16 +2749,19 @@
         card.className = `p-3 rounded-2xl border ${isPending ? 'bg-amber-50/50 border-amber-300' : 'bg-white border-slate-200'} shadow-xs flex flex-col gap-2`;
 
         card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <div>
-              <div class="flex items-center gap-1.5">
-                <span class="font-bold text-xs text-slate-800">${u.name || u.user}</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded ${u.role === 'admin' ? 'bg-purple-100 text-purple-700 font-bold' : u.role === 'senior' ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-100 text-slate-600'}">@${u.user}</span>
-                ${isSelf ? '<span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.2 rounded border border-indigo-200">บัญชีของคุณ</span>' : ''}
-              </div>
-              <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
-                <span><i class="fa-solid fa-clock-rotate-left text-slate-400"></i> ประสบการณ์: ${u.exp || '-'}</span>
-                <span>• สมัครเมื่อ: ${u.registeredAt || '-'}</span>
+          <div class="flex items-start justify-between gap-2.5">
+            <div class="flex items-start gap-2.5 min-w-0">
+              ${getUserAvatarHtml(u, 'w-10 h-10', 'border-2 border-slate-200 shadow-2xs')}
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="font-bold text-xs text-slate-800 truncate">${u.name || u.user}</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.2 rounded shrink-0 ${u.role === 'admin' ? 'bg-purple-100 text-purple-700 font-bold' : u.role === 'senior' ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-100 text-slate-600'}">@${u.user}</span>
+                  ${isSelf ? '<span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.2 rounded border border-indigo-200 shrink-0">บัญชีของคุณ</span>' : ''}
+                </div>
+                <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                  <span><i class="fa-solid fa-clock-rotate-left text-slate-400"></i> ประสบการณ์: ${u.exp || '-'}</span>
+                  <span>• สมัครเมื่อ: ${u.registeredAt || '-'}</span>
+                </div>
               </div>
             </div>
             <div>
@@ -2664,12 +2854,17 @@
         statusSelect.disabled = isSelf;
       }
 
+      // Avatar state initialization for Admin editing
+      tempEditUserAvatar = u.avatar || null;
+      renderAvatarPreview('admin', tempEditUserAvatar);
+
       document.getElementById('userRoleModal').classList.remove('hidden');
     }
 
     function closeUserRoleModal() {
       const modal = document.getElementById('userRoleModal');
       if (modal) modal.classList.add('hidden');
+      tempEditUserAvatar = null;
     }
 
     function handleSaveUserRole(e) {
@@ -2704,6 +2899,8 @@
       // Update user object
       u.name = name;
       u.exp = exp;
+      u.avatar = tempEditUserAvatar || null;
+
       if (!isSelf) {
         u.role = selectedRole;
         u.status = selectedStatus;
@@ -2718,6 +2915,7 @@
       if (isSelf) {
         currentLoggedUser = u;
         document.getElementById('displayUser').innerText = u.name || u.user;
+        updateHeaderAvatar(u);
       }
 
       renderAdminUserList();
@@ -2755,6 +2953,10 @@
         }
       }
 
+      // Initialize avatar preview for profile
+      tempProfileAvatar = user.avatar || null;
+      renderAvatarPreview('profile', tempProfileAvatar);
+
       // Clear password fields
       const curPass = document.getElementById('profileCurrentPassword');
       const newPass = document.getElementById('profileNewPassword');
@@ -2770,6 +2972,7 @@
     function closeUserProfileModal() {
       const modal = document.getElementById('userProfileModal');
       if (modal) modal.classList.add('hidden');
+      tempProfileAvatar = null;
     }
 
     function handleSaveUserProfile(e) {
@@ -2815,12 +3018,14 @@
 
       user.name = name;
       user.exp = exp;
+      user.avatar = tempProfileAvatar || null;
 
       saveUsers(currentUsers);
       currentLoggedUser = user;
 
-      // Update Header Display
+      // Update Header Display & Avatar
       document.getElementById('displayUser').innerText = user.name || user.user;
+      updateHeaderAvatar(user);
       renderAdminUserList();
       closeUserProfileModal();
 
@@ -3174,10 +3379,27 @@
     function appendAiBubble(role, html) {
       const chat = document.getElementById('aiChat');
       const div = document.createElement('div');
-      div.className = role === 'user'
-        ? 'ml-auto max-w-[85%] bg-indigo-600 text-white text-sm px-3 py-2 rounded-2xl rounded-br-sm'
-        : 'max-w-[92%] bg-white border border-slate-200 text-slate-700 text-sm px-3 py-2.5 rounded-2xl rounded-bl-sm shadow-sm';
-      div.innerHTML = html;
+      if (role === 'user') {
+        div.className = 'ml-auto max-w-[88%] flex items-end justify-end gap-2';
+        div.innerHTML = `
+          <div class="bg-indigo-600 text-white text-sm px-3.5 py-2.5 rounded-2xl rounded-br-xs shadow-xs break-words">
+            ${html}
+          </div>
+          <div class="shrink-0 mb-0.5">
+            ${getUserAvatarHtml(currentLoggedUser, 'w-6 h-6', 'border border-indigo-200 shadow-2xs')}
+          </div>
+        `;
+      } else {
+        div.className = 'mr-auto max-w-[92%] flex items-start gap-2';
+        div.innerHTML = `
+          <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-1 shadow-2xs">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="flex-1 bg-white border border-slate-200 text-slate-700 text-sm px-3.5 py-2.5 rounded-2xl rounded-tl-xs shadow-xs break-words">
+            ${html}
+          </div>
+        `;
+      }
       chat.appendChild(div);
       div.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
@@ -4747,22 +4969,22 @@
         const likedBy = Array.isArray(t.likedBy) ? t.likedBy : [];
         const hasLiked = likedBy.includes(currentUser);
 
+        const authorUser = currentUsers.find(u => u.user === t.createdBy || u.name === t.author) || { user: t.createdBy, name: t.author, role: 'nurse' };
+
         const item = document.createElement('div');
         item.className = `bg-white p-4 rounded-xl border ${isBlocked ? 'border-amber-300 bg-amber-50/30' : 'border-slate-200'} shadow-sm space-y-2 relative`;
         
         item.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-full ${isBlocked ? 'bg-amber-100 text-amber-700' : 'bg-brand-100 text-brand-700'} font-bold text-xs flex items-center justify-center">
-                <i class="fa-solid fa-user-nurse"></i>
-              </div>
-              <div>
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              ${getUserAvatarHtml(authorUser, 'w-8 h-8', isBlocked ? 'border-2 border-amber-300' : 'border border-slate-200 shadow-2xs')}
+              <div class="min-w-0">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <p class="text-xs font-bold text-slate-800">${t.author}</p>
-                  ${isOwner ? '<span class="text-[9px] bg-sky-100 text-brand-700 px-1.5 py-0.2 rounded font-semibold">เกร็ดของคุณ</span>' : ''}
-                  ${isBlocked ? '<span class="text-[9px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded border border-rose-200"><i class="fa-solid fa-ban"></i> ถูก Admin ระงับ (Blocked)</span>' : ''}
+                  <p class="text-xs font-bold text-slate-800 truncate">${t.author}</p>
+                  ${isOwner ? '<span class="text-[9px] bg-sky-100 text-brand-700 px-1.5 py-0.2 rounded font-semibold shrink-0">เกร็ดของคุณ</span>' : ''}
+                  ${isBlocked ? '<span class="text-[9px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded border border-rose-200 shrink-0"><i class="fa-solid fa-ban"></i> ถูก Admin ระงับ (Blocked)</span>' : ''}
                 </div>
-                <p class="text-[10px] text-slate-400">${t.tag}</p>
+                <p class="text-[10px] text-slate-400 truncate">${t.tag}</p>
               </div>
             </div>
             
@@ -5546,42 +5768,51 @@
         const askerText = item.askedByName || 'พยาบาลน้องใหม่';
         const dateText = item.askedAt || '';
 
+        const askerUser = currentUsers.find(u => u.name === item.askedByName || u.user === item.askedBy) || { name: askerText, role: 'nurse' };
+        const reviewerUser = isAnswered ? (currentUsers.find(u => u.name === item.reviewedBy || u.user === item.reviewedBy) || { name: item.reviewedBy || 'Incharge', role: 'senior' }) : null;
+
         return `
-          <div class="p-3.5 bg-white border ${isAnswered ? 'border-emerald-200' : 'border-amber-200 bg-amber-50/20'} rounded-2xl shadow-2xs space-y-2">
+          <div class="p-3.5 bg-white border ${isAnswered ? 'border-emerald-200' : 'border-amber-200 bg-amber-50/20'} rounded-2xl shadow-2xs space-y-2.5">
             <div class="flex items-start justify-between gap-2">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="text-[9px] bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded">
-                  <i class="fa-solid fa-user-nurse text-brand-600"></i> ${escapeHtml(askerText)}
-                </span>
-                ${isAnswered ? `
-                  <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <i class="fa-solid fa-circle-check text-emerald-600"></i> พี่ตอบและรับรองแล้ว
+              <div class="flex items-center gap-2 min-w-0">
+                ${getUserAvatarHtml(askerUser, 'w-7 h-7', 'border border-slate-200 shadow-2xs')}
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-xs font-bold text-slate-800">
+                    ${escapeHtml(askerText)}
                   </span>
-                ` : `
-                  <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
-                    <i class="fa-solid fa-clock text-amber-600"></i> รอพี่ Incharge ตอบ
-                  </span>
-                `}
+                  ${isAnswered ? `
+                    <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <i class="fa-solid fa-circle-check text-emerald-600"></i> พี่ตอบและรับรองแล้ว
+                    </span>
+                  ` : `
+                    <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
+                      <i class="fa-solid fa-clock text-amber-600"></i> รอพี่ Incharge ตอบ
+                    </span>
+                  `}
+                </div>
               </div>
-              <span class="text-[10px] text-slate-400 font-mono">${dateText}</span>
+              <span class="text-[10px] text-slate-400 font-mono shrink-0">${dateText}</span>
             </div>
 
             <!-- Question -->
-            <div class="font-bold text-xs text-slate-900 leading-snug flex items-start gap-1.5">
+            <div class="font-bold text-xs text-slate-900 leading-snug flex items-start gap-1.5 pl-1">
               <i class="fa-solid fa-circle-question text-amber-500 mt-0.5 shrink-0"></i>
               <span>${escapeHtml(item.question)}</span>
             </div>
 
             <!-- Answer Box -->
             ${isAnswered ? `
-              <div class="p-2.5 bg-emerald-50/60 border border-emerald-100 rounded-xl space-y-1">
+              <div class="p-2.5 bg-emerald-50/60 border border-emerald-100 rounded-xl space-y-1.5">
                 <div class="text-[10px] font-bold text-emerald-800 flex items-center gap-1">
                   <i class="fa-solid fa-circle-check text-emerald-600"></i> คำตอบจากพี่:
                 </div>
                 <p class="text-xs text-slate-800 leading-relaxed">${escapeHtml(item.quickAnswer || item.answer || '')}</p>
-                <div class="pt-1 text-[10px] text-slate-500 flex items-center justify-between border-t border-emerald-100/60">
-                  <span>ผู้ตอบ: <strong>${escapeHtml(item.reviewedBy || 'Incharge')}</strong></span>
-                  <span class="truncate max-w-[180px]">${escapeHtml(item.reference || '')}</span>
+                <div class="pt-1.5 text-[10px] text-slate-500 flex items-center justify-between border-t border-emerald-100/60 gap-2">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    ${getUserAvatarHtml(reviewerUser, 'w-5 h-5', 'border border-emerald-200')}
+                    <span class="truncate">ผู้ตอบ: <strong class="text-slate-700">${escapeHtml(item.reviewedBy || 'Incharge')}</strong></span>
+                  </div>
+                  <span class="truncate max-w-[180px] shrink-0 text-slate-400">${escapeHtml(item.reference || '')}</span>
                 </div>
               </div>
             ` : `
