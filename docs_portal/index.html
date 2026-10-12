@@ -1203,7 +1203,12 @@ $$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Toke
     function toggleMobileSidebar() {
       const sidebar = document.getElementById('sidebarNavWrapper');
       if (sidebar) {
+        const isHidden = sidebar.classList.contains('hidden');
         sidebar.classList.toggle('hidden');
+        // เมื่อเมนูขยายออกมา ให้เลื่อนหน้าจอขึ้นไปบนสุด
+        if (isHidden) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     }
 
