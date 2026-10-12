@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BPMN Process Flow: Bedside Q&A & Mentorship Knowledge Loop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Mermaid JS -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Sarabun', sans-serif; background-color: #0f172a; color: #f8fafc; }
+    .mermaid svg { max-width: 100% !important; height: auto !important; }
+  </style>
+</head>
+<body class="p-4 md:p-8 flex flex-col items-center min-h-screen">
+
+  <!-- Header & Toolbar -->
+  <div class="max-w-6xl w-full flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-800/90 border border-slate-700/80 p-5 rounded-2xl shadow-xl backdrop-blur-md mb-6">
+    <div>
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+        <i class="fa-solid fa-diagram-project mr-1"></i> A-Nurse Architecture
+      </span>
+      <h1 class="text-xl md:text-2xl font-bold mt-2 text-white">
+        BPMN Flow: ระบบจัดการคำถามข้างเตียง & คลังปัญญาพี่สู่น้อง
+      </h1>
+      <p class="text-xs md:text-sm text-slate-400 mt-1">
+        Bedside Q&A Deduplication, Follower Queue & Mentorship Knowledge Loop
+      </p>
+    </div>
+
+    <!-- Export / Download Buttons -->
+    <div class="flex items-center gap-2.5 flex-wrap">
+      <button onclick="downloadAsPNG()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold rounded-xl text-xs md:text-sm shadow-lg shadow-emerald-900/40 flex items-center gap-2 transition-all cursor-pointer">
+        <i class="fa-solid fa-file-image text-base"></i> ดาวน์โหลดรูปภาพ (PNG)
+      </button>
+      <button onclick="downloadAsSVG()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold rounded-xl text-xs md:text-sm shadow-lg shadow-indigo-900/40 flex items-center gap-2 transition-all cursor-pointer">
+        <i class="fa-solid fa-bezier-curve text-base"></i> ดาวน์โหลดเวกเตอร์ (SVG)
+      </button>
+      <button onclick="window.print()" class="px-3 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold rounded-xl text-xs md:text-sm transition-all cursor-pointer">
+        <i class="fa-solid fa-print"></i> พิมพ์
+      </button>
+    </div>
+  </div>
+
+  <!-- Legend / Swimlanes Badge -->
+  <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+    <div class="p-3 bg-blue-950/40 border border-blue-500/30 rounded-xl flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center text-lg">
+        🧑‍⚕️
+      </div>
+      <div>
+        <h4 class="text-xs font-bold text-blue-200">Lane 1: พยาบาลรุ่นน้อง</h4>
+        <p class="text-[11px] text-blue-300/70">ถามข้างเตียง, รับคำตอบทันที, กด +1 ติดตาม</p>
+      </div>
+    </div>
+
+    <div class="p-3 bg-amber-950/40 border border-amber-500/30 rounded-xl flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-amber-600/20 text-amber-400 flex items-center justify-center text-lg">
+        ⚙️
+      </div>
+      <div>
+        <h4 class="text-xs font-bold text-amber-200">Lane 2: A-Nurse System Engine</h4>
+        <p class="text-[11px] text-amber-300/70">Similarity Match 65%, Deduplication Gate, Vector DB</p>
+      </div>
+    </div>
+
+    <div class="p-3 bg-rose-950/40 border border-rose-500/30 rounded-xl flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-rose-600/20 text-rose-400 flex items-center justify-center text-lg">
+        👩‍⚕️
+      </div>
+      <div>
+        <h4 class="text-xs font-bold text-rose-200">Lane 3: พยาบาลรุ่นพี่ / In-charge</h4>
+        <p class="text-[11px] text-rose-300/70">ตรวจคำถามตามลำดับความสนใจ, ตอบ & รับรองเข้า CPG</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagram Container -->
+  <div class="max-w-6xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl overflow-x-auto flex justify-center" id="diagramWrapper">
+    <div id="mermaidTarget" class="mermaid w-full flex justify-center">
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1e293b', 'primaryTextColor': '#f8fafc', 'primaryBorderColor': '#475569', 'lineColor': '#94a3b8', 'secondaryColor': '#0f172a', 'tertiaryColor': '#1e293b'}}}%%
+sequenceDiagram
+    autonumber
+    actor Junior as 🧑‍⚕️ พยาบาลรุ่นน้อง (Junior Nurse)
+    participant System as ⚙️ ระบบ A-Nurse System (Engine)
+    actor Senior as 👩‍⚕️ พยาบาลรุ่นพี่ / In-charge (Senior)
+
+    Note over Junior: เกิดข้อสงสัยหน้างานข้างเตียง (e.g. Post-TAVI, EKG, ยาฉุกเฉิน)
+
+    Junior->>System: 1. พิมพ์คำถามข้างเตียงถาม AI Assistant
+    alt AI มีคำตอบตรงตาม CPG
+        System-->>Junior: ตอบแนวปฏิบัติตาม CPG ศิริราช
+        Junior->>Junior: นำไปปฏิบัติการพยาบาลทันที (จบขั้นตอน)
+    else AI ตอบไม่ได้ / คำถามซับซ้อน
+        System-->>Junior: แจ้งว่ายังไม่มีคำตอบที่ยืนยัน + แสดงปุ่ม [ส่งถามพี่ In-charge]
+        Junior->>System: 2. กดส่งคำถามเข้ากระดานรุ่นพี่
+    end
+
+    critical 🔍 ระบบตรวจจับคำถามซ้ำ (Deduplication Check >= 65%)
+        System->>System: เปรียบเทียบความคล้ายคลึงกับคำถามในคลัง FAQ
+    end
+
+    alt กรณี A: ตรงกับคำถามที่ 'พี่เคยตอบและรับรองแล้ว' (Approved Duplicate)
+        System-->>Junior: ป๊อปอัปเขียว: '💡 พี่ In-charge เคยตอบไว้แล้ว'<br/>แสดงคำตอบ + CPG อ้างอิงทันที
+        Junior->>Junior: ได้รับคำตอบทันที นำไปดูแลคนไข้ข้างเตียง (จบขั้นตอน)
+    else กรณี B: ตรงกับคำถามที่ 'มีเพื่อนถามค้างรอพี่ตอบ' (Pending Duplicate)
+        System-->>Junior: ป๊อปอัปส้ม: '⏳ มีเพื่อนพยาบาลเพิ่งถามคำถามนี้ไปแล้ว'<br/>แสดงชื่อเพื่อน + จำนวนคนรอ
+        Junior->>System: กดปุ่ม [🔔 ติดตามคำตอบนี้ด้วย (+1)]
+        System->>System: บันทึกยอดผู้รอคอยเพิ่ม (+1 Follower / เพิ่มความสำคัญ)
+    else กรณี C: เป็นคำถามใหม่ (New Question)
+        System->>System: บันทึกเข้าคิวรอตรวจ (Status: pending)
+    end
+
+    opt เมื่อมีคำถามใหม่ หรือคนติดตามคำถามเพิ่มขึ้น
+        System->>Senior: แจ้งเตือนผ่าน Badge สีส้มบนเมนู [กระดานถามพี่]
+    end
+
+    Senior->>System: 3. เปิด [กระดานถามพี่] เลือกดูคำถามที่มีน้องติดตามสูง
+    Senior->>System: 4. กดปุ่ม [✍️ ตอบคำถาม] เขียนคำตอบและระบุ CPG อ้างอิง
+    Senior->>System: 5. กด [ตอบและรับรองเข้าคลังทันที]
+
+    System->>System: เปลี่ยนสถานะเป็น 'approved' + เพิ่มเข้าคลัง Vector AI
+    System-->>Junior: แจ้งเตือนและอัปเดตสถานะเป็น '✅ พี่ตอบแล้ว'
+    Junior->>Junior: น้องทุกคนที่รอเปิดอ่านคำตอบและนำไปปฏิบัติการพยาบาล
+    </div>
+  </div>
+
+  <!-- Instruction Note -->
+  <div class="max-w-6xl w-full mt-4 text-center text-xs text-slate-500">
+    <p>💡 หากกดปุ่มดาวน์โหลดไม่ได้ อ้ายสามารถคลิกขวาที่ตัวแผนภาพ แล้วเลือก <strong>"บันทึกรูปภาพเป็น... (Save image as...)"</strong> ได้เช่นกันครับ</p>
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true });
+
+    // ฟังก์ชันดาวน์โหลดเป็น SVG
+    function downloadAsSVG() {
+      const svg = document.querySelector("#mermaidTarget svg");
+      if (!svg) {
+        alert("ไม่พบไฟล์แผนภาพ กรุณารอสักครู่แล้วลองใหม่ครับ");
+        return;
+      }
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+      const svgUrl = URL.createObjectURL(svgBlob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = svgUrl;
+      downloadLink.download = "a-nurse-bpmn-workflow.svg";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+
+    // ฟังก์ชันแปลง SVG เป็น PNG คุณภาพสูงแล้วดาวน์โหลด
+    function downloadAsPNG() {
+      const svg = document.querySelector("#mermaidTarget svg");
+      if (!svg) {
+        alert("ไม่พบไฟล์แผนภาพ กรุณารอสักครู่แล้วลองใหม่ครับ");
+        return;
+      }
+
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+      const URL = window.URL || window.webkitURL || window;
+      const blobURL = URL.createObjectURL(svgBlob);
+      
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        const scale = 2; // Hi-res Retina Scale
+        const bbox = svg.getBoundingClientRect();
+        canvas.width = (bbox.width || 1200) * scale;
+        canvas.height = (bbox.height || 900) * scale;
+        const context = canvas.getContext("2d");
+        
+        // Draw Dark Background
+        context.fillStyle = "#0f172a";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw SVG onto canvas
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        
+        const png = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.href = png;
+        downloadLink.download = "a-nurse-bpmn-workflow.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      };
+      image.src = blobURL;
+    }
+  </script>
+</body>
+</html>
