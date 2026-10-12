@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A-Nurse System Documentation Portal (ศูนย์รวมเอกสารระบบการพยาบาล CCU)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Markdown Parser (Marked.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Mermaid.js for Diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;500;600;700&display=swap');
+    body { font-family: 'Sarabun', sans-serif; background-color: #0b1120; color: #f8fafc; }
+    h1, h2, h3, h4, .font-heading { font-family: 'Prompt', sans-serif; }
+    .prose-dark { color: #cbd5e1; max-width: 100%; }
+    .prose-dark h1 { color: #f8fafc; font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 2px solid #334155; padding-bottom: 0.5rem; font-family: 'Prompt', sans-serif; }
+    .prose-dark h2 { color: #38bdf8; font-size: 1.35rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; border-left: 4px solid #0284c7; padding-left: 0.75rem; font-family: 'Prompt', sans-serif; }
+    .prose-dark h3 { color: #e2e8f0; font-size: 1.15rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; font-family: 'Prompt', sans-serif; }
+    .prose-dark p { margin-bottom: 0.85rem; line-height: 1.75; font-size: 0.95rem; }
+    .prose-dark ul, .prose-dark ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+    .prose-dark li { margin-bottom: 0.35rem; font-size: 0.95rem; }
+    .prose-dark table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.875rem; }
+    .prose-dark th { background-color: #1e293b; color: #38bdf8; padding: 0.75rem; text-align: left; border: 1px solid #334155; }
+    .prose-dark td { padding: 0.75rem; border: 1px solid #334155; background-color: #0f172a; }
+    .prose-dark pre { background-color: #030712; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; border: 1px solid #1e293b; margin: 1rem 0; }
+    .prose-dark code { color: #38bdf8; background-color: #1e293b; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.85em; font-family: monospace; }
+    .prose-dark blockquote { border-left: 4px solid #f59e0b; background-color: rgba(245, 158, 11, 0.08); padding: 0.75rem 1rem; border-radius: 0 0.5rem 0.5rem 0; margin: 1rem 0; color: #fde68a; font-size: 0.9rem; }
+    .tab-active { background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: white !important; font-weight: 700; box-shadow: 0 4px 14px 0 rgba(2, 132, 199, 0.39); }
+    .mermaid svg { max-width: 100% !important; height: auto !important; margin: 1rem auto; display: block; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white text-lg shadow-md shadow-sky-500/20">
+        <i class="fa-solid fa-book-medical"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-sky-400 uppercase tracking-wider">A-Nurse Docs Portal</span>
+          <span class="text-[10px] bg-sky-500/10 text-sky-300 border border-sky-500/20 px-2 py-0.5 rounded-full font-mono">v1.2.0</span>
+        </div>
+        <h1 class="text-base font-bold text-white leading-tight">ศูนย์รวมเอกสารทางเทคนิคและคู่มือระบบ (CCU Siriraj)</h1>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2.5">
+      <a href="../index.html" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all">
+        <i class="fa-solid fa-arrow-left"></i> กลับสู่หน้าแอปพลิเคชัน
+      </a>
+      <a href="../bpmn-diagram.html" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 hover:text-white text-xs font-semibold border border-indigo-500/40 flex items-center gap-1.5 transition-all">
+        <i class="fa-solid fa-diagram-project"></i> ผัง BPMN (PNG/SVG)
+      </a>
+      <button onclick="window.print()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 flex items-center justify-center text-xs border border-slate-700 transition-all" title="พิมพ์หน้านี้">
+        <i class="fa-solid fa-print"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="flex-1 flex flex-col lg:flex-row max-w-7xl w-full mx-auto p-4 lg:p-6 gap-6">
+
+    <!-- Left Sidebar: Document Categories & Navigation -->
+    <aside class="w-full lg:w-72 shrink-0 space-y-4">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 flex items-center justify-between">
+          <span>หมวดหมู่เอกสาร</span>
+          <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">5 เอกสาร</span>
+        </p>
+        <nav class="space-y-1.5" id="navTabs">
+          <button onclick="switchDoc('proposal')" id="tab-proposal" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all tab-active">
+            <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs shrink-0">
+              <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <div class="truncate">
+              <span class="block font-bold">1. Project Proposal</span>
+              <span class="text-[10px] opacity-75 font-normal">ข้อเสนอโครงการพัฒนานวัตกรรม</span>
+            </div>
+          </button>
+
+          <button onclick="switchDoc('requirements')" id="tab-requirements" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
+            <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs shrink-0">
+              <i class="fa-solid fa-list-check"></i>
+            </div>
+            <div class="truncate">
+              <span class="block font-bold">2. Requirements Spec</span>
+              <span class="text-[10px] opacity-75 font-normal">ข้อกำหนดความต้องการระบบ (SRS)</span>
+            </div>
+          </button>
+
+          <button onclick="switchDoc('analysis')" id="tab-analysis" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs shrink-0">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="truncate">
+              <span class="block font-bold">3. System Analysis</span>
+              <span class="text-[10px] opacity-75 font-normal">การวิเคราะห์หน้างาน & ช่องว่างความรู้</span>
+            </div>
+          </button>
+
+          <button onclick="switchDoc('design')" id="tab-design" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
+            <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs shrink-0">
+              <i class="fa-solid fa-compass-drafting"></i>
+            </div>
+            <div class="truncate">
+              <span class="block font-bold">4. System & Architecture Design</span>
+              <span class="text-[10px] opacity-75 font-normal">การออกแบบสถาปัตยกรรม & ฐานข้อมูล</span>
+            </div>
+          </button>
+
+          <button onclick="switchDoc('manual')" id="tab-manual" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 flex items-center gap-3 transition-all">
+            <div class="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs shrink-0">
+              <i class="fa-solid fa-book-open-reader"></i>
+            </div>
+            <div class="truncate">
+              <span class="block font-bold">5. User Manual & Guide</span>
+              <span class="text-[10px] opacity-75 font-normal">คู่มือการใช้งานสำหรับพยาบาล CCU</span>
+            </div>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Quick Summary Widget -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl text-xs space-y-2.5">
+        <h4 class="font-bold text-slate-300 flex items-center gap-1.5 text-xs">
+          <i class="fa-solid fa-circle-info text-sky-400"></i> ข้อมูลโครงการโดยสังเขป
+        </h4>
+        <div class="space-y-1.5 text-[11px] text-slate-400">
+          <div class="flex justify-between py-1 border-b border-slate-800">
+            <span>หน่วยงาน:</span>
+            <strong class="text-slate-200">CCU ตึกนวมินทรบพิตรฯ</strong>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-800">
+            <span>โรงพยาบาล:</span>
+            <strong class="text-slate-200">รพ.ศิริราช</strong>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-800">
+            <span>ระยะเวลา:</span>
+            <strong class="text-slate-200">6 เดือน (พ.ย. 69 - เม.ย. 70)</strong>
+          </div>
+          <div class="flex justify-between py-1">
+            <span>Core Pillars:</span>
+            <strong class="text-sky-300">EKG, ยา, TAVI, Rehab</strong>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Content Area: Markdown Viewer & Documentation View -->
+    <main class="flex-1 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 lg:p-10 shadow-2xl overflow-hidden min-h-[750px] flex flex-col">
+      <!-- Document Banner -->
+      <div class="pb-6 mb-6 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span id="docBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+            PROJECT PROPOSAL
+          </span>
+          <h2 id="docTitle" class="text-xl md:text-2xl font-bold text-white mt-2">
+            1. ข้อเสนอโครงการพัฒนานวัตกรรม (Project Proposal)
+          </h2>
+          <p id="docSubtitle" class="text-xs text-slate-400 mt-1">
+            โครงการระบบผู้ช่วยปัญญาประดิษฐ์สืบค้นความรู้ทางการพยาบาล หอผู้ป่วยอภิบาลโรคหัวใจ (CCU)
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="copyDocContent()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all">
+            <i class="fa-regular fa-copy"></i> คัดลอกเนื้อหา
+          </button>
+        </div>
+      </div>
+
+      <!-- Rendered Article Body -->
+      <article id="docContent" class="prose-dark flex-1">
+        <!-- Rendered by JS -->
+      </article>
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-8 border-t border-slate-800/80 bg-slate-950 py-6 px-4 text-center text-xs text-slate-500">
+    <p>A-Nurse Knowledge Platform &copy; 2026 Cardiac Care Unit (CCU), Faculty of Medicine Siriraj Hospital, Mahidol University.</p>
+    <p class="text-[11px] text-slate-600 mt-1">Designed with zero-hallucination grounded clinical guidelines & mentorship architecture.</p>
+  </footer>
+
+  <!-- Embedded Documents Data & Logic -->
+  <script>
+    const DOCS_DATA = {
+      proposal: {
+        badge: "PROJECT PROPOSAL",
+        title: "1. ข้อเสนอโครงการพัฒนานวัตกรรม (Project Proposal)",
+        subtitle: "โครงการพัฒนาระบบผู้ช่วยปัญญาประดิษฐ์สืบค้นความรู้ทางการพยาบาล หอผู้ป่วย CCU ศิริราช",
+        markdown: `
+# 1. ข้อเสนอโครงการพัฒนานวัตกรรม (Project Proposal)
+
+**ชื่อโครงการ:**
+* **ภาษาไทย:** โครงการพัฒนาระบบผู้ช่วยปัญญาประดิษฐ์สืบค้นความรู้ทางการพยาบาล หอผู้ป่วยอภิบาลโรคหัวใจ (CCU Nurse AI Assistant)
+* **ภาษาอังกฤษ:** Development of an AI-Powered Clinical Knowledge Assistant for Nurses in the Cardiac Care Unit
+
+---
+
+### 1. ข้อมูลโครงการและหน่วยงานที่รับผิดชอบ
+* **หน่วยงาน:** หอผู้ป่วยอภิบาลโรคหัวใจ (CCU) ตึกนวมินทรบพิตร 84 พรรษา ชั้น 7 ฝั่งใต้ ฝ่ายการพยาบาล โรงพยาบาลศิริราช
+* **ระยะเวลาดำเนินโครงการ:** 6 เดือน (1 พฤศจิกายน 2569 – 30 เมษายน 2570)
+* **กลุ่มเป้าหมาย:** พยาบาลวิชาชีพปฏิบัติการในหอผู้ป่วย CCU โดยเฉพาะพยาบาลจบใหม่และอายุงาน 1–2 ปี
+
+---
+
+### 2. หลักการและเหตุผล (Problem Statement & Rationale)
+หอผู้ป่วยอภิบาลโรคหัวใจ (CCU) เป็นหอผู้ป่วยวิกฤตระดับตติยภูมิขั้นสูงที่ให้การดูแลผู้ป่วยโรคหัวใจที่มีอาการรุนแรง ซับซ้อน และเปลี่ยนแปลงรวดเร็ว เช่น Post-TAVI, TEER, Temporary Pacemaker, IABP, ภาวะ Complete Heart Block (CHB) และการบริหารยาช่วยชีวิตความเสี่ยงสูง (High-Alert Drugs)
+
+จากประสบการณ์การปฏิบัติงานจริงของพยาบาลที่มีอายุงาน 1–2 ปี พบปัญหาสำคัญ 3 ประการ:
+1. **ความเร่งด่วนในภาวะวิกฤตกับข้อจำกัดในการสืบค้นข้อมูล:** แนวปฏิบัติการพยาบาล (CPG) มักอยู่ในแฟ้มเอกสารหนาหลายเล่มหรือคอมพิวเตอร์ส่วนกลาง การเปิดค้นหาใช้เวลานานและไม่ทันต่อเหตุการณ์
+2. **ความวิตกกังวลของพยาบาลรุ่นน้อง:** ในช่วงขึ้นเวรบ่าย-ดึก พยาบาลใหม่มักเกิดความกังวล กลัวเกิดความผิดพลาด และต้องคอยถามพยาบาลรุ่นพี่ตลอดเวลา ซึ่งในบางสถานการณ์รุ่นพี่ติดทำหัตถการกู้ชีพผู้ป่วยรายอื่น
+3. **การสูญหายของความรู้เชิงปฏิบัติ (Tacit Knowledge Loss):** เกร็ดความรู้หน้างานข้างเตียงไม่ได้ถูกรวบรวมเป็นระบบ ทำให้เมื่อเปลี่ยนเวรหรือเปลี่ยนรุ่น ความรู้เหล่านั้นตกหล่น
+
+---
+
+### 3. วัตถุประสงค์ของโครงการ (Objectives)
+1. เพื่อพัฒนาระบบสืบค้นความรู้ทางการพยาบาลอัจฉริยะ (A-Nurse) ที่ตอบคำถามอิงตาม CPG มาตรฐานของศิริราชได้แม่นยำภายใน < 3 วินาที
+2. เพื่อเป็นบัดดี้ (Buddy System) ช่วยลดความวิตกกังวลและเพิ่มความมั่นใจในการปฏิบัติงานของพยาบาลรุ่นน้องในเวรวิกฤต
+3. เพื่อสร้างวงจรความรู้พี่สู่น้อง (Mentorship Loop) ให้พี่ In-charge สามารถตรวจรับรองคำตอบและตอบคำถามข้างเตียงได้อย่างมีประสิทธิภาพ
+
+---
+
+### 4. ตัวชี้วัดความสำเร็จ (KPIs & Target)
+* **KPI 1:** พยาบาลสามารถเข้าถึงแนวปฏิบัติการพยาบาลวิกฤตได้ภายใน **3 วินาที** (เดิมใช้เวลาเปิดแฟ้ม 5–15 นาที)
+* **KPI 2:** ระดับความมั่นใจในการปฏิบัติการพยาบาลของพยาบาลใหม่เพิ่มขึ้น **≥ 85%**
+* **KPI 3:** ลดอัตราความคลาดเคลื่อนทางยา (Medication Error) และลดความล่าช้าในการตอบสนองต่อภาวะวิกฤตหัวใจ **≥ 50%**
+* **KPI 4:** ความพึงพอใจของผู้ใช้งานในหอผู้ป่วย CCU **≥ 90%**
+`
+      },
+
+      requirements: {
+        badge: "SOFTWARE REQUIREMENTS SPECIFICATION",
+        title: "2. ข้อกำหนดความต้องการระบบ (Requirements Specification)",
+        subtitle: "Functional, Non-Functional, Security Requirements & Clinical Guardrails",
+        markdown: `
+# 2. ข้อกำหนดความต้องการของระบบ (System Requirements Specification - SRS)
+
+เอกสารฉบับนี้กำหนดรายละเอียดฟังก์ชันการทำงาน มาตรฐานความปลอดภัย และข้อกำหนดทางคลินิกสำหรับแพลตฟอร์ม A-Nurse
+
+---
+
+### 1. Functional Requirements (ความต้องการเชิงหน้าที่)
+
+#### FR-01: Bedside AI Assistant & Vector CPG Retrieval
+* ระบบต้องสามารถรับข้อความคำถามทางคลินิกเป็นภาษาไทย/อังกฤษ และตอบกลับภายใน **3 วินาที**
+* คำตอบต้องสกัดมาจากคลัง CPG 4 เสาหลักของศิริราชเท่านั้น (Zero-Hallucination Guardrail) ได้แก่:
+  1. การแปลผลคลื่นไฟฟ้าหัวใจและภาวะหัวใจเต้นผิดจังหวะ (EKG & Arrhythmia)
+  2. การบริหารยาช่วยชีวิตและยาความเสี่ยงสูง (High-Alert Drugs & Vasopressors/Inotropes)
+  3. การดูแลผู้ป่วยหัตถการหัวใจขั้นสูง (TAVI, TEER, Pacemaker, ACS)
+  4. การฟื้นฟูสภาพหัวใจและแนวปฏิบัติทั่วไป (Cardiac Rehabilitation & General Care)
+
+#### FR-02: Smart Deduplication System (ระบบตรวจจับคำถามซ้ำ)
+* เมื่อพยาบาลส่งคำถามข้างเตียง ระบบต้องประมวลผลความคล้ายคลึงของข้อความ (Cosine / Token Similarity $\ge$ 65%)
+* **กรณีคำถามที่พี่ตอบแล้ว (Approved Duplicate):** แสดงคำตอบที่รับรองแล้วพร้อมเอกสารอ้างอิงทันที (Instant Resolution)
+* **กรณีคำถามที่รอพี่ตอบ (Pending Duplicate):** แจ้งเตือนว่ามีเพื่อนถามแล้ว พร้อมปุ่ม **[🔔 ติดตามคำตอบนี้ด้วย (+1)]** เพื่อเพิ่มค่าน้ำหนักความสำคัญ (Upvotes)
+
+#### FR-03: Senior Mentorship & Bedside Q&A Board
+* มีหน้ากระดานสำหรับพยาบาลรุ่นพี่/In-charge ดูคิวคำถามที่น้องถามข้างเตียง
+* แสดง Badge ตัวเลขคำถามที่รอตรวจแบบเรียลไทม์
+* พยาบาลรุ่นพี่สามารถกดปุ่ม **[✍️ ตอบคำถาม]** เพื่อเขียนคำแนะนำ แนบเอกสาร CPG และกด **"ตอบและรับรองทันที"**
+* ข้อคำถามที่ได้รับการรับรองจะถูกเปลี่ยนสถานะเป็น \`approved\` และบรรจุเข้าคลังสมอง Vector Search โดยอัตโนมัติ
+
+#### FR-04: Tacit Knowledge & Pearl Heart Reactions
+* รองรับการบันทึกเกร็ดความรู้หน้างาน (Tacit Pearls) จากพี่สู่น้อง
+* พยาบาลทุกคนสามารถกดไลก์รูปหัวใจได้แบบ **1 คน 1 สิทธิ์ (1 User 1 Heart Toggle)** พร้อมระบุชื่อผู้ให้หัวใจ
+
+---
+
+### 2. Non-Functional Requirements (ความต้องการเชิงสมรรถนะ)
+* **NFR-01 (Speed & Latency):** ระบบสืบค้นและตอบกลับต้องมีความหน่วงต่ำกว่า **3.0 วินาที** บนสัญญาณ 4G/5G และ Wi-Fi โรงพยาบาล
+* **NFR-02 (Mobile-First Ergonomics):** หน้าจอออกแบบเน้นการใช้งานบนสมาร์ตโฟนมือเดียว (One-Hand Ergonomics) สะดวกต่อการเปิดข้างเตียงผู้ป่วย
+* **NFR-03 (High Availability):** พร้อมใช้งาน 24 ชั่วโมง ตลอด 7 วัน โดยเฉพาะเวรวิกฤต (เวรบ่าย 16.00-24.00 น. และเวรดึก 00.00-08.00 น.)
+* **NFR-04 (Zero Hallucination):** ป้องกันไม่ให้ AI กุข้อมูลเอง หากไม่มีในเอกสาร CPG ระบบต้องตอบอย่างตรงไปตรงมาว่า "ยังไม่มีแนวปฏิบัติรับรอง" พร้อมขึ้นปุ่มส่งถามพี่ In-charge ทันที
+
+---
+
+### 3. Security & Data Privacy (ความปลอดภัยของข้อมูลผู้ป่วย)
+* **SP-01 (No PHI Policy):** ห้ามนำข้อมูลระบุตัวตนผู้ป่วย (Protected Health Information เช่น ชื่อ, HN, เลขบัตรประชาชน) เข้าสู่ระบบ AI เด็ดขาด
+* **SP-02 (Role-Based Access Control):** แยกสิทธิ์ชัดเจนระหว่าง พยาบาลทั่วไป (\`nurse\`), พยาบาลรุ่นพี่/In-charge (\`senior\`), และผู้ดูแลระบบ (\`admin\`)
+`
+      },
+
+      analysis: {
+        badge: "SYSTEM ANALYSIS & WORKFLOW",
+        title: "3. การวิเคราะห์ระบบและหน้างาน (System Analysis)",
+        subtitle: "Clinical Workflow Analysis, Knowledge Gap Identification & Impact Assessment",
+        markdown: `
+# 3. การวิเคราะห์ระบบและหน้างาน (System Analysis)
+
+การวิเคราะห์บริบทการทำงานจริงในหอผู้ป่วยอภิบาลโรคหัวใจ (CCU) ตึกนวมินทรบพิตร 84 พรรษา เพื่อทำความเข้าใจ Root Cause ของปัญหาและออกแบบวิธีแก้ปัญหาที่ตรงจุด
+
+---
+
+### 1. การวิเคราะห์ปัญหาหน้างาน (Current Workflow Pain Points)
+
+\`\`\`
+[สถานการณ์เดิม (As-Is)]:
+คนไข้วิกฤตเปลี่ยนแปลงอาการ (เช่น BP ตก / Arryhthmia) 
+  ↳ พยาบาลใหม่จำขนาดยา / การตั้งเครื่องไม่ได้ 
+  ↳ วิ่งไปหาแฟ้ม CPG ที่เคาน์เตอร์ (ใช้เวลา 5-10 นาที) หรือเดินตามหาพี่ In-charge 
+  ↳ พี่ In-charge กำลัง CPR / ใส่ท่อช่วยหายใจคนไข้อีกเตียง 
+  ↳ เกิดความล่าช้า (Delay) และความวิตกกังวลสูง
+\`\`\`
+
+\`\`\`
+[สถานการณ์ใหม่ (To-Be ด้วย A-Nurse)]:
+คนไข้วิกฤตเปลี่ยนแปลงอาการ 
+  ↳ พยาบาลใหม่เปิดมือถือ ถาม AI Assistant ได้ข้างเตียงทันที (ใช้เวลา < 3 วินาที)
+  ↳ ได้สูตรยา / Check-list สำคัญตาม CPG ศิริราชอย่างถูกต้อง
+  ↳ หากเป็นเคสซับซ้อน กด 'ส่งถามพี่ In-charge' 
+  ↳ ระบบเช็คว่าเคยมีคำตอบหรือเพื่อนถามไว้หรือยัง ป้องกันภาระงานพี่ซ้ำซ้อน
+  ↳ พี่ In-charge ตอบผ่านกระดาน คำตอบถูกบันทึกเป็นคลังความรู้ถาวร
+\`\`\`
+
+---
+
+### 2. การวิเคราะห์ช่องว่างความรู้ (Knowledge Gap Matrix)
+
+| หมวดความรู้ | ประเด็นที่พยาบาลใหม่พบปัญหาบ่อย | ความเสี่ยงทางคลินิก (Clinical Risk) | วิธีที่ระบบ A-Nurse เข้ามาปิดช่องว่าง |
+| :--- | :--- | :--- | :--- |
+| **EKG & Rhythm** | แปลผล CHB, New LBBB, VT/VF ไม่ทัน | แปลผลผิด รักษาช้า อาจเกิด Cardiac Arrest | มีตารางจำแนกจุดเด่นคลื่นไฟฟ้าหัวใจ & Quick Action Plan |
+| **High-Alert Drugs** | การผสมยา Inotropes/Vasopressors, Double-check | สับสนอัตราหยด (drip rate), BP ผันผวนรุนแรง | แสดงอัตราการให้ยา Min-Max, ข้อควรระวังเส้นเลือดดำรั่ว |
+| **TAVI / TEER** | เฝ้าระวัง CHB หลังขยายลิ้นหัวใจ, ดูแลสายสวน | เลือดออก Femoral Hematoma, Stroke เฉียบพลัน | สรุป Post-op 24 ชม. Check-list จาก CPG พว.วิยะดา & พว.พัฒนาพร |
+| **Pacemaker & IABP** | การตั้งค่า Back-up rate, สัญญาณเตือน Alarm | เครื่องไม่ Capture, เกิด Balloon Rupture | รวบรวม Troubleshooting Alarm ขั้นวิกฤตที่ต้องแก้ทันที |
+
+---
+
+### 3. การวิเคราะห์ผลกระทบ (Impact Assessment)
+1. **ผลต่อผู้ป่วย (Patient Safety):** ผู้ป่วยได้รับการพยาบาลที่ถูกต้องตามมาตรฐาน รวดเร็ว ไม่ต้องรอค้นเอกสาร ลดอัตราการเกิดภาวะแทรกซ้อนวิกฤต
+2. **ผลต่อพยาบาลรุ่นน้อง (Junior Staff Retention):** ลดความเครียด (Burnout) จากการขึ้นเวร เพิ่มความมั่นใจในการตัดสินใจเชิงคลินิก
+3. **ผลต่อพยาบาลรุ่นพี่ (Senior Workload):** ลดการถูกขัดจังหวะด้วยคำถามซ้ำ ๆ ได้มากกว่า **70%** ทำให้มีสมาธิดูแลเคสวิกฤตขั้นสูงได้เต็มที่
+`
+      },
+
+      design: {
+        badge: "SYSTEM & ARCHITECTURE DESIGN",
+        title: "4. การออกแบบสถาปัตยกรรมและระบบ (Architecture Design)",
+        subtitle: "System Architecture, Database Schema, Deduplication Engine & BPMN Workflow",
+        markdown: `
+# 4. การออกแบบสถาปัตยกรรมและระบบ (System Architecture & Design)
+
+การออกแบบโครงสร้างทางเทคนิคของระบบ A-Nurse เน้นความเบา (Lightweight), ความปลอดภัย และรองรับการสืบค้นแบบเวกเตอร์ (Vector Embeddings)
+
+---
+
+### 1. สถาปัตยกรรมภาพรวม (System Architecture)
+
+\`\`\`mermaid
+flowchart TD
+    subgraph Client ["📱 Client Tier (Progressive Web Application)"]
+        UI["Tailwind CSS + Vanilla JS UI<br/>(One-Hand Ergonomics)"]
+        Chat["AI Bedside Assistant"]
+        Board["Junior Q&A Board"]
+        Pearls["Tacit Knowledge Wall"]
+    end
+
+    subgraph Logic ["🧠 Application Tier (Serverless & Client Engine)"]
+        DedupEngine["Deduplication Engine<br/>(Token Similarity >= 65%)"]
+        RAGProcessor["Clinical RAG Processor<br/>(Zero-Hallucination Guard)"]
+        RoleGuard["RBAC Authorization Guard"]
+    end
+
+    subgraph DataTier ["🗄️ Knowledge & Database Tier (Supabase / Vector DB)"]
+        CPGStore[("CPG PDF Documents (29 ฉบับ)<br/>Siriraj Clinical Guidelines")]
+        FAQTable[("cpg_faqs Table<br/>Status: Pending / Approved")]
+        VectorIndex[("HNSW Vector Index (768 dims)<br/>Cosine Similarity")]
+        PearlsTable[("tacit_pearls Table<br/>Likes & Pearls Store")]
+    end
+
+    Client <--> Logic
+    Logic <--> DataTier
+\`\`\`
+
+---
+
+### 2. การออกแบบฐานข้อมูล (Database Schema)
+
+\`\`\`sql
+-- 1. ตารางเก็บข้อคำถาม-คำตอบทางการพยาบาล CCU (CPG FAQs)
+CREATE TABLE cpg_faqs (
+    id VARCHAR PRIMARY KEY,
+    cpg_id VARCHAR REFERENCES cpg_catalog(id),
+    category VARCHAR NOT NULL, -- 'EKG', 'Drug', 'TAVI', 'Rehab'
+    question TEXT NOT NULL,
+    quick_answer TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    reference_doc TEXT NOT NULL,
+    asked_by VARCHAR,
+    asked_by_name VARCHAR,
+    asked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    status VARCHAR DEFAULT 'pending', -- 'pending', 'approved', 'rejected'
+    reviewed_by VARCHAR,
+    reviewed_at TIMESTAMP WITH TIME ZONE,
+    followers TEXT[] DEFAULT '{}', -- รายชื่อ User ที่กดติดตามคำถามนี้
+    upvotes INT DEFAULT 1,
+    embedding VECTOR(768) -- Vector Embedding สำหรับค้นหาความหมาย
+);
+
+-- สร้างดัชนีแบบ HNSW เพื่อการค้นหา Vector ที่รวดเร็วในระดับ Millisecond
+CREATE INDEX idx_cpg_faqs_embedding ON cpg_faqs 
+USING hnsw (embedding vector_cosine_ops);
+\`\`\`
+
+---
+
+### 3. อัลกอริทึมการตรวจจับคำถามซ้ำ (Deduplication Logic)
+ระบบใช้ฟังก์ชันคำนวณความคล้ายคลึงระหว่างข้อความคำถามใหม่ ($Q_{new}$) กับคำถามในคลัง ($Q_{exist}$):
+
+$$Similarity = \\frac{2 \\times |Tokens(Q_{new}) \\cap Tokens(Q_{exist})|}{|Tokens(Q_{new})| + |Tokens(Q_{exist})|}$$
+
+* **ถ้า $Similarity \\ge 0.65$ และสถานะเป็น \`approved\`:** ส่งผลลัพธ์ CPG ที่รับรองแล้วทันที (Instant Resolution)
+* **ถ้า $Similarity \\ge 0.65$ และสถานะเป็น \`pending\`:** เสนอให้กด **\`+1 ติดตาม\`** เพื่อเพิ่มความสำคัญในคิว โดยไม่สร้างการ์ดคำถามซ้ำ
+* **ถ้า $Similarity < 0.65$:** บรรจุเข้าคิวเป็นคำถามใหม่ พร้อมส่งแจ้งเตือนเข้ากระดานพยาบาลรุ่นพี่
+`
+      },
+
+      manual: {
+        badge: "USER & OPERATIONAL MANUAL",
+        title: "5. คู่มือการใช้งานระบบ (User Manual & Guidelines)",
+        subtitle: "คู่มือการปฏิบัติงานสำหรับพยาบาลรุ่นน้อง และ พยาบาลรุ่นพี่/In-charge CCU",
+        markdown: `
+# 5. คู่มือการใช้งานระบบ (User Manual & Operational Guide)
+
+คู่มือฉบับนี้อธิบายขั้นตอนการใช้งานระบบ A-Nurse สำหรับบุคลากรทางการพยาบาลทุกระดับ
+
+---
+
+### 1. สำหรับพยาบาลรุ่นน้อง (Junior Nurse Guide)
+
+#### 1.1 การค้นหาแนวปฏิบัติและถาม AI ข้างเตียง
+1. เข้าสู่ระบบ A-Nurse ผ่านเว็บเบราว์เซอร์บนสมาร์ตโฟน
+2. เลือกแท็บ **"ถามตอบ AI"** จากแถบเมนูด้านล่าง
+3. พิมพ์ข้อสงสัยทางคลินิก เช่น:
+   * *"คนไข้ Post-TAVI 24 ชม. แรก ต้องเฝ้าระวังอะไรเป็นพิเศษ?"*
+   * *"สูตรผสมยา Norepinephrine ในคนไข้ช็อก ให้ทางไหนได้บ้าง?"*
+4. ระบบจะแสดงแนวปฏิบัติสำคัญ สรุปเป็นข้อ ๆ พร้อมระบุเอกสารอ้างอิง CPG ให้ทันที
+
+#### 1.2 การส่งคำถามหาพี่ In-charge เมื่อ AI ยังไม่มีคำตอบ
+1. หาก AI ไม่มีข้อมูลตรงกับคำถาม จะปรากฏปุ่ม **[ส่งคำถามให้พี่ In-charge]**
+2. กดปุ่มเพื่อส่งคำถามเข้าสู่กระดาน
+3. **หากขึ้นป๊อปอัป "พี่ In-charge เคยตอบไว้แล้ว":** ให้อ่านคำตอบที่พี่เคยเฉลยไว้ได้ทันที
+4. **หากขึ้นป๊อปอัป "มีเพื่อนพยาบาลถามคำถามนี้แล้ว":** ให้กดปุ่ม **[🔔 ติดตามคำตอบนี้ด้วย (+1)]** เพื่อรอรับคำตอบพร้อมกันเมื่อพี่ In-charge ตอบ
+
+---
+
+### 2. สำหรับพยาบาลรุ่นพี่ / In-charge CCU (Senior Mentor Guide)
+
+#### 2.1 การตรวจสอบคำถามข้างเตียงจากน้อง
+1. สังเกตตัวเลขแจ้งเตือนสีส้ม (Badge) บนปุ่ม **[กระดานถามพี่]** ที่หน้า AI Assistant หรือแท็บ **"ตรวจ FAQ"**
+2. กดเปิด **"กระดานคำถามข้างเตียงจากรุ่นน้อง"**
+3. คำถามที่มีน้องกดติดตามหลายคนจะแสดงไอคอนกระดิ่งพร้อมจำนวนผู้รอติดตาม ให้ความสำคัญกับคำถามนี้เป็นลำดับแรก
+
+#### 2.2 การตอบคำถามและรับรองเข้าคลังความรู้
+1. กดปุ่ม **[✍️ ตอบคำถามนี้]** ที่การ์ดคำถาม
+2. ตรวจสอบข้อคำถาม และพิมพ์คำแนะนำทางการพยาบาลที่ถูกต้องในช่องคำตอบ
+3. เลือก CPG ที่เกี่ยวข้อง (เช่น CPG TAVI ศิริราช) และระบุเอกสารอ้างอิง
+4. กดปุ่ม **[ตอบและรับรองเข้าคลังทันที]**
+5. ระบบจะขึ้นสถานะ **"พี่ตอบและรับรองแล้ว"** ส่งคำตอบกลับไปให้น้องทุกคน และบันทึกเข้าสมอง AI ตลอดไป
+
+---
+
+### 3. การแลกเปลี่ยนเกร็ดความรู้ (Tacit Knowledge Pearls)
+1. ไปที่แท็บ **"พี่สู่น้อง"** เพื่ออ่านเกร็ดการดูแลคนไข้จากประสบการณ์จริงของพี่ ๆ
+2. กดรูปหัวใจ **❤️** เพื่อให้กำลังใจและยืนยันว่าเกร็ดความรู้นี้มีประโยชน์ (1 คน 1 หัวใจ)
+3. หากรุ่นพี่ต้องการเพิ่มเกร็ดความรู้ใหม่ สามารถกดปุ่ม **[+ เพิ่มเกร็ดความรู้]** ได้ตลอดเวลา
+`
+      }
+    };
+
+    function renderDoc(key) {
+      const doc = DOCS_DATA[key];
+      if (!doc) return;
+
+      document.getElementById('docBadge').innerText = doc.badge;
+      document.getElementById('docTitle').innerText = doc.title;
+      document.getElementById('docSubtitle').innerText = doc.subtitle;
+      
+      const contentEl = document.getElementById('docContent');
+      contentEl.innerHTML = marked.parse(doc.markdown);
+
+      // Re-initialize mermaid diagrams inside markdown
+      setTimeout(() => {
+        mermaid.init(undefined, contentEl.querySelectorAll('.language-mermaid, .mermaid'));
+      }, 50);
+    }
+
+    function switchDoc(key) {
+      document.querySelectorAll('#navTabs button').forEach(btn => {
+        btn.classList.remove('tab-active');
+      });
+      const activeBtn = document.getElementById('tab-' + key);
+      if (activeBtn) activeBtn.classList.add('tab-active');
+
+      renderDoc(key);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyDocContent() {
+      const activeTab = document.querySelector('#navTabs button.tab-active');
+      const docKey = activeTab ? activeTab.id.replace('tab-', '') : 'proposal';
+      const doc = DOCS_DATA[docKey];
+      if (doc) {
+        navigator.clipboard.writeText(doc.markdown).then(() => {
+          alert('คัดลอกเนื้อหา Markdown ของเอกสารนี้เรียบร้อยแล้วครับ!');
+        });
+      }
+    }
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+      renderDoc('proposal');
+    });
+  </script>
+</body>
+</html>
