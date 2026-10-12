@@ -621,20 +621,20 @@
 
         <!-- SECTION A: USER MANAGEMENT -->
         <div id="adminSectionUsers" class="space-y-3">
-          <!-- Summary user counts -->
+          <!-- Summary user counts (Clickable Filters) -->
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
-              <div class="text-[10px] text-slate-400">ผู้ใช้ทั้งหมด</div>
-              <div id="statTotalUsers" class="text-base font-bold text-slate-800">0</div>
-            </div>
-            <div class="bg-white p-2.5 rounded-xl border border-amber-200 bg-amber-50/40">
+            <button type="button" onclick="filterAdminUserStatus('all')" id="userStatCard-all" class="user-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-slate-800 ring-offset-1">
+              <div class="text-[10px] text-slate-300 font-medium">ผู้ใช้ทั้งหมด</div>
+              <div id="statTotalUsers" class="text-base font-bold text-white">0</div>
+            </button>
+            <button type="button" onclick="filterAdminUserStatus('pending')" id="userStatCard-pending" class="user-stat-btn p-2.5 rounded-xl border border-amber-200 bg-white text-amber-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-amber-50 active:scale-95">
               <div class="text-[10px] text-amber-700 font-medium">รออนุมัติ</div>
               <div id="statPendingUsers" class="text-base font-bold text-amber-600">0</div>
-            </div>
-            <div class="bg-white p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/40">
+            </button>
+            <button type="button" onclick="filterAdminUserStatus('active')" id="userStatCard-active" class="user-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-white text-emerald-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 active:scale-95">
               <div class="text-[10px] text-emerald-700 font-medium">อนุมัติแล้ว</div>
               <div id="statActiveUsers" class="text-base font-bold text-emerald-600">0</div>
-            </div>
+            </button>
           </div>
 
           <!-- Search Bar (ผู้ใช้งาน) -->
@@ -660,20 +660,20 @@
 
         <!-- SECTION B: KM MANAGEMENT (จัดการคลังความรู้: เพิ่ม ลบ แก้ไข อนุมัติ) -->
         <div id="adminSectionKm" class="space-y-3 hidden">
-          <!-- Quick Summary Stats for KM -->
+          <!-- Quick Summary Stats for KM (Clickable Filters) -->
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
-              <div class="text-[10px] text-slate-400">CPG ทั้งหมด</div>
-              <div id="statTotalKm" class="text-base font-bold text-slate-800">29</div>
-            </div>
-            <div class="bg-white p-2.5 rounded-xl border border-amber-200 bg-amber-50/40">
+            <button type="button" onclick="filterAdminKmStatus('all')" id="kmStatCard-all" class="km-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-slate-800 ring-offset-1">
+              <div class="text-[10px] text-slate-300 font-medium">CPG ทั้งหมด</div>
+              <div id="statTotalKm" class="text-base font-bold text-white">29</div>
+            </button>
+            <button type="button" onclick="filterAdminKmStatus('pending')" id="kmStatCard-pending" class="km-stat-btn p-2.5 rounded-xl border border-amber-200 bg-white text-amber-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-amber-50 active:scale-95">
               <div class="text-[10px] text-amber-700 font-medium">รออนุมัติ CPG</div>
               <div id="statPendingKm" class="text-base font-bold text-amber-600">0</div>
-            </div>
-            <div class="bg-white p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/40">
+            </button>
+            <button type="button" onclick="filterAdminKmStatus('approved')" id="kmStatCard-approved" class="km-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-white text-emerald-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 active:scale-95">
               <div class="text-[10px] text-emerald-700 font-medium">เผยแพร่แล้ว</div>
               <div id="statApprovedKm" class="text-base font-bold text-emerald-600">29</div>
-            </div>
+            </button>
           </div>
 
           <!-- Search Bar (จัดการคลัง CPG) -->
@@ -2035,6 +2035,16 @@
       const btnKm = document.getElementById('adminTabKm');
       const btnPearls = document.getElementById('adminTabPearls');
       const btnFaqs = document.getElementById('adminTabFaqs');
+
+      if (subtab === 'users') {
+        renderAdminUserList();
+      } else if (subtab === 'km') {
+        renderManageCatalog();
+      } else if (subtab === 'faqs') {
+        renderAdminFaqList();
+      } else if (subtab === 'pearls') {
+        renderAdminPearlsList();
+      }
       const createKmBtn = document.getElementById('adminCreateKmBtn');
       const createFaqBtn = document.getElementById('adminCreateFaqBtn');
       const createPearlBtn = document.getElementById('adminCreatePearlBtn');
@@ -2103,10 +2113,68 @@
       }
     }
 
-    function updateUserStats() {
-      const total = currentUsers.length;
-      const pending = currentUsers.filter(u => u.status === 'pending').length;
-      const active = currentUsers.filter(u => u.status === 'active').length;
+    let currentAdminUserFilter = 'all';
+
+    function resetUserStatCardStyles(status) {
+      const cardAll = document.getElementById('userStatCard-all');
+      const cardPending = document.getElementById('userStatCard-pending');
+      const cardActive = document.getElementById('userStatCard-active');
+
+      if (cardAll) {
+        cardAll.className = 'user-stat-btn p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 active:scale-95';
+        const num = cardAll.querySelector('#statTotalUsers');
+        const txt = cardAll.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-slate-800';
+        if (txt) txt.className = 'text-[10px] text-slate-400 font-medium';
+      }
+      if (cardPending) {
+        cardPending.className = 'user-stat-btn p-2.5 rounded-xl border border-amber-200 bg-white text-amber-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-amber-50 active:scale-95';
+        const num = cardPending.querySelector('#statPendingUsers');
+        const txt = cardPending.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-amber-600';
+        if (txt) txt.className = 'text-[10px] text-amber-700 font-medium';
+      }
+      if (cardActive) {
+        cardActive.className = 'user-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-white text-emerald-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 active:scale-95';
+        const num = cardActive.querySelector('#statActiveUsers');
+        const txt = cardActive.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-emerald-600';
+        if (txt) txt.className = 'text-[10px] text-emerald-700 font-medium';
+      }
+
+      // Apply active style
+      if (status === 'all' && cardAll) {
+        cardAll.className = 'user-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-slate-800 ring-offset-1';
+        const num = cardAll.querySelector('#statTotalUsers');
+        const txt = cardAll.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-slate-300 font-medium';
+      } else if (status === 'pending' && cardPending) {
+        cardPending.className = 'user-stat-btn p-2.5 rounded-xl border border-amber-400 bg-amber-500 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-amber-500 ring-offset-1';
+        const num = cardPending.querySelector('#statPendingUsers');
+        const txt = cardPending.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-amber-100 font-medium';
+      } else if (status === 'active' && cardActive) {
+        cardActive.className = 'user-stat-btn p-2.5 rounded-xl border border-emerald-400 bg-emerald-600 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-emerald-600 ring-offset-1';
+        const num = cardActive.querySelector('#statActiveUsers');
+        const txt = cardActive.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-emerald-100 font-medium';
+      }
+    }
+
+    function filterAdminUserStatus(status) {
+      currentAdminUserFilter = status;
+      resetUserStatCardStyles(status);
+      renderAdminUserList();
+    }
+
+    function updateUserStats(customList) {
+      const list = customList || currentUsers;
+      const total = list.length;
+      const pending = list.filter(u => u.status === 'pending').length;
+      const active = list.filter(u => u.status === 'active').length;
 
       const elTotal = document.getElementById('statTotalUsers');
       const elPending = document.getElementById('statPendingUsers');
@@ -2132,18 +2200,40 @@
       }
     }
 
-    function renderAdminUserList(list) {
-      const usersToRender = list || currentUsers;
+    function renderAdminUserList(customList) {
       const container = document.getElementById('adminUserListContainer');
       if (!container) return;
       container.innerHTML = '';
 
-      if (usersToRender.length === 0) {
-        container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs">ไม่พบผู้ใช้งานที่ตรงกับการค้นหา</div>';
+      const searchInput = document.getElementById('adminUserSearch');
+      const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      let baseList = customList || currentUsers;
+      if (q) {
+        baseList = baseList.filter(u => 
+          (u.name || '').toLowerCase().includes(q) ||
+          (u.user || '').toLowerCase().includes(q) ||
+          (u.exp || '').toLowerCase().includes(q) ||
+          (u.role || '').toLowerCase().includes(q)
+        );
+      }
+
+      // Update stat counters based on search
+      updateUserStats(baseList);
+
+      let list = baseList;
+      if (currentAdminUserFilter === 'pending') {
+        list = list.filter(u => u.status === 'pending');
+      } else if (currentAdminUserFilter === 'active') {
+        list = list.filter(u => u.status === 'active');
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs col-span-full bg-white rounded-2xl border border-slate-200">ไม่พบผู้ใช้งานในเงื่อนไขนี้</div>';
         return;
       }
 
-      usersToRender.forEach(u => {
+      list.forEach(u => {
         const isPending = u.status === 'pending';
         const isSuspended = u.status === 'suspended';
         const isSelf = currentLoggedUser && (currentLoggedUser.id === u.id || currentLoggedUser.user === u.user);
@@ -2321,9 +2411,67 @@
       updateJuniorPendingBadge();
     });
 
-    function updateCounts() {
-      const total = currentCatalog.length;
-      const pendingKm = currentCatalog.filter(k => k.status === 'pending').length;
+    let currentAdminKmFilter = 'all';
+
+    function resetKmStatCardStyles(status) {
+      const cardAll = document.getElementById('kmStatCard-all');
+      const cardPending = document.getElementById('kmStatCard-pending');
+      const cardApproved = document.getElementById('kmStatCard-approved');
+
+      if (cardAll) {
+        cardAll.className = 'km-stat-btn p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 active:scale-95';
+        const num = cardAll.querySelector('#statTotalKm');
+        const txt = cardAll.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-slate-800';
+        if (txt) txt.className = 'text-[10px] text-slate-400 font-medium';
+      }
+      if (cardPending) {
+        cardPending.className = 'km-stat-btn p-2.5 rounded-xl border border-amber-200 bg-white text-amber-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-amber-50 active:scale-95';
+        const num = cardPending.querySelector('#statPendingKm');
+        const txt = cardPending.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-amber-600';
+        if (txt) txt.className = 'text-[10px] text-amber-700 font-medium';
+      }
+      if (cardApproved) {
+        cardApproved.className = 'km-stat-btn p-2.5 rounded-xl border border-emerald-200 bg-white text-emerald-800 transition-all flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 active:scale-95';
+        const num = cardApproved.querySelector('#statApprovedKm');
+        const txt = cardApproved.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-emerald-600';
+        if (txt) txt.className = 'text-[10px] text-emerald-700 font-medium';
+      }
+
+      // Apply active style
+      if (status === 'all' && cardAll) {
+        cardAll.className = 'km-stat-btn p-2.5 rounded-xl border border-slate-800 bg-slate-800 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-slate-800 ring-offset-1';
+        const num = cardAll.querySelector('#statTotalKm');
+        const txt = cardAll.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-slate-300 font-medium';
+      } else if (status === 'pending' && cardPending) {
+        cardPending.className = 'km-stat-btn p-2.5 rounded-xl border border-amber-400 bg-amber-500 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-amber-500 ring-offset-1';
+        const num = cardPending.querySelector('#statPendingKm');
+        const txt = cardPending.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-amber-100 font-medium';
+      } else if (status === 'approved' && cardApproved) {
+        cardApproved.className = 'km-stat-btn p-2.5 rounded-xl border border-emerald-400 bg-emerald-600 text-white shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 ring-2 ring-emerald-600 ring-offset-1';
+        const num = cardApproved.querySelector('#statApprovedKm');
+        const txt = cardApproved.querySelector('div:first-child');
+        if (num) num.className = 'text-base font-bold text-white';
+        if (txt) txt.className = 'text-[10px] text-emerald-100 font-medium';
+      }
+    }
+
+    function filterAdminKmStatus(status) {
+      currentAdminKmFilter = status;
+      resetKmStatCardStyles(status);
+      renderManageCatalog();
+    }
+
+    function updateCounts(customList) {
+      const baseKmList = customList || currentCatalog;
+      const total = baseKmList.length;
+      const pendingKm = baseKmList.filter(k => k.status === 'pending').length;
       const approvedKm = total - pendingKm;
 
       const countEl = document.getElementById('catalogCount');
@@ -3354,14 +3502,42 @@
     }
 
     // Render Manage Catalog Console (Admin: เพิ่ม ลบ แก้ไข อนุมัติ + Cascading FAQ)
-    function renderManageCatalog(items) {
+    function renderManageCatalog(customList) {
       const container = document.getElementById('manageListContainer');
       if (!container) return;
       container.innerHTML = '';
 
+      const searchInput = document.getElementById('adminKmSearch');
+      const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      let baseList = customList || currentCatalog;
+      if (q) {
+        baseList = baseList.filter(k => 
+          k.title.toLowerCase().includes(q) || 
+          k.desc.toLowerCase().includes(q) ||
+          k.category.toLowerCase().includes(q) ||
+          k.author.toLowerCase().includes(q)
+        );
+      }
+
+      // Update KM stat counts based on search query
+      updateCounts(baseList);
+
+      let list = baseList;
+      if (currentAdminKmFilter === 'pending') {
+        list = list.filter(k => k.status === 'pending');
+      } else if (currentAdminKmFilter === 'approved') {
+        list = list.filter(k => k.status !== 'pending');
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs col-span-full bg-white rounded-2xl border border-slate-200">ไม่พบรายการ CPG ในเงื่อนไขนี้</div>';
+        return;
+      }
+
       const allFaqs = getFaqList();
 
-      items.forEach(item => {
+      list.forEach(item => {
         const isApproved = item.status !== 'pending';
         // คำนวณสถานะ FAQ ที่สังกัด CPG นี้
         const linkedFaqs = allFaqs.filter(f => f.cpgId === item.id);
@@ -3936,18 +4112,7 @@
       } else {
         clearBtn.classList.add('hidden');
       }
-
-      if (!q) {
-        renderAdminUserListFiltered(currentUsers);
-        return;
-      }
-      const filtered = currentUsers.filter(u => 
-        (u.name || '').toLowerCase().includes(q) ||
-        (u.user || '').toLowerCase().includes(q) ||
-        (u.exp || '').toLowerCase().includes(q) ||
-        (u.role || '').toLowerCase().includes(q)
-      );
-      renderAdminUserListFiltered(filtered);
+      renderAdminUserList();
     }
 
     function clearAdminUserSearch() {
@@ -3965,24 +4130,13 @@
       } else {
         clearBtn.classList.add('hidden');
       }
-
-      if (!q) {
-        renderManageCatalog(currentCatalog);
-        return;
-      }
-      const filtered = currentCatalog.filter(k => 
-        k.title.toLowerCase().includes(q) || 
-        k.desc.toLowerCase().includes(q) ||
-        k.category.toLowerCase().includes(q) ||
-        k.author.toLowerCase().includes(q)
-      );
-      renderManageCatalog(filtered);
+      renderManageCatalog();
     }
 
     function clearAdminKmSearch() {
       document.getElementById('adminKmSearch').value = '';
       document.getElementById('clearAdminKmBtn').classList.add('hidden');
-      renderManageCatalog(currentCatalog);
+      renderManageCatalog();
     }
 
     // Search in Admin Section: Pearls
