@@ -308,45 +308,73 @@
   <!-- ================================================= -->
   <!-- SCREEN 2: MAIN APP INTERFACE                      -->
   <!-- ================================================= -->
-  <div id="appContainer" class="hidden min-h-screen pb-[78px]">
+  <div id="appContainer" class="hidden min-h-screen pb-[78px] lg:pb-8 bg-slate-100">
 
-    <!-- TOP APP BAR -->
+    <!-- TOP APP BAR (Responsive: Mobile & Tablet/Desktop) -->
     <header class="bg-brand-700 text-white sticky top-0 z-40 shadow-md safe-top">
-      <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-        <div onclick="switchTab('home')" class="flex items-center gap-2.5 cursor-pointer active:opacity-80 transition-opacity" title="กลับสู่หน้าหลัก">
-          <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-rose-300 border border-white/20 shadow-inner">
-            <i class="fa-solid fa-heart-pulse text-lg animate-pulse"></i>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between">
+        <!-- Left: Brand Logo & Title -->
+        <div onclick="switchTab('home')" class="flex items-center gap-3 cursor-pointer active:opacity-80 transition-opacity" title="กลับสู่หน้าหลัก">
+          <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-rose-300 border border-white/20 shadow-inner shrink-0">
+            <i class="fa-solid fa-heart-pulse text-xl animate-pulse"></i>
           </div>
           <div>
-            <div class="flex items-center gap-1.5 leading-none">
-              <span class="font-heading font-bold text-base tracking-tight">CCU Siriraj Guide</span>
-              <span class="text-[10px] bg-rose-500/90 text-white font-medium px-1.5 py-0.5 rounded">ศิริราช</span>
+            <div class="flex items-center gap-2 leading-none">
+              <span class="font-heading font-bold text-base sm:text-lg tracking-tight">CCU Siriraj Guide</span>
+              <span class="text-[10px] bg-rose-500 text-white font-medium px-2 py-0.5 rounded shadow-xs">ศิริราช</span>
             </div>
-            <p class="text-[11px] text-sky-200 mt-0.5">คลังความรู้พยาบาลวิกฤตหัวใจ • <span id="displayUser" class="font-semibold text-white">nurse</span></p>
+            <p class="text-[11px] sm:text-xs text-sky-200 mt-1">คลังความรู้พยาบาลวิกฤตหัวใจ • ผู้ใช้: <span id="displayUser" class="font-bold text-white">nurse</span></p>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5">
+        <!-- Center: Desktop Navigation Bar (md:flex) -->
+        <nav class="hidden lg:flex items-center gap-1 bg-brand-800/70 p-1.5 rounded-2xl border border-white/10 text-xs font-semibold shadow-inner whitespace-nowrap">
+          <button onclick="switchTab('home')" id="desktop-nav-home" class="desktop-nav-item px-3.5 py-1.5 rounded-xl text-white bg-white/20 shadow-xs flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-house"></i>
+            <span>หน้าหลัก</span>
+          </button>
+          <button onclick="switchTab('ai')" id="desktop-nav-ai" class="desktop-nav-item px-3.5 py-1.5 rounded-xl text-sky-200 hover:text-white hover:bg-white/10 flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-robot"></i>
+            <span>ถาม AI</span>
+          </button>
+          <button onclick="switchTab('knowledge')" id="desktop-nav-knowledge" class="desktop-nav-item px-3.5 py-1.5 rounded-xl text-sky-200 hover:text-white hover:bg-white/10 flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-book-medical"></i>
+            <span>คลังความรู้</span>
+          </button>
+          <button onclick="switchTab('tacit')" id="desktop-nav-tacit" class="desktop-nav-item px-3.5 py-1.5 rounded-xl text-sky-200 hover:text-white hover:bg-white/10 flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>พี่สู่น้อง</span>
+          </button>
+          <button onclick="switchTab('manage')" id="desktop-nav-manage" class="desktop-nav-item hidden px-3.5 py-1.5 rounded-xl text-purple-200 hover:text-white hover:bg-white/10 items-center gap-1.5 transition-all relative">
+            <i class="fa-solid fa-users-gear text-purple-300"></i>
+            <span>Admin</span>
+            <span id="desktopNavPendingBadge" class="hidden absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500"></span>
+          </button>
+        </nav>
+
+        <!-- Right: Actions (Docs, SOS, Logout) -->
+        <div class="flex items-center gap-2">
           <!-- Documentation Portal Button -->
-          <a href="docs_portal/index.html" target="_blank" title="เปิดศูนย์รวมเอกสารโครงการ (Proposal, Req, Analysis, Design, Manual)" class="h-8 px-2 rounded-lg bg-sky-800/80 hover:bg-sky-600 text-sky-100 flex items-center gap-1 text-[11px] font-semibold border border-sky-400/30 transition-all">
+          <a href="docs_portal/index.html" target="_blank" title="เปิดศูนย์รวมเอกสารโครงการ (Proposal, Req, Analysis, Design, Manual)" class="h-9 px-3 rounded-xl bg-sky-800 hover:bg-sky-600 text-sky-100 flex items-center gap-1.5 text-xs font-semibold border border-sky-400/30 shadow-xs transition-all">
             <i class="fa-solid fa-book-bookmark text-amber-300"></i>
-            <span class="hidden sm:inline">เอกสาร</span>
+            <span class="hidden sm:inline">ศูนย์เอกสารคู่มือ</span>
           </a>
           <!-- SOS Emergency button -->
-          <button onclick="switchTab('emergency')" class="bg-rose-600 active:bg-rose-700 text-white text-xs font-bold px-2 py-1.5 rounded-lg shadow flex items-center gap-1 border border-rose-400/40">
-            <i class="fa-solid fa-bolt text-amber-300"></i>
-            <span>วิกฤต</span>
+          <button onclick="switchTab('emergency')" class="h-9 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white text-xs font-bold px-2.5 sm:px-3 rounded-xl shadow flex items-center gap-1.5 border border-rose-400/40 transition-all shrink-0">
+            <i class="fa-solid fa-bolt text-amber-300 animate-pulse"></i>
+            <span class="hidden sm:inline">วิกฤตข้างเตียง</span>
+            <span class="sm:hidden">วิกฤต</span>
           </button>
           <!-- Logout Button -->
-          <button onclick="handleLogout()" title="ออกจากระบบ" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs">
+          <button onclick="handleLogout()" title="ออกจากระบบ" class="h-9 w-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs transition-all">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
       </div>
     </header>
 
-    <!-- APP CONTENT CONTAINER -->
-    <main class="max-w-md mx-auto px-4 pt-3 pb-6">
+    <!-- APP CONTENT CONTAINER (Responsive: max-w-7xl) -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8">
 
       <!-- ================================================= -->
       <!-- VIEW 1: HOME (หน้าหลัก / Dashboard & Quick Search)-->
@@ -399,7 +427,7 @@
         </button>
 
         <!-- 4 Main Proposal Categories Grid (ตรงตามขอบเขต Proposal 100%) -->
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           
           <!-- Category 1: Emergency & Arrhythmia -->
           <div onclick="filterCategoryGroup('emergency_ekg')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-rose-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
@@ -533,7 +561,7 @@
           </button>
         </div>
 
-        <div id="knowledgeListContainer" class="space-y-3">
+        <div id="knowledgeListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
           <!-- Dynamically populated via JS -->
         </div>
       </div>
@@ -625,7 +653,7 @@
           </div>
 
           <!-- User List Container -->
-          <div id="adminUserListContainer" class="space-y-2.5">
+          <div id="adminUserListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             <!-- Rendered by JS -->
           </div>
         </div>
@@ -664,7 +692,7 @@
           </div>
 
           <!-- Manage List Table / Cards -->
-          <div class="space-y-3" id="manageListContainer">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="manageListContainer">
             <!-- Dynamically rendered manage cards with approve/edit/delete buttons -->
           </div>
         </div>
@@ -699,7 +727,7 @@
           </div>
 
           <!-- Manage Pearls List -->
-          <div class="space-y-2.5" id="adminPearlsListContainer">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="adminPearlsListContainer">
             <!-- Rendered by JS -->
           </div>
         </div>
@@ -738,7 +766,7 @@
           </div>
 
           <!-- FAQ Verification List Container -->
-          <div class="space-y-3" id="adminFaqListContainer">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="adminFaqListContainer">
             <!-- Rendered by JS -->
           </div>
         </div>
@@ -781,7 +809,7 @@
           </button>
         </div>
 
-        <div class="space-y-3" id="tacitFeed">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="tacitFeed">
           <!-- Rendered dynamically -->
         </div>
       </div>
@@ -803,6 +831,7 @@
           </div>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
         <!-- Action Card 1: VT/VF -->
         <div class="bg-white p-4 rounded-xl border-2 border-rose-300 shadow-sm space-y-2">
           <h3 class="font-heading font-bold text-sm text-rose-800 flex items-center gap-1.5">
@@ -844,13 +873,14 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
 
       <!-- ================================================= -->
       <!-- MODAL 1: VIEW DETAILS MODAL                       -->
       <!-- ================================================= -->
-      <div id="topicModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[88vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="topicModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[88vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <h3 id="modalTitle" class="font-heading font-bold text-base text-slate-800">หัวข้อแนวปฏิบัติ</h3>
             <button onclick="closeTopicModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
@@ -866,8 +896,8 @@
       <!-- ================================================= -->
       <!-- MODAL 2: CREATE / EDIT KNOWLEDGE MODAL (หน้าสร้างความรู้) -->
       <!-- ================================================= -->
-      <div id="createKnowledgeModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="createKnowledgeModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <h3 id="formModalTitle" class="font-heading font-bold text-base text-slate-800">สร้างองค์ความรู้ใหม่</h3>
             <button onclick="closeCreateKnowledgeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
@@ -969,8 +999,8 @@
       <!-- ================================================= -->
       <!-- MODAL: แก้ไข/สร้างข้อคำถาม-คำตอบ (Clinical FAQ Form)-->
       <!-- ================================================= -->
-      <div id="faqFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="faqFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">
@@ -1055,8 +1085,8 @@
       <!-- ================================================= -->
       <!-- MODAL: AI EXTRACT FAQS FROM CPG (ผลลัพธ์สกัด FAQ ด้วย AI) -->
       <!-- ================================================= -->
-      <div id="aiExtractFaqModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="aiExtractFaqModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs">
@@ -1106,8 +1136,8 @@
       <!-- ================================================= -->
       <!-- MODAL: กระดานคำถามจากรุ่นน้อง (Junior Q&A Board)   -->
       <!-- ================================================= -->
-      <div id="juniorQuestionsBoardModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="juniorQuestionsBoardModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shadow-2xs">
@@ -1146,8 +1176,8 @@
       <!-- ================================================= -->
       <!-- MODAL: ตอบคำถามรุ่นน้อง (Senior Answer Modal)     -->
       <!-- ================================================= -->
-      <div id="answerJuniorFaqModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="answerJuniorFaqModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm shadow-2xs">
@@ -1212,8 +1242,8 @@
       <!-- ================================================= -->
       <!-- MODAL: ตรวจจับคำถามซ้ำ (Junior Duplicate Notice)  -->
       <!-- ================================================= -->
-      <div id="juniorDuplicateNoticeModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="juniorDuplicateNoticeModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div id="duplicateModalIconBox" class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shadow-2xs">
@@ -1244,8 +1274,8 @@
       <!-- ================================================= -->
       <!-- MODAL: เพิ่ม/แก้ไขเกร็ดความรู้ (Tacit Pearl Form)  -->
       <!-- ================================================= -->
-      <div id="tacitFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="tacitFormModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs">
@@ -1293,8 +1323,8 @@
       <!-- ================================================= -->
       <!-- MODAL: EDIT USER ROLE (จัดการและแก้ไขสิทธิ์ผู้ใช้) -->
       <!-- ================================================= -->
-      <div id="userRoleModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-0">
-        <div class="bg-white w-full max-w-md rounded-t-3xl max-h-[90vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200">
+      <div id="userRoleModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[90vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs">
@@ -1438,7 +1468,7 @@
           </div>
 
           <!-- FAQ Items List (Rendered by JS) -->
-          <div id="bedsideFaqList" class="grid grid-cols-1 gap-1.5 max-h-48 overflow-y-auto pr-0.5"></div>
+          <div id="bedsideFaqList" class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-0.5"></div>
         </div>
 
         <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1" id="aiSuggest"></div>
@@ -1458,7 +1488,7 @@
           </div>
         </div>
 
-        <form onsubmit="sendAiMessage(event)" class="sticky bottom-16 bg-slate-50 pt-1 flex gap-2">
+        <form onsubmit="sendAiMessage(event)" class="sticky bottom-16 md:bottom-2 bg-slate-100/90 backdrop-blur-xs py-2 flex gap-2">
           <input id="aiInput" type="text" autocomplete="off" placeholder="ถามเรื่อง EKG, ยา High-alert, TAVI, TEER..." class="flex-1 text-sm px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
           <button type="submit" class="bg-indigo-600 text-white px-4 rounded-xl active:bg-indigo-700"><i class="fa-solid fa-paper-plane"></i></button>
         </form>
@@ -1469,7 +1499,7 @@
     <!-- ================================================= -->
     <!-- MOBILE BOTTOM NAVIGATION BAR                     -->
     <!-- ================================================= -->
-    <nav class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 safe-bottom shadow-lg">
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 safe-bottom shadow-lg">
       <div id="bottomNavGrid" class="max-w-md mx-auto grid grid-cols-4 h-14 text-center">
         
         <!-- Nav 1: Home -->
@@ -1934,14 +1964,23 @@
       const isSenior = user.role === 'senior';
       const canAccessAdminNav = isAdmin || isSenior;
 
+      const desktopManageNav = document.getElementById('desktop-nav-manage');
       if (canAccessAdminNav) {
         if (manageNav) manageNav.classList.remove('hidden');
+        if (desktopManageNav) {
+          desktopManageNav.classList.remove('hidden');
+          desktopManageNav.classList.add('flex');
+        }
         if (bottomNavGrid) {
           bottomNavGrid.classList.remove('grid-cols-4');
           bottomNavGrid.classList.add('grid-cols-5');
         }
       } else {
         if (manageNav) manageNav.classList.add('hidden');
+        if (desktopManageNav) {
+          desktopManageNav.classList.add('hidden');
+          desktopManageNav.classList.remove('flex');
+        }
         if (bottomNavGrid) {
           bottomNavGrid.classList.remove('grid-cols-5');
           bottomNavGrid.classList.add('grid-cols-4');
@@ -2072,14 +2111,17 @@
       if (elPending) elPending.innerText = pending;
       if (elActive) elActive.innerText = active;
       const navBadge = document.getElementById('navPendingBadge');
+      const desktopNavBadge = document.getElementById('desktopNavPendingBadge');
       if (badgePending) {
         if (pending > 0) {
           badgePending.innerText = pending;
           badgePending.classList.remove('hidden');
           if (navBadge) navBadge.classList.remove('hidden');
+          if (desktopNavBadge) desktopNavBadge.classList.remove('hidden');
         } else {
           badgePending.classList.add('hidden');
           if (navBadge) navBadge.classList.add('hidden');
+          if (desktopNavBadge) desktopNavBadge.classList.add('hidden');
         }
       }
     }
@@ -3009,12 +3051,24 @@
     function switchTab(viewId) {
       if (viewId === 'ai') initAi();
       document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+      
+      // Update mobile bottom nav items
       document.querySelectorAll('.nav-item').forEach(btn => {
         btn.classList.remove('text-brand-600', 'text-rose-600');
         if (btn.id === 'nav-emergency') {
           btn.classList.add('text-rose-500');
         } else {
           btn.classList.add('text-slate-400');
+        }
+      });
+
+      // Update desktop header nav items
+      document.querySelectorAll('.desktop-nav-item').forEach(btn => {
+        btn.classList.remove('text-white', 'bg-white/20', 'shadow-xs');
+        if (btn.id === 'desktop-nav-manage') {
+          btn.classList.add('text-purple-200');
+        } else {
+          btn.classList.add('text-sky-200');
         }
       });
 
@@ -3033,6 +3087,12 @@
           activeNav.classList.remove('text-slate-400');
           activeNav.classList.add('text-brand-600');
         }
+      }
+
+      const activeDesktopNav = document.getElementById('desktop-nav-' + viewId);
+      if (activeDesktopNav) {
+        activeDesktopNav.classList.remove('text-sky-200', 'text-purple-200');
+        activeDesktopNav.classList.add('text-white', 'bg-white/20', 'shadow-xs');
       }
 
       if (viewId === 'manage') {
