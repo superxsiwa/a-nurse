@@ -352,10 +352,15 @@
           </button>
         </nav>
 
-        <!-- Right: Actions (Docs, SOS, Logout) -->
-        <div class="flex items-center gap-2">
+        <!-- Right: Actions (Profile, Docs, SOS, Logout) -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- User Profile & Password Button -->
+          <button onclick="openUserProfileModal()" title="แก้ไขข้อมูลส่วนตัว / เปลี่ยนรหัสผ่าน" class="h-9 px-2.5 sm:px-3 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center gap-1.5 text-xs font-semibold border border-white/15 transition-all">
+            <i class="fa-solid fa-circle-user text-sky-300 text-sm"></i>
+            <span class="hidden sm:inline">โปรไฟล์</span>
+          </button>
           <!-- Documentation Portal Button -->
-          <a href="docs_portal/index.html" target="_blank" title="เปิดศูนย์รวมเอกสารโครงการ (Proposal, Req, Analysis, Design, Manual)" class="h-9 px-3 rounded-xl bg-sky-800 hover:bg-sky-600 text-sky-100 flex items-center gap-1.5 text-xs font-semibold border border-sky-400/30 shadow-xs transition-all">
+          <a href="docs_portal/index.html" target="_blank" title="เปิดศูนย์รวมเอกสารโครงการ (Proposal, Req, Analysis, Design, Manual)" class="h-9 px-2.5 sm:px-3 rounded-xl bg-sky-800 hover:bg-sky-600 text-sky-100 flex items-center gap-1.5 text-xs font-semibold border border-sky-400/30 shadow-xs transition-all">
             <i class="fa-solid fa-book-bookmark text-amber-300"></i>
             <span class="hidden sm:inline">ศูนย์เอกสารคู่มือ</span>
           </a>
@@ -1482,16 +1487,20 @@
       </div>
 
       <!-- ================================================= -->
-      <!-- MODAL: EDIT USER ROLE (จัดการและแก้ไขสิทธิ์ผู้ใช้) -->
+      <!-- ================================================= -->
+      <!-- MODAL: EDIT USER DETAILS & ROLE (Admin จัดการผู้ใช้ทุกคน) -->
       <!-- ================================================= -->
       <div id="userRoleModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
-        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[90vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
+        <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
           <div class="p-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs">
-                <i class="fa-solid fa-user-shield"></i>
+              <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm shadow-2xs">
+                <i class="fa-solid fa-user-gear"></i>
               </div>
-              <h3 class="font-heading font-bold text-base text-slate-800">แก้ไขสิทธิ์และสถานะผู้ใช้งาน</h3>
+              <div>
+                <h3 class="font-heading font-bold text-base text-slate-800">จัดการข้อมูลและสิทธิ์ผู้ใช้งาน</h3>
+                <p class="text-[10px] text-slate-500">สำหรับผู้ดูแลระบบ (Admin) สามารถแก้ไขข้อมูลและรหัสผ่านได้ทุกคน</p>
+              </div>
             </div>
             <button onclick="closeUserRoleModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
               <i class="fa-solid fa-xmark"></i>
@@ -1501,18 +1510,58 @@
           <form id="userRoleForm" onsubmit="handleSaveUserRole(event)" class="p-4 overflow-y-auto text-xs space-y-3.5">
             <input type="hidden" id="editUserId">
 
-            <div class="bg-slate-50 border border-slate-200 p-3 rounded-2xl space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] text-slate-400">ชื่อผู้ใช้งาน / Username:</span>
-                <span id="editUserUsername" class="font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">@username</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">ชื่อผู้ใช้งาน (Username):</label>
+                <input type="text" id="editUserUsername" readonly class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-100 font-mono text-slate-600 cursor-not-allowed">
               </div>
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] text-slate-400">ชื่อ-นามสกุล:</span>
-                <span id="editUserName" class="font-bold text-slate-800">-</span>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">ชื่อ-นามสกุล <span class="text-rose-500">*</span>:</label>
+                <input type="text" id="editUserName" required class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-500">
               </div>
             </div>
 
-            <div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">ระดับประสบการณ์ / วอร์ด:</label>
+                <select id="editUserExp" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-purple-500">
+                  <option value="น้องใหม่ (&lt; 1 ปี)">น้องใหม่ (&lt; 1 ปี)</option>
+                  <option value="1-3 ปี">1-3 ปี</option>
+                  <option value="3-5 ปี">3-5 ปี</option>
+                  <option value="&gt; 5 ปี (รุ่นพี่/Incharge)">&gt; 5 ปี (รุ่นพี่/Incharge)</option>
+                  <option value="APN / ผู้เชี่ยวชาญ">APN / ผู้เชี่ยวชาญ</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 flex items-center gap-1">
+                  <i class="fa-solid fa-traffic-light text-slate-500"></i> สถานะบัญชีผู้ใช้:
+                </label>
+                <select id="editUserStatus" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-500 bg-white">
+                  <option value="active">อนุมัติแล้ว (Active) - ใช้งานได้ปกติ</option>
+                  <option value="pending">รออนุมัติ (Pending)</option>
+                  <option value="suspended">ระงับการใช้งาน (Suspended)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Admin Reset User Password Section -->
+            <div class="p-3 bg-purple-50/50 border border-purple-200 rounded-2xl space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label class="block font-bold text-purple-900 flex items-center gap-1">
+                  <i class="fa-solid fa-key text-purple-600"></i> รีเซ็ตรหัสผ่านผู้ใช้นี้ (Admin Only):
+                </label>
+                <span class="text-[10px] text-purple-600 italic">เว้นว่างไว้หากไม่ต้องการเปลี่ยน</span>
+              </div>
+              <div class="relative">
+                <input type="password" id="editUserNewPassword" placeholder="พิมพ์รหัสผ่านใหม่ (อย่างน้อย 4 ตัวอักษร)..." class="w-full text-xs p-2.5 pr-10 rounded-xl border border-purple-200 bg-white focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400">
+                <button type="button" onclick="togglePasswordVisibility('editUserNewPassword', 'editUserNewPassToggleIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                  <i id="editUserNewPassToggleIcon" class="fa-solid fa-eye text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- User Role Options -->
+            <div id="editUserRoleSection">
               <label class="block font-bold text-slate-700 mb-1.5 flex items-center gap-1">
                 <i class="fa-solid fa-shield-halved text-purple-600"></i> เลือกระดับสิทธิ์การเข้าถึง (Role):
               </label>
@@ -1524,7 +1573,7 @@
                       พยาบาลรุ่นน้อง / ทั่วไป (Junior RN)
                       <span class="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-normal">nurse</span>
                     </div>
-                    <p class="text-[11px] text-slate-500">เข้าถึง CPG ข้างเตียง, AI ผู้ช่วย, เกร็ดพี่สู่น้อง และแบ่งปันความรู้</p>
+                    <p class="text-[11px] text-slate-500">เข้าถึง CPG ข้างเตียง, AI ผู้ช่วย, เกร็ดพี่สู่น้อง และเบอร์โทรฉุกเฉิน</p>
                   </div>
                 </label>
 
@@ -1546,21 +1595,10 @@
                       ผู้ดูแลระบบ (Admin)
                       <span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.2 rounded font-bold">admin</span>
                     </div>
-                    <p class="text-[11px] text-slate-500">สิทธิ์สูงสุด อนุมัติผู้ใช้งาน แก้ไขสิทธิ์ จัดการ CPG ทั้งหมด</p>
+                    <p class="text-[11px] text-slate-500">สิทธิ์สูงสุด จัดการผู้ใช้งานทุกคน CPG และเบอร์โทรฉุกเฉิน</p>
                   </div>
                 </label>
               </div>
-            </div>
-
-            <div>
-              <label class="block font-bold text-slate-700 mb-1 flex items-center gap-1">
-                <i class="fa-solid fa-traffic-light text-slate-500"></i> สถานะบัญชีผู้ใช้:
-              </label>
-              <select id="editUserStatus" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-500 bg-white">
-                <option value="active">อนุมัติแล้ว (Active) - ใช้งานได้ปกติ</option>
-                <option value="pending">รออนุมัติ (Pending)</option>
-                <option value="suspended">ระงับการใช้งาน (Suspended)</option>
-              </select>
             </div>
 
             <div class="pt-2 flex gap-2">
@@ -1568,7 +1606,103 @@
                 ยกเลิก
               </button>
               <button type="submit" class="w-1/2 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl text-xs active:bg-purple-800 shadow-sm transition-all flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-check"></i> บันทึกสิทธิ์ผู้ใช้
+                <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูลผู้ใช้
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- MODAL: USER PROFILE & PASSWORD (ผู้ใช้แก้ไขข้อมูลตนเอง) -->
+      <!-- ================================================= -->
+      <div id="userProfileModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md md:max-w-lg rounded-t-3xl md:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-sky-100 text-brand-700 flex items-center justify-center text-sm shadow-2xs">
+                <i class="fa-solid fa-id-badge"></i>
+              </div>
+              <div>
+                <h3 class="font-heading font-bold text-base text-slate-800">โปรไฟล์และข้อมูลส่วนตัว</h3>
+                <p class="text-[10px] text-slate-500">แก้ไขข้อมูลบัญชีผู้ใช้และเปลี่ยนรหัสผ่านของคุณ</p>
+              </div>
+            </div>
+            <button onclick="closeUserProfileModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <form id="userProfileForm" onsubmit="handleSaveUserProfile(event)" class="p-4 overflow-y-auto text-xs space-y-3.5">
+            <!-- Account Badge summary -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-slate-400 block">บัญชีผู้ใช้งาน:</span>
+                <span id="profileUsernameDisplay" class="font-mono font-bold text-slate-800 text-sm">@username</span>
+              </div>
+              <div id="profileRoleBadge">
+                <span class="text-[10px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded-full">พยาบาลทั่วไป</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">
+                ชื่อ-นามสกุล <span class="text-rose-500">*</span>:
+              </label>
+              <input type="text" id="profileFullName" required placeholder="เช่น พว.สมหญิง วงศ์ใจดี" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">ระดับประสบการณ์ / อายุงาน:</label>
+              <select id="profileExp" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                <option value="น้องใหม่ (&lt; 1 ปี)">น้องใหม่ (&lt; 1 ปี)</option>
+                <option value="1-3 ปี">1-3 ปี</option>
+                <option value="3-5 ปี">3-5 ปี</option>
+                <option value="&gt; 5 ปี (รุ่นพี่/Incharge)">&gt; 5 ปี (รุ่นพี่/Incharge)</option>
+                <option value="APN / ผู้เชี่ยวชาญ">APN / ผู้เชี่ยวชาญ</option>
+              </select>
+            </div>
+
+            <!-- Password Change Section -->
+            <div class="p-3.5 bg-amber-50/60 border border-amber-200 rounded-2xl space-y-2.5">
+              <div class="flex items-center gap-1.5 text-amber-900 font-bold">
+                <i class="fa-solid fa-lock text-amber-600"></i>
+                <span>เปลี่ยนรหัสผ่าน (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)</span>
+              </div>
+
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">รหัสผ่านปัจจุบัน (สำหรับยืนยันความปลอดภัย):</label>
+                <div class="relative">
+                  <input type="password" id="profileCurrentPassword" placeholder="พิมพ์รหัสผ่านปัจจุบันของคุณ..." class="w-full text-xs p-2.5 pr-10 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-amber-500">
+                  <button type="button" onclick="togglePasswordVisibility('profileCurrentPassword', 'profileCurrentPassToggleIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                    <i id="profileCurrentPassToggleIcon" class="fa-solid fa-eye text-xs"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block font-semibold text-slate-700 mb-1">รหัสผ่านใหม่:</label>
+                  <div class="relative">
+                    <input type="password" id="profileNewPassword" placeholder="อย่างน้อย 4 ตัวอักษร..." class="w-full text-xs p-2.5 pr-10 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-amber-500">
+                    <button type="button" onclick="togglePasswordVisibility('profileNewPassword', 'profileNewPassToggleIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                      <i id="profileNewPassToggleIcon" class="fa-solid fa-eye text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label class="block font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่:</label>
+                  <input type="password" id="profileConfirmPassword" placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-amber-500">
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2 flex gap-2">
+              <button type="button" onclick="closeUserProfileModal()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs transition-colors">
+                ยกเลิก
+              </button>
+              <button type="submit" class="w-1/2 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-xs active:bg-brand-800 shadow-sm transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-check"></i> บันทึกข้อมูลโปรไฟล์
               </button>
             </div>
           </form>
@@ -2459,15 +2593,9 @@
                   <i class="fa-solid fa-user-check"></i> อนุมัติ
                 </button>
               ` : ''}
-              ${isSelf ? `
-                <span class="text-[10px] text-slate-400 italic px-2 py-1 bg-slate-50 rounded-lg border border-slate-100" title="ไม่สามารถแก้ไขสิทธิ์ของตนเองได้">
-                  <i class="fa-solid fa-lock text-[9px]"></i> บัญชีตนเอง
-                </span>
-              ` : `
-                <button onclick="openUserRoleModal('${u.id}')" class="text-[11px] px-2.5 py-1 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 font-semibold flex items-center gap-1 transition-colors">
-                  <i class="fa-solid fa-user-gear"></i> แก้ไขสิทธิ์
-                </button>
-              `}
+              <button onclick="openUserRoleModal('${u.id}')" class="text-[11px] px-2.5 py-1 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 font-semibold flex items-center gap-1 transition-colors">
+                <i class="fa-solid fa-user-gear"></i> ${isSelf ? 'แก้ไขโปรไฟล์ตนเอง' : 'แก้ไขข้อมูล/สิทธิ์'}
+              </button>
               ${!isPending && !isSelf ? `
                 <button onclick="toggleSuspendUser('${u.id}')" class="text-[11px] px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
                   ${isSuspended ? 'ปลดระงับ' : 'ระงับ'}
@@ -2489,31 +2617,51 @@
       renderAdminUserList(list);
     }
 
-    // Modal Actions for User Role Management
-    function openUserRoleModal(userId) {
-      const u = currentUsers.find(item => item.id === userId);
-      if (!u) return;
+    // ==============================================================
+    // USER MANAGEMENT (Admin จัดการทุกคน) & PROFILE SELF-SERVICE
+    // ==============================================================
 
-      // ป้องกันแก้ไขสิทธิ์ของตนเอง
-      if (currentLoggedUser && (currentLoggedUser.id === u.id || currentLoggedUser.user === u.user)) {
-        alert('ระบบรักษาความปลอดภัย: ผู้ดูแลระบบไม่สามารถแก้ไขสิทธิ์หรือระงับบัญชีของตนเองได้ค่ะ');
+    // 1. ADMIN EDIT USER MODAL ACTIONS
+    function openUserRoleModal(userId) {
+      if (!currentLoggedUser || currentLoggedUser.role !== 'admin') {
+        alert("ขออภัยค่ะ เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถจัดการผู้ใช้งานในส่วนนี้ได้");
         return;
       }
 
-      document.getElementById('editUserId').value = u.id;
-      document.getElementById('editUserUsername').innerText = '@' + u.user;
-      document.getElementById('editUserName').innerText = u.name || u.user;
+      const u = currentUsers.find(item => item.id === userId);
+      if (!u) return;
 
-      // Select matching radio button
+      const isSelf = currentLoggedUser && (currentLoggedUser.id === u.id || currentLoggedUser.user === u.user);
+
+      document.getElementById('editUserId').value = u.id;
+      document.getElementById('editUserUsername').value = '@' + u.user;
+      document.getElementById('editUserName').value = u.name || u.user;
+      
+      const expSelect = document.getElementById('editUserExp');
+      if (expSelect) expSelect.value = u.exp || 'น้องใหม่ (< 1 ปี)';
+
+      // Clear password field
+      const newPassInput = document.getElementById('editUserNewPassword');
+      if (newPassInput) newPassInput.value = '';
+
+      // Select matching role radio button
       const radioOpts = document.querySelectorAll('input[name="userRoleOption"]');
       radioOpts.forEach(r => {
         r.checked = (r.value === (u.role || 'nurse'));
+        // If editing self, prevent removing own admin role to prevent lockout
+        if (isSelf && r.value !== 'admin') {
+          r.disabled = true;
+        } else {
+          r.disabled = false;
+        }
       });
 
       // Set user status select
       const statusSelect = document.getElementById('editUserStatus');
       if (statusSelect) {
         statusSelect.value = u.status || 'active';
+        // If editing self, prevent suspending self
+        statusSelect.disabled = isSelf;
       }
 
       document.getElementById('userRoleModal').classList.remove('hidden');
@@ -2526,28 +2674,161 @@
 
     function handleSaveUserRole(e) {
       e.preventDefault();
+      if (!currentLoggedUser || currentLoggedUser.role !== 'admin') {
+        alert("ขออภัยค่ะ เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถบันทึกข้อมูลได้");
+        return;
+      }
+
       const userId = document.getElementById('editUserId').value;
       const u = currentUsers.find(item => item.id === userId);
       if (!u) return;
 
-      // ป้องกันแก้ไขสิทธิ์ของตนเอง
-      if (currentLoggedUser && (currentLoggedUser.id === u.id || currentLoggedUser.user === u.user)) {
-        alert('ระบบรักษาความปลอดภัย: คุณไม่สามารถแก้ไขสิทธิ์ของตนเองได้ค่ะ');
-        closeUserRoleModal();
+      const isSelf = currentLoggedUser && (currentLoggedUser.id === u.id || currentLoggedUser.user === u.user);
+
+      const name = document.getElementById('editUserName').value.trim();
+      const exp = document.getElementById('editUserExp').value;
+      const newPassword = document.getElementById('editUserNewPassword').value.trim();
+      const selectedRole = document.querySelector('input[name="userRoleOption"]:checked')?.value || 'nurse';
+      const selectedStatus = isSelf ? 'active' : (document.getElementById('editUserStatus').value || 'active');
+
+      if (!name) {
+        alert("กรุณากรอกชื่อ-นามสกุลให้ครบถ้วน");
         return;
       }
 
-      const selectedRole = document.querySelector('input[name="userRoleOption"]:checked')?.value || 'nurse';
-      const selectedStatus = document.getElementById('editUserStatus').value || 'active';
+      if (newPassword && newPassword.length < 4) {
+        alert("รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 4 ตัวอักษร");
+        return;
+      }
 
-      u.role = selectedRole;
-      u.status = selectedStatus;
+      // Update user object
+      u.name = name;
+      u.exp = exp;
+      if (!isSelf) {
+        u.role = selectedRole;
+        u.status = selectedStatus;
+      }
+      if (newPassword) {
+        u.pass = newPassword;
+      }
 
       saveUsers(currentUsers);
+
+      // If edited self, update current logged user state & header display
+      if (isSelf) {
+        currentLoggedUser = u;
+        document.getElementById('displayUser').innerText = u.name || u.user;
+      }
+
       renderAdminUserList();
       closeUserRoleModal();
 
-      alert(`บันทึกสิทธิ์ของ "${u.name || u.user}" เป็น "${selectedRole === 'admin' ? 'ผู้ดูแลระบบ (Admin)' : selectedRole === 'senior' ? 'พยาบาลรุ่นพี่ (Senior RN)' : 'พยาบาลรุ่นน้อง (Junior RN)'}" เรียบร้อยแล้วค่ะ`);
+      let successMsg = `บันทึกข้อมูลของ "${u.name || u.user}" สำเร็จเรียบร้อยแล้วค่ะ`;
+      if (newPassword) successMsg += ` (เปลี่ยนรหัสผ่านใหม่เรียบร้อย)`;
+      alert(successMsg);
+    }
+
+    // 2. USER PROFILE SELF-SERVICE (ผู้ใช้แก้ไขข้อมูลของตนเอง & เปลี่ยนรหัสผ่าน)
+    function openUserProfileModal() {
+      if (!currentLoggedUser) {
+        alert("กรุณาเข้าสู่ระบบก่อนดำเนินการค่ะ");
+        return;
+      }
+
+      const user = currentUsers.find(u => u.id === currentLoggedUser.id || u.user === currentLoggedUser.user) || currentLoggedUser;
+
+      document.getElementById('profileUsernameDisplay').innerText = '@' + user.user;
+      document.getElementById('profileFullName').value = user.name || user.user;
+      
+      const expSelect = document.getElementById('profileExp');
+      if (expSelect) expSelect.value = user.exp || 'น้องใหม่ (< 1 ปี)';
+
+      // Role badge display
+      const badgeContainer = document.getElementById('profileRoleBadge');
+      if (badgeContainer) {
+        if (user.role === 'admin') {
+          badgeContainer.innerHTML = '<span class="text-[10px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full border border-purple-200"><i class="fa-solid fa-shield-halved"></i> ผู้ดูแลระบบ (Admin)</span>';
+        } else if (user.role === 'senior') {
+          badgeContainer.innerHTML = '<span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full border border-amber-200"><i class="fa-solid fa-user-nurse"></i> พยาบาลรุ่นพี่ (Senior RN)</span>';
+        } else {
+          badgeContainer.innerHTML = '<span class="text-[10px] bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-full border border-slate-200"><i class="fa-solid fa-user-nurse"></i> พยาบาลรุ่นน้อง (Junior RN)</span>';
+        }
+      }
+
+      // Clear password fields
+      const curPass = document.getElementById('profileCurrentPassword');
+      const newPass = document.getElementById('profileNewPassword');
+      const confirmPass = document.getElementById('profileConfirmPassword');
+      if (curPass) curPass.value = '';
+      if (newPass) newPass.value = '';
+      if (confirmPass) confirmPass.value = '';
+
+      const modal = document.getElementById('userProfileModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeUserProfileModal() {
+      const modal = document.getElementById('userProfileModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleSaveUserProfile(e) {
+      e.preventDefault();
+      if (!currentLoggedUser) return;
+
+      const user = currentUsers.find(u => u.id === currentLoggedUser.id || u.user === currentLoggedUser.user);
+      if (!user) return;
+
+      const name = document.getElementById('profileFullName').value.trim();
+      const exp = document.getElementById('profileExp').value;
+      const curPass = document.getElementById('profileCurrentPassword').value.trim();
+      const newPass = document.getElementById('profileNewPassword').value.trim();
+      const confirmPass = document.getElementById('profileConfirmPassword').value.trim();
+
+      if (!name) {
+        alert("กรุณากรอกชื่อ-นามสกุลของคุณ");
+        return;
+      }
+
+      // Check password change request
+      let passwordChanged = false;
+      if (curPass || newPass || confirmPass) {
+        if (!curPass) {
+          alert("กรุณาระบุรหัสผ่านปัจจุบันเพื่อยืนยันตัวตนก่อนเปลี่ยนรหัสผ่านค่ะ");
+          return;
+        }
+        if (curPass !== user.pass) {
+          alert("รหัสผ่านปัจจุบันไม่ถูกต้อง กรุณาตรวจสอบอีกครั้งค่ะ");
+          return;
+        }
+        if (!newPass || newPass.length < 4) {
+          alert("รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 4 ตัวอักษรค่ะ");
+          return;
+        }
+        if (newPass !== confirmPass) {
+          alert("รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้งค่ะ");
+          return;
+        }
+        user.pass = newPass;
+        passwordChanged = true;
+      }
+
+      user.name = name;
+      user.exp = exp;
+
+      saveUsers(currentUsers);
+      currentLoggedUser = user;
+
+      // Update Header Display
+      document.getElementById('displayUser').innerText = user.name || user.user;
+      renderAdminUserList();
+      closeUserProfileModal();
+
+      let msg = "บันทึกข้อมูลส่วนตัวเรียบร้อยแล้วค่ะ!";
+      if (passwordChanged) {
+        msg += "\n(เปลี่ยนรหัสผ่านใหม่สำเร็จแล้ว สามารถใช้รหัสผ่านใหม่เข้าสู่ระบบในครั้งถัดไป)";
+      }
+      alert(msg);
     }
 
     function approveUser(userId) {
