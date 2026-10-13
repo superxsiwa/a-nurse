@@ -433,65 +433,100 @@
           <i class="fa-solid fa-chevron-right text-white/70"></i>
         </button>
 
-        <!-- 4 Main Proposal Categories Grid (ตรงตามขอบเขต Proposal 100%) -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          
-          <!-- Category 1: Emergency & Arrhythmia -->
-          <div onclick="filterCategoryGroup('emergency_ekg')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-rose-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg mb-2">
-                <i class="fa-solid fa-heart-pulse"></i>
-              </div>
-              <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">1. ด่วนวิกฤต & EKG</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">แปลผล EKG อันตราย, VT/VF, Bradycardia, กู้ชีพ ACLS</p>
-            </div>
-            <span class="mt-2.5 text-[10px] text-rose-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-medical"></i> 4 เอกสารแนวปฏิบัติ
-            </span>
+        <!-- 4 Main Proposal Document Pillars Grid (4 เสาหลักเอกสารแนวปฏิบัติ CPG ศิริราช) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between px-0.5">
+            <h3 class="font-heading font-bold text-xs text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-layer-group text-brand-600"></i> หมวดหมู่เอกสาร CPG (4 เสาหลัก)
+            </h3>
+            <button onclick="switchTab('knowledge')" class="text-[11px] text-brand-700 hover:text-brand-900 font-semibold flex items-center gap-1">
+              ดูทั้งหมด <i class="fa-solid fa-chevron-right text-[9px]"></i>
+            </button>
           </div>
-
-          <!-- Category 2: High-Alert Drugs -->
-          <div onclick="filterCategoryGroup('high_alert_drug')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-emerald-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-2">
-                <i class="fa-solid fa-syringe"></i>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            
+            <!-- Pillar 1: Emergency & Arrhythmia -->
+            <div onclick="filterCategoryGroup('emergency_ekg')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-rose-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between group">
+              <div>
+                <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg mb-2 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <h4 class="font-heading font-bold text-sm text-slate-800 leading-snug">1. ด่วนวิกฤต & EKG</h4>
+                <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">แปลผล EKG อันตราย, VT/VF, Bradycardia, กู้ชีพ ACLS</p>
               </div>
-              <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">2. ยาความเสี่ยงสูง</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Norepinephrine, Dobutamine, Cordarone, Heparin</p>
+              <span class="mt-2.5 text-[10px] text-rose-600 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-file-medical"></i> <span id="homeCountPillar1">4</span> เอกสารแนวปฏิบัติ
+              </span>
             </div>
-            <span class="mt-2.5 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-medical"></i> 4 เอกสาร & โปรโตคอล
-            </span>
-          </div>
 
-          <!-- Category 3: Devices & Specialized Procedures -->
-          <div onclick="filterCategoryGroup('devices_procedures')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-sky-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-9 h-9 rounded-xl bg-sky-50 text-brand-600 flex items-center justify-center text-lg mb-2">
-                <i class="fa-solid fa-microchip"></i>
+            <!-- Pillar 2: High-Alert Drugs -->
+            <div onclick="filterCategoryGroup('high_alert_drug')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-emerald-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between group">
+              <div>
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-2 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-syringe"></i>
+                </div>
+                <h4 class="font-heading font-bold text-sm text-slate-800 leading-snug">2. ยาความเสี่ยงสูง</h4>
+                <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Norepinephrine, Dobutamine, Cordarone, Heparin</p>
               </div>
-              <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">3. เครื่องมือ & หัตถการ</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">IABP, Pacemaker, TAVI, TEER (MitraClip), PCI</p>
+              <span class="mt-2.5 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-file-medical"></i> <span id="homeCountPillar2">4</span> เอกสาร & โปรโตคอล
+              </span>
             </div>
-            <span class="mt-2.5 text-[10px] text-brand-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-file-medical"></i> 5 คู่มือเฉพาะทาง
-            </span>
-          </div>
 
-          <!-- Category 4: Clinical Pearls (พี่สู่น้อง) -->
-          <div onclick="filterCategoryGroup('clinical_pearls')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-amber-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between">
-            <div>
-              <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg mb-2">
+            <!-- Pillar 3: Devices & Specialized Procedures -->
+            <div onclick="filterCategoryGroup('devices_procedures')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-sky-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between group">
+              <div>
+                <div class="w-9 h-9 rounded-xl bg-sky-50 text-brand-600 flex items-center justify-center text-lg mb-2 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-microchip"></i>
+                </div>
+                <h4 class="font-heading font-bold text-sm text-slate-800 leading-snug">3. เครื่องมือ & หัตถการ</h4>
+                <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">IABP, Pacemaker, TAVI, TEER (MitraClip), PCI</p>
+              </div>
+              <span class="mt-2.5 text-[10px] text-brand-600 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-file-medical"></i> <span id="homeCountPillar3">5</span> คู่มือเฉพาะทาง
+              </span>
+            </div>
+
+            <!-- Pillar 4: Rehabilitation & General Nursing Care -->
+            <div onclick="filterCategoryGroup('rehab_general')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-indigo-300 active:bg-slate-50 transition-all cursor-pointer flex flex-col justify-between group">
+              <div>
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg mb-2 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-person-walking"></i>
+                </div>
+                <h4 class="font-heading font-bold text-sm text-slate-800 leading-snug">4. การฟื้นฟู & ทั่วไป</h4>
+                <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Cardiovascular Rehab, Phase I In-hospital, แนวปฏิบัติทั่วไป</p>
+              </div>
+              <span class="mt-2.5 text-[10px] text-indigo-600 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-file-medical"></i> <span id="homeCountPillar4">1</span> เอกสารฟื้นฟู
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Dedicated Section: Tacit Knowledge (ประสบการณ์พี่สู่น้อง / Clinical Pearls) -->
+        <div onclick="switchTab('tacit')" class="bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 text-white p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer relative overflow-hidden group">
+          <div class="relative z-10 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-xl text-amber-100 group-hover:scale-105 transition-transform shrink-0">
                 <i class="fa-solid fa-lightbulb"></i>
               </div>
-              <h3 class="font-heading font-bold text-sm text-slate-800 leading-snug">4. พี่สู่น้อง</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">อาการเตือนก่อน Arrest, ส่งเวร SBAR, การฟื้นฟูสภาพ</p>
+              <div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="font-heading font-bold text-sm sm:text-base">ประสบการณ์พี่สู่น้อง (Clinical Pearls)</span>
+                  <span class="text-[10px] bg-white/25 text-white font-semibold px-2 py-0.2 rounded-full backdrop-blur-xs">Tacit Knowledge</span>
+                </div>
+                <p class="text-xs text-amber-100 mt-0.5 line-clamp-1">
+                  คลังเกร็ดความรู้ ประสบการณ์ข้างเตียง จุดพึงระวัง และส่งต่อเวรจากพยาบาลรุ่นพี่ CCU
+                </p>
+              </div>
             </div>
-            <span class="mt-2.5 text-[10px] text-amber-700 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-comments"></i> ฟีดเกร็ดความรู้ & Rehab
-            </span>
+            <div class="flex items-center gap-1 text-xs font-semibold bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-xl shrink-0 transition-colors">
+              <span>เปิดอ่าน</span>
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </div>
           </div>
-
+          <i class="fa-solid fa-comments absolute -right-3 -bottom-3 text-7xl text-white/10 pointer-events-none"></i>
         </div>
 
       </div>
@@ -530,41 +565,48 @@
           </button>
         </div>
 
-        <!-- Category Icon Filter Bar (5 Items: Icon + Short Text) -->
-        <div class="grid grid-cols-5 gap-1.5 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80">
+        <!-- Category Icon Filter Bar (4 เสาหลัก CPG + เกร็ดพี่สู่น้อง) -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80">
           <!-- 1. All -->
           <button onclick="filterCategoryGroup('all')" id="chip-all" class="tag-chip active flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white text-brand-700 shadow-xs border border-brand-200 transition-all">
             <i class="fa-solid fa-layer-group text-sm mb-1"></i>
             <span class="text-[10px] font-bold leading-tight">ทั้งหมด</span>
-            <span class="text-[9px] text-slate-400 mt-0.5">(29)</span>
+            <span id="chipCount-all" class="text-[9px] text-slate-400 mt-0.5">(29)</span>
           </button>
 
           <!-- 2. Emergency & EKG -->
           <button onclick="filterCategoryGroup('emergency_ekg')" id="chip-emergency_ekg" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
             <i class="fa-solid fa-heart-pulse text-sm mb-1 text-rose-500"></i>
-            <span class="text-[10px] font-semibold leading-tight text-center">ด่วน/EKG</span>
-            <span class="text-[9px] text-slate-400 mt-0.5">(4)</span>
+            <span class="text-[10px] font-semibold leading-tight text-center">1. ด่วน/EKG</span>
+            <span id="chipCount-emergency_ekg" class="text-[9px] text-slate-400 mt-0.5">(4)</span>
           </button>
 
           <!-- 3. High-Alert Drug -->
           <button onclick="filterCategoryGroup('high_alert_drug')" id="chip-high_alert_drug" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
             <i class="fa-solid fa-syringe text-sm mb-1 text-emerald-500"></i>
-            <span class="text-[10px] font-semibold leading-tight text-center">ยาเสี่ยงสูง</span>
-            <span class="text-[9px] text-slate-400 mt-0.5">(4)</span>
+            <span class="text-[10px] font-semibold leading-tight text-center">2. ยาเสี่ยงสูง</span>
+            <span id="chipCount-high_alert_drug" class="text-[9px] text-slate-400 mt-0.5">(4)</span>
           </button>
 
           <!-- 4. Devices & Procedures -->
           <button onclick="filterCategoryGroup('devices_procedures')" id="chip-devices_procedures" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
             <i class="fa-solid fa-microchip text-sm mb-1 text-sky-500"></i>
-            <span class="text-[10px] font-semibold leading-tight text-center">หัตถการ</span>
-            <span class="text-[9px] text-slate-400 mt-0.5">(5)</span>
+            <span class="text-[10px] font-semibold leading-tight text-center">3. หัตถการ</span>
+            <span id="chipCount-devices_procedures" class="text-[9px] text-slate-400 mt-0.5">(5)</span>
           </button>
 
-          <!-- 5. Clinical Pearls (พี่สู่น้อง) -->
+          <!-- 5. Rehabilitation & General Nursing -->
+          <button onclick="filterCategoryGroup('rehab_general')" id="chip-rehab_general" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
+            <i class="fa-solid fa-person-walking text-sm mb-1 text-indigo-500"></i>
+            <span class="text-[10px] font-semibold leading-tight text-center">4. ฟื้นฟู/ทั่วไป</span>
+            <span id="chipCount-rehab_general" class="text-[9px] text-slate-400 mt-0.5">(1)</span>
+          </button>
+
+          <!-- 6. Clinical Pearls (พี่สู่น้อง - ทางลัดเปิดฟีด) -->
           <button onclick="filterCategoryGroup('clinical_pearls')" id="chip-clinical_pearls" class="tag-chip flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-transparent text-slate-600 hover:bg-white/60 transition-all">
             <i class="fa-solid fa-lightbulb text-sm mb-1 text-amber-500"></i>
             <span class="text-[10px] font-semibold leading-tight text-center">พี่สู่น้อง</span>
-            <span class="text-[9px] text-slate-400 mt-0.5">(เกร็ด)</span>
+            <span class="text-[9px] text-amber-600 font-medium mt-0.5">เกร็ด</span>
           </button>
         </div>
 
@@ -3295,6 +3337,34 @@
       if (statEl) statEl.innerText = total;
       if (statPendingEl) statPendingEl.innerText = pendingKm;
       if (statApprovedEl) statApprovedEl.innerText = approvedKm;
+
+      // Update 4 Core Pillars dynamic count badges
+      const countP1 = baseKmList.filter(k => (PROPOSAL_GROUPS.emergency_ekg || []).includes(k.category)).length;
+      const countP2 = baseKmList.filter(k => (PROPOSAL_GROUPS.high_alert_drug || []).includes(k.category)).length;
+      const countP3 = baseKmList.filter(k => (PROPOSAL_GROUPS.devices_procedures || []).includes(k.category)).length;
+      const countP4 = baseKmList.filter(k => (PROPOSAL_GROUPS.rehab_general || []).includes(k.category)).length;
+
+      // Home view pillar counts
+      const homeP1 = document.getElementById('homeCountPillar1');
+      const homeP2 = document.getElementById('homeCountPillar2');
+      const homeP3 = document.getElementById('homeCountPillar3');
+      const homeP4 = document.getElementById('homeCountPillar4');
+      if (homeP1) homeP1.innerText = countP1;
+      if (homeP2) homeP2.innerText = countP2;
+      if (homeP3) homeP3.innerText = countP3;
+      if (homeP4) homeP4.innerText = countP4;
+
+      // CPG filter bar chip counts
+      const chipAll = document.getElementById('chipCount-all');
+      const chipP1 = document.getElementById('chipCount-emergency_ekg');
+      const chipP2 = document.getElementById('chipCount-high_alert_drug');
+      const chipP3 = document.getElementById('chipCount-devices_procedures');
+      const chipP4 = document.getElementById('chipCount-rehab_general');
+      if (chipAll) chipAll.innerText = `(${total})`;
+      if (chipP1) chipP1.innerText = `(${countP1})`;
+      if (chipP2) chipP2.innerText = `(${countP2})`;
+      if (chipP3) chipP3.innerText = `(${countP3})`;
+      if (chipP4) chipP4.innerText = `(${countP4})`;
     }
 
     // ===== BEDSIDE CLINICAL FAQS & SENIOR VERIFICATION SYSTEM =====
@@ -4245,6 +4315,8 @@
         if (item.category === "TEER") badgeColor = "bg-purple-50 text-purple-700";
         if (item.category === "Pacemaker") badgeColor = "bg-teal-50 text-teal-700";
         if (item.category === "ACS") badgeColor = "bg-amber-50 text-amber-700";
+        if (item.category === "Rehabilitation") badgeColor = "bg-indigo-50 text-indigo-700";
+        if (item.category === "General") badgeColor = "bg-slate-100 text-slate-700";
 
         // ค้นหา FAQ ที่สังกัด CPG นี้ (แสดงเฉพาะที่ approved ให้พยาบาลดู)
         const linkedFaqs = allFaqs.filter(f => f.cpgId === item.id && f.status === 'approved');
@@ -4805,7 +4877,7 @@
       emergency_ekg: ['EKG'],
       high_alert_drug: ['Drug'],
       devices_procedures: ['TAVI', 'TEER', 'Pacemaker', 'ACS'],
-      clinical_pearls: ['Rehabilitation']
+      rehab_general: ['Rehabilitation', 'General']
     };
 
     function filterCategoryGroup(groupKey) {
