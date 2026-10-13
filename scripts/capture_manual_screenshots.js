@@ -199,7 +199,35 @@ async function run() {
     await new Promise(r => setTimeout(r, 800));
     await capture('11_admin_user_roles.png');
 
-    console.log('🎉 All 11 screenshots successfully captured!');
+    // 12. User Profile & Avatar Modal
+    console.log('12. Capturing User Profile & Avatar Modal...');
+    await evaluate(`
+      closeUserRoleModal();
+      openUserProfileModal();
+    `);
+    await new Promise(r => setTimeout(r, 800));
+    await capture('12_user_profile_modal.png');
+
+    // 13. Admin Emergency Directory Management
+    console.log('13. Capturing Admin Emergency Directory Management...');
+    await evaluate(`
+      closeUserProfileModal();
+      switchTab('manage');
+      switchAdminSubtab('emergency');
+    `);
+    await new Promise(r => setTimeout(r, 800));
+    await capture('13_admin_emergency_contacts.png');
+
+    // 14. Admin Add / Edit User Modal
+    console.log('14. Capturing Admin Add User Modal...');
+    await evaluate(`
+      switchAdminSubtab('users');
+      openCreateUserModal();
+    `);
+    await new Promise(r => setTimeout(r, 800));
+    await capture('14_admin_add_user_modal.png');
+
+    console.log('🎉 All 14 screenshots successfully captured!');
   } finally {
     ws.close();
     chrome.kill();
