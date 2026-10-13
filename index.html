@@ -2803,28 +2803,28 @@
         const card = document.createElement('div');
         card.className = `p-3 rounded-2xl border ${isPending ? 'bg-amber-50/50 border-amber-300' : 'bg-white border-slate-200'} shadow-xs flex flex-col gap-2`;
 
+        const statusBadgeHtml = isPending 
+          ? '<span class="inline-flex items-center gap-1 text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-300"><i class="fa-solid fa-hourglass-half text-[9px]"></i> รออนุมัติ</span>'
+          : isSuspended
+          ? '<span class="inline-flex items-center gap-1 text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-ban text-[9px]"></i> ระงับการใช้งาน</span>'
+          : '<span class="inline-flex items-center gap-1 text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-check text-[9px]"></i> อนุมัติแล้ว</span>';
+
         card.innerHTML = `
-          <div class="flex items-start justify-between gap-2.5">
-            <div class="flex items-start gap-2.5 min-w-0">
-              ${getUserAvatarHtml(u, 'w-10 h-10', 'border-2 border-slate-200 shadow-2xs')}
-              <div class="min-w-0">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="font-bold text-xs text-slate-800 truncate">${u.name || u.user}</span>
-                  <span class="text-[10px] font-mono px-1.5 py-0.2 rounded shrink-0 ${u.role === 'admin' ? 'bg-purple-100 text-purple-700 font-bold' : u.role === 'senior' ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-100 text-slate-600'}">@${u.user}</span>
-                  ${isSelf ? '<span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.2 rounded border border-indigo-200 shrink-0">บัญชีของคุณ</span>' : ''}
-                </div>
-                <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2 flex-wrap">
-                  <span><i class="fa-solid fa-clock-rotate-left text-slate-400"></i> ประสบการณ์: ${u.exp || '-'}</span>
-                  <span>• สมัครเมื่อ: ${u.registeredAt || '-'}</span>
-                </div>
+          <div class="flex items-start gap-2.5 min-w-0">
+            ${getUserAvatarHtml(u, 'w-10 h-10', 'border-2 border-slate-200 shadow-2xs')}
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-bold text-xs text-slate-800 truncate">${u.name || u.user}</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded shrink-0 ${u.role === 'admin' ? 'bg-purple-100 text-purple-700 font-bold' : u.role === 'senior' ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-100 text-slate-600'}">@${u.user}</span>
+                ${isSelf ? '<span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.2 rounded border border-indigo-200 shrink-0">บัญชีของคุณ</span>' : ''}
               </div>
-            </div>
-            <div>
-              ${isPending 
-                ? '<span class="text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-300"><i class="fa-solid fa-hourglass-half"></i> รออนุมัติ</span>'
-                : isSuspended
-                ? '<span class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-ban"></i> ระงับ</span>'
-                : '<span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-check"></i> อนุมัติแล้ว</span>'}
+              <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                <span><i class="fa-solid fa-clock-rotate-left text-slate-400"></i> ประสบการณ์: ${u.exp || '-'}</span>
+                <span>• สมัครเมื่อ: ${u.registeredAt || '-'}</span>
+              </div>
+              <div class="mt-1.5">
+                ${statusBadgeHtml}
+              </div>
             </div>
           </div>
 
